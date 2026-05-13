@@ -3,7 +3,7 @@
 export function Button() {
 
     return (
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button className="bg-[var(--gray-200)] hover:bg-[var(--gray-100)] text-[var(--gray-600)] font-bold py-2 px-4 rounded">
             Button
         </button>
     )

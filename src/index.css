@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+:root {
+  --blue-dark: #2e3da3;
+  --blue-base: #5165e1;
+  --blue-light: #8996eb;
+
+  --gray-100: #151619;
+  --gray-200: #1e2024;
+  --gray-300: #535964;
+  --gray-400: #858b99;
+  --gray-500: #e3e5e8;
+  --gray-600: #f9fafa;
+
+  --feedback-danger: #d03e3e;
+  --feedback-open: #cc3d6a;
+  --feedback-progress: #355ec5;
+  --feedback-done: #508b26;
+}
+button,
+body,
+input,
+select,
+textarea {
+  font-family: "Lato", sans-serif;
+}
