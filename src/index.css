@@ -1,26 +1,27 @@
-@import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
 
-:root {
-  --blue-dark: #2e3da3;
-  --blue-base: #5165e1;
-  --blue-light: #8996eb;
+/* Defina o tema diretamente aqui */
+@theme {
+  --color-*: initial;
+  --color-blue-dark: #2e3da3;
+  --color-blue-base: #5156e1;
+  --color-blue-light: #8996eb;
 
-  --gray-100: #151619;
-  --gray-200: #1e2024;
-  --gray-300: #535964;
-  --gray-400: #858b99;
-  --gray-500: #e3e5e8;
-  --gray-600: #f9fafa;
+  --color-gray-600: #151619;
+  --color-gray-500: #1e2024;
+  --color-gray-400: #535964;
+  --color-gray-300: #858b99;
+  --color-gray-200: #e3e5e8;
+  --color-gray-100: #f9fafa;
 
-  --feedback-danger: #d03e3e;
-  --feedback-open: #cc3d6a;
-  --feedback-progress: #355ec5;
-  --feedback-done: #508b26;
+  --color-feedback-danger: #d03e3e;
+  --color-feedback-open: #cc3d6a;
+  --color-feedback-progress: #355ec5;
+  --color-feedback-done: #508b26;
+  --font-sans: "Lato", sans-serif;
 }
-button,
-body,
-input,
-select,
-textarea {
+body {
   font-family: "Lato", sans-serif;
 }
