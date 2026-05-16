@@ -1,21 +1,21 @@
-
-import { ButtonIcon } from "./components/ButtonIcon";
-
-import IconHamburger from "./assets/icon/menu.svg?react";
-import IconX from "./assets/icon/x.svg?react";
-
-
+import { Avatar } from "./components/Avatar";
+import { Text } from "./components/Text";
 
 export function App() {
-
   return (
-    <div className="flex flex-col max-w-md mx-auto border border-gray-300 p-4">
+    <div className="flex flex-col gap-2">
+      <Text variant={"text-xl-bold"} className="text-blue-dark">Hello, World!</Text>
+      <Text variant={"text-lg-bold"}>Hello, World!</Text>
+      <Text variant={"heading-md-normal"}>Hello, World!</Text>
+      <Text variant={"text-sm-regular"}>Hello, World!</Text>
+      <Text variant={"text-xs-regular"}>Hello, World!</Text>
+      <Text variant={"text-xxs-bold"}>Hello, World!</Text>
 
-      <h1 className="text-blue-dark text-3xl font-bold">Tailwind CSS - Button Icon</h1>
+      <Avatar name="Maria Oliveira" sizePx={70} color={"green"} />
+      <Avatar name="João Souza" size="lg" color={"yellow"} />
+      <Avatar name="Ana Costa" />
+      <Avatar name="Francisco Silva" color={"red"} />
 
-      <IconHamburger className="fill-amber-600" />
-
-      <ButtonIcon icon={<IconX />} />
 
     </div>
   )

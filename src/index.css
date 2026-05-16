@@ -4,24 +4,25 @@
 
 /* Defina o tema diretamente aqui */
 @theme {
-  --color-*: initial;
   --color-blue-dark: #2e3da3;
   --color-blue-base: #5156e1;
   --color-blue-light: #8996eb;
 
-  --color-gray-600: #151619;
-  --color-gray-500: #1e2024;
-  --color-gray-400: #535964;
-  --color-gray-300: #858b99;
-  --color-gray-200: #e3e5e8;
-  --color-gray-100: #f9fafa;
+  --color-gray-100: #151619;
+  --color-gray-200: #1e2024;
+  --color-gray-300: #535964;
+  --color-gray-400: #858b99;
+  --color-gray-500: #e3e5e8;
+  --color-gray-600: #f9fafa;
 
   --color-feedback-danger: #d03e3e;
   --color-feedback-open: #cc3d6a;
   --color-feedback-progress: #355ec5;
   --color-feedback-done: #508b26;
   --font-sans: "Lato", sans-serif;
+
+  --font-sans: "Lato", sans-serif;
 }
 body {
-  font-family: "Lato", sans-serif;
+  color: var(--color-gray-200);
 }
