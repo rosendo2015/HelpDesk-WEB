@@ -19,7 +19,11 @@
   --color-feedback-open: #cc3d6a;
   --color-feedback-progress: #355ec5;
   --color-feedback-done: #508b26;
-  --font-sans: "Lato", sans-serif;
+
+  --color-bg-feedback-open-20: rgba(204, 61, 106, 0.2);
+  --color-bg-feedback-info-20: rgba(53, 94, 197, 0.2);
+  --color-bg-feedback-success-20: rgba(80, 139, 38, 0.2);
+  --color-bg-feedback-danger-20: rgba(208, 62, 62, 0.2);
 
   --font-sans: "Lato", sans-serif;
 }
