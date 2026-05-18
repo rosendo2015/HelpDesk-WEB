@@ -22,7 +22,7 @@ export function Tags({
     return (
         <div className={tagsVariants({ variant, className, size, })} {...props}>
             {svg && <Icon svg={svg} className={tagsIconVariants({ variant })} />}
-            <Text variant={"text-xs-regular"} className={tagsTextVariants({ variant })}>{children}</Text>
+            <Text variant={"text-xs-bold"} className={tagsTextVariants({ variant })}>{children}</Text>
         </div>
     )
 }

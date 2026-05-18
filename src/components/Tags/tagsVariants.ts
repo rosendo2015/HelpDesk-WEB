@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 
-export const tagsVariants = cva("inline-flex items-center justify-center rounded-full", {
+export const tagsVariants = cva("text-xs-bold flex items-center justify-center rounded-full", {
     variants: {
         variant: {
             "new": "border border-feedback-open/20 bg-bg-feedback-open-20",
@@ -9,7 +9,7 @@ export const tagsVariants = cva("inline-flex items-center justify-center rounded
             "danger": "border border-feedback-danger/20 bg-bg-feedback-danger-20"
         },
         size: {
-            "md": "p-1.5",
+            "md": "py-1.5 px-3",
         }
     },
     defaultVariants: {
