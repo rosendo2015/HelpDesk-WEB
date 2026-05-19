@@ -16,8 +16,10 @@ import XIcon from "./assets/icons/x.svg?react";
 import LinePencil from "./assets/icons/pen-line.svg?react";
 import { ButtonIcon } from "./components/ButtonIcon";
 import { InputText } from "./components/InputText";
+import { InputSelect } from "./components/InputSelect";
 
 import { useState } from "react"
+
 
 
 export function App() {
@@ -114,10 +116,25 @@ export function App() {
           placeholder="Digite sua senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          error={error}
+          error={true}
           errorIcon={AlertCircle}
           helperText={error ? "A senha deve ter pelo menos 8 caracteres" : ""}
         />
+
+        <InputSelect
+          label="Categoria"
+          options={["Item 1", "Item 2", "Item 3"]}
+          helperText="Escolha uma opção"
+          error={false}
+        />
+
+        <InputSelect
+          label="Categoria"
+          options={["Item 1", "Item 2", "Item 3"]}
+          helperText="Campo obrigatório"
+          error={true}
+        />
+
 
         <Button type="submit" variant="primary">Enviar</Button>
       </form>
