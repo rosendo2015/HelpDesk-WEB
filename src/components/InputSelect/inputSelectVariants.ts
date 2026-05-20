@@ -6,12 +6,12 @@ export const inputSelectVariants = cva(
         variants: {
             state: {
                 default: "border-gray-400 text-gray-400",
-                focus: "border-blue-500 text-blue-500",
-                error: "border-red-500 text-red-500",
+                focus: "border-blue-500 text-blue-500 shadow-md",
+                error: "border-red-500 text-red-500 shadow-sm",
             },
         },
         defaultVariants: {
             state: "default",
         },
     }
-)
+);

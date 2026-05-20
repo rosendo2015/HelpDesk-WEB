@@ -9,6 +9,7 @@ export const buttonVariants = cva("flex items-center justify-center cursor-point
             link: "bg-transparent hover:bg-gray-500"
         },
         size: {
+            lg: "h-10 px-6 w-full",
             md: "h-10 px-4",
             sm: "h-7 px-3"
         },

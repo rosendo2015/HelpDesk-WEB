@@ -97,7 +97,7 @@ export function App() {
         <ButtonIcon icon={LinePencil} variant="link" size="sm" />
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex items-center flex-col gap-4 p-4 border border-gray-300 rounded-lg w-xl mx-auto">
         <h2 className="text-lg font-bold">FORMULÁRIO EXEMPLO</h2>
 
         <InputText
@@ -137,11 +137,11 @@ export function App() {
         />
 
 
-        <Button type="submit" variant="primary">Enviar</Button>
+        <Button type="submit" size="md" variant="primary">Enviar</Button>
       </form>
 
 
-      <div className="flex p-8 bg-gray-100">
+      <div className="flex p-8 bg-gray-600">
         <Card size="md">Hello World.</Card>
       </div>
 
