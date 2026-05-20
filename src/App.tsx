@@ -19,6 +19,7 @@ import { InputText } from "./components/InputText";
 import { InputSelect } from "./components/InputSelect";
 
 import { useState } from "react"
+import { Card } from "./components/Card";
 
 
 
@@ -96,7 +97,7 @@ export function App() {
         <ButtonIcon icon={LinePencil} variant="link" size="sm" />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-max border p-4 rounded-2xl">
+      <form onSubmit={handleSubmit}>
         <h2 className="text-lg font-bold">FORMULÁRIO EXEMPLO</h2>
 
         <InputText
@@ -138,6 +139,11 @@ export function App() {
 
         <Button type="submit" variant="primary">Enviar</Button>
       </form>
+
+
+      <div className="flex p-8 bg-gray-100">
+        <Card size="md">Hello World.</Card>
+      </div>
 
     </div>
   )

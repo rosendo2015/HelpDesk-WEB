@@ -1,14 +1,13 @@
 import { useState } from "react"
 import { type VariantProps } from "class-variance-authority"
 import { cx } from "class-variance-authority"
-import { inputSelectVariants } from "./inputselectVariants"
+import { inputSelectVariants } from "./inputSelectVariants"
 
 import ChevronDown from "../../assets/icons/chevron-down.svg?react"
 import ChevronUp from "../../assets/icons/chevron-up.svg?react"
 import Check from "../../assets/icons/check.svg?react"
 import AlertCircle from "../../assets/icons/circle-alert.svg?react"
-
-
+import { Icon } from "../Icon"
 
 interface inputSelectProps
     extends VariantProps<typeof inputSelectVariants> {
@@ -35,7 +34,7 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
         <div className="group w-lg flex flex-col gap-1 relative">
             <label
                 className={cx(
-                    "text-sm transition-all",
+                    "text-sm transition-all mt-4",
                     state === "error"
                         ? "text-red-500"
                         : state === "focus"
@@ -54,10 +53,19 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
                     {selected || "Selecione uma opção"}
                 </span>
                 {open ? (
-                    <ChevronUp className={cx(state === "error" ? "text-red-500" : "text-blue-500")} />
+                    <Icon
+                        svg={ChevronUp}
+                        color={state === "error" ? "red" : "blue"}
+                        size="lg"
+                    />
                 ) : (
-                    <ChevronDown className={cx(state === "error" ? "text-red-500" : "text-gray-400")} />
+                    <Icon
+                        svg={ChevronDown}
+                        color={state === "error" ? "red" : "gray"}
+                        size="lg"
+                    />
                 )}
+
             </div>
 
             {open && (
@@ -72,7 +80,7 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
                             )}
                         >
                             {option}
-                            {selected === option && <Check className="w-4 h-4 text-blue-500" />}
+                            {selected === option && <Icon svg={Check} color="blue" size="lg" />}
                         </div>
                     ))}
                 </div>
@@ -81,11 +89,11 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
             {helperText && (
                 <span
                     className={cx(
-                        "text-xs mt-1 flex items-center gap-1",
+                        "text-xs mt-1 flex items-center gap-1 italic",
                         state === "error" ? "text-red-500" : "text-gray-400"
                     )}
                 >
-                    {state === "error" && <AlertCircle className="w-3 h-3" />}
+                    {state === "error" && <Icon svg={AlertCircle} fill="red" size="md" />}
                     {helperText}
                 </span>
             )}

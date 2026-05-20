@@ -16,7 +16,7 @@ export const inputTextVariants = cva(
 )
 
 export const labelInputTextVariants = cva(
-    "transition-all",
+    "transition-all mt-4",
     {
         variants: {
             error: {
