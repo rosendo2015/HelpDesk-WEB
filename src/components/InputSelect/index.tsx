@@ -31,7 +31,7 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
     const state = error ? "error" : open ? "focus" : "default"
 
     return (
-        <div className="group w-lg flex flex-col gap-1 relative">
+        <div className="group w-full flex flex-col gap-1 relative">
             <label
                 className={cx(
                     "text-sm transition-all mt-4",

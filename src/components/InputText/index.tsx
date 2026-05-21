@@ -20,7 +20,7 @@ export function InputText({
     ...props
 }: InputTextProps) {
     return (
-        <div className="group w-lg flex flex-col gap-1">
+        <div className="group flex flex-col gap-1 w-full">
             <label
                 htmlFor="inputText"
                 className={labelInputTextVariants({ error })}

@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority"
 
 export const inputTextVariants = cva(
-    "border-b border-solid bg-transparent outline-none w-full",
+    "border-b border-solid bg-transparent outline-none flex-1",
     {
         variants: {
             error: {
