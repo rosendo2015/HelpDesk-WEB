@@ -1,7 +1,48 @@
+import { Button } from "../components/Button";
+import { Card } from "../components/Card";
+import { Container } from "../components/Container";
+import { InputText } from "../components/InputText";
+import { Logo } from "../components/Logo";
+import { Text } from "../components/Text";
+
 export function SignUp() {
     return (
-        <div className="flex items-center justify-center h-screen">
-            <h1 className="text-2xl font-bold text-gray-300">Sign Out Page</h1>
-        </div>
+        <Container className="flex flex-col items-center justify-center gap-6 py-8 px-6 mx-auto bg-gray-600 rounded-3xl">
+            <header>
+                <Logo />
+            </header>
+            <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+                <Card className="w-full p-6">
+                    <Text as="h2" variant="text-lg-bold">Crie sua conta</Text>
+                    <Text as="span" variant="text-xs-regular" className="text-gray-300" >Informe seu nome, e-mail e senha</Text>
+
+                    <form action="#" className="flex flex-col gap-4">
+                        <InputText
+                            label="NOME"
+                            type="text"
+                            placeholder="Digite o nome completo"
+                        />
+                        <InputText
+                            label="E-MAIL"
+                            type="email"
+                            placeholder="exemplo@email.com"
+                        />
+                        <InputText
+                            label="SENHA"
+                            type="password"
+                            placeholder="Digite sua senha"
+                        />
+
+                        <Button size="lg" className="mt-4">Cadastrar</Button>
+                    </form>
+                </Card>
+                <Card className="w-full p-6">
+                    <Text as="h2" variant="text-lg-bold">Já tem uma conta?</Text>
+                    <Text variant="text-xs-regular" className="text-gray-300">Entre agora mesmo</Text>
+                    <Button size="lg" variant="secondary" className="mt-5">Acessar conta</Button>
+                </Card>
+            </main>
+        </Container>
+
     );
 }

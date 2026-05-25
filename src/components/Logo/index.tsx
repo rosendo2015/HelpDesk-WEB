@@ -1,10 +1,28 @@
-import LogoIcon from "../../assets/images/Logo_IconLight.svg"
+import { type VariantProps } from "class-variance-authority";
+import LogoIcon from "../../assets/images/Logo_IconLight.svg";
 import { Text } from "../Text";
-export function Logo() {
+import { logoImage, logoStyles } from "./logoVariants";
+
+
+interface LogoProps extends VariantProps<typeof logoStyles> {
+    color?: string;
+    className?: string;
+}
+
+export function Logo({ size, orientation, color, className }: LogoProps) {
     return (
-        <div className="flex items-center justify-center gap-3">
-            <img className="w-10 h-10" src={LogoIcon} alt="logo HelpDesk" />
-            <Text variant="text-xl-bold" className="text-[var(--color-blue-dark)]">HelpDesk</Text>
+        <div className={logoStyles({ size, orientation }) + (className ? ` ${className}` : "")}>
+            <img
+                className={logoImage({ size })}
+                src={LogoIcon}
+                alt="Logo HelpDesk"
+            />
+            <Text
+                variant="text-xl-bold"
+                className={color ? color : "text-blue-dark"}
+            >
+                HelpDesk
+            </Text>
         </div>
     );
 }
