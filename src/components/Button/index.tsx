@@ -8,22 +8,27 @@ interface ButtonProps extends
     Omit<React.ComponentProps<"button">, 'size' | 'disabled'>,
     VariantProps<typeof buttonVariants> {
     icon?: React.ComponentProps<typeof Icon>["svg"]
+
 }
 
 export function Button({
     variant,
     size,
     disabled,
+
     className,
     children,
     icon,
     ...props
 }: ButtonProps) {
     return (
-        <button className={buttonVariants({ variant, size, disabled, className })} {...props}>
+        <button
+            className={buttonVariants({ disabled, variant, size, className })}
+
+            {...props}>
             {icon && <Icon
                 svg={icon}
-                className={buttonIconVariants({ variant, size })}
+                className={buttonIconVariants({ variant, size: "md" })}
             />}
             <Text variant="text-sm-bold" className={buttonTextVariants({ variant })}>
                 {children}
