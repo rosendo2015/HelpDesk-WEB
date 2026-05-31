@@ -30,7 +30,7 @@ export function SignUp() {
             const data = signUpSchema.parse({
                 name, email, password
             })
-            await api.post("/user", data)
+            await api.post("/users", data)
             if (confirm("cadastrado com sucesso.")) {
                 navigate("/")
             }

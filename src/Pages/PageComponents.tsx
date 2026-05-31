@@ -5,15 +5,15 @@ import { Tags } from "../components/Tags";
 import { TagTime } from "../components/TagTime";
 import { Button } from "../components/Button";
 
-import AlertCircle from "./assets/icons/circle-alert.svg?react";
-import TrashIcon from "./assets/icons/trash.svg?react";
-import SpinIcon from "./assets/icons/spinner.svg?react";
-import LogOutIcon from "./assets/icons/log-out.svg?react";
-import NewIcon from "./assets/icons/circle-help.svg?react";
-import ClockIcon from "./assets/icons/clock-2.svg?react";
-import CircleCheckIcon from "./assets/icons/circle-check-big.svg?react";
-import XIcon from "./assets/icons/x.svg?react";
-import LinePencil from "./assets/icons/pen-line.svg?react";
+import AlertCircle from "../assets/icons/circle-alert.svg?react";
+import TrashIcon from "../assets/icons/trash.svg?react";
+import SpinIcon from "../assets/icons/spinner.svg?react";
+import LogOutIcon from "../assets/icons/log-out.svg?react";
+import NewIcon from "../assets/icons/circle-help.svg?react";
+import ClockIcon from "../assets/icons/clock-2.svg?react";
+import CircleCheckIcon from "../assets/icons/circle-check-big.svg?react";
+import XIcon from "../assets/icons/x.svg?react";
+import LinePencil from "../assets/icons/pen-line.svg?react";
 import { ButtonIcon } from "../components/ButtonIcon";
 import { InputText } from "../components/InputText";
 import { InputSelect } from "../components/InputSelect";
@@ -21,8 +21,6 @@ import { InputSelect } from "../components/InputSelect";
 import { useState } from "react"
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
-
-
 
 export function Components() {
 
@@ -46,8 +44,6 @@ export function Components() {
       alert("Formulário enviado com sucesso!")
     }
   }
-
-
   return (
     <Container>
       <div className="flex flex-col gap-2 p-4">
