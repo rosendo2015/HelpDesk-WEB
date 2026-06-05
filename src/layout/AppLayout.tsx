@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { appLayoutVariants } from "./layoutVariants"
 import { Logo } from "../components/Logo"
 import { Sidebar } from "../components/Sidebar"
+import { Avatar } from "../components/Avatar"
 
 interface AppLayoutProps {
     role?: "ADMIN" | "TECNICO" | "CLIENTE"
@@ -19,9 +20,12 @@ export function AppLayout({ role = "CLIENTE", children }: AppLayoutProps) {
                 </div>
                 <Sidebar role={role} />
                 {/* Rodapé opcional */}
-                <footer className="text-sm text-gray-400 mt-auto">
-                    <p>Usuário {role}</p>
-                    <p>user.{role.toLowerCase()}@test.com</p>
+                <footer className="flex items-center gap-4 text-gray-400 mt-auto">
+                    <Avatar name="Usuario Cliente" size="sm" />
+                    <div>
+                        <p>Usuário {role}</p>
+                        <p>user.{role.toLowerCase()}@test.com</p>
+                    </div>
                 </footer>
             </aside>
 

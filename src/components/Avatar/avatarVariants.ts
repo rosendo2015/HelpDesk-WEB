@@ -10,14 +10,8 @@ export const avatarVariants = cva(
                 lg: "w-16 h-16 text-lg",
             },
             color: {
-                blue: "bg-blue-500",
-                green: "bg-green-500",
-                red: "bg-red-500",
-                purple: "bg-purple-500",
-                yellow: "bg-yellow-500",
-                pink: "bg-pink-500",
-                indigo: "bg-indigo-500",
-                teal: "bg-teal-500",
+                blue: "bg-blue-dark",
+
             },
         },
         defaultVariants: {
