@@ -30,7 +30,10 @@ export function SignUp() {
             const data = signUpSchema.parse({
                 name, email, password
             })
-            await api.post("/users", data)
+
+            // força cadastro como CLIENTE
+            await api.post("/users", { ...data, role: "CLIENTE" })
+
             if (confirm("cadastrado com sucesso.")) {
                 navigate("/")
             }
@@ -45,7 +48,7 @@ export function SignUp() {
     return (
         <Container className="flex flex-col items-center justify-center gap-6 py-8 px-6 mx-auto bg-gray-600 rounded-3xl">
             <header>
-                <Logo />
+                <Logo color="blue" />
             </header>
             <main className="flex flex-col gap-3 w-85.5 sm:w-100">
                 <Card className="w-full p-6">

@@ -9,6 +9,7 @@ import { Text } from "../components/Text";
 import { api } from "../services/api";
 import { z, ZodError } from "zod";
 import { useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 
 const signUpSchema = z.object({
@@ -21,6 +22,7 @@ export function SignIn() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate()
+    const { signIn } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,11 +32,26 @@ export function SignIn() {
             })
             const response = await api.post("/sessions", data);
 
-            // Armazena o token JWT
-            localStorage.setItem("token", response.data.token);
 
-            // Redireciona para o dashboard
-            navigate("./PageComponents.tsx")
+            signIn({
+                token: response.data.token,
+                user: response.data.user
+            });
+
+            const role = response.data.user.role;
+
+            if (role === "ADMIN") {
+                navigate("/admin");
+            }
+
+            if (role === "TECNICO") {
+                navigate("/tecnico");
+            }
+
+            if (role === "CLIENTE") {
+                navigate("/cliente");
+            }
+
         } catch (error) {
             console.log(error)
             if (error instanceof ZodError) {
@@ -47,7 +64,7 @@ export function SignIn() {
     return (
         <Container className="flex flex-col items-center justify-center gap-6 py-8 px-6 mx-auto bg-gray-600 rounded-3xl">
             <header>
-                <Logo />
+                <Logo color="blue" />
             </header>
             <main className="flex flex-col gap-3 w-85.5 sm:w-100">
                 <Card className="w-full p-6">

@@ -1,20 +1,64 @@
 import { Route, Routes, Navigate } from "react-router";
+
 import { AuthLayout } from "../layout/AuthLayout";
+
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
-import { Components } from "../pages/PageComponents";
+
+import { DashboardAdmin } from "../pages/admin";
+import { DashboardTecnico } from "../pages/tecnico";
+import { DashboardCliente } from "../pages/cliente";
+
+import { PrivateRoute } from "./PrivateRoute";
 
 export function AppRoutes() {
     return (
         <Routes>
-            {/* Layout de autenticação */}
-            <Route element={<AuthLayout />}>
-                <Route index element={<Navigate to="/login" replace />} />
-                <Route path="/login" element={<SignIn />} />
-                <Route path="/register" element={<SignUp />} />
-                <Route path="/components" element={<Components />} />
 
+            <Route element={<AuthLayout />}>
+                <Route
+                    path="/login"
+                    element={<SignIn />}
+                />
+
+                <Route
+                    path="/register"
+                    element={<SignUp />}
+                />
             </Route>
+
+            <Route
+                path="/admin"
+                element={
+                    <PrivateRoute roles={["ADMIN"]}>
+                        <DashboardAdmin />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/tecnico"
+                element={
+                    <PrivateRoute roles={["TECNICO"]}>
+                        <DashboardTecnico />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/cliente"
+                element={
+                    <PrivateRoute roles={["CLIENTE"]}>
+                        <DashboardCliente />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="*"
+                element={<Navigate to="/login" />}
+            />
+
         </Routes>
     );
 }

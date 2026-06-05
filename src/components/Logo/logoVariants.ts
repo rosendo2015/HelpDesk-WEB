@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 
-export const logoStyles = cva("flex items-center justify-center gap-3", {
+export const logoStyles = cva("flex items-center justify-center gap-3 mx-4", {
     variants: {
         size: {
             sm: "gap-2",
@@ -23,10 +23,22 @@ export const logoImage = cva("", {
         size: {
             sm: "w-6 h-6",
             md: "w-10 h-10",
-            lg: "w-14 h-14",
+            lg: "w-11 h-11",
         },
     },
     defaultVariants: {
         size: "md",
+    },
+});
+
+export const logoText = cva("", {
+    variants: {
+        color: {
+            blue: "text-blue-dark",
+            white: "text-white",
+        },
+    },
+    defaultVariants: {
+        color: "blue",
     },
 });
