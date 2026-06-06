@@ -26,19 +26,3 @@ export const authBackground = cva("absolute inset-0 bg-cover bg-center opacity-6
 });
 
 export const authContent = cva("h-206 sm:h-[47.825rem] bg-[var(--color-gray-600)] relative z-10 rounded-tl-[1.25rem] px-35 py-12 ");
-
-export const appLayoutVariants = cva(
-    "min-h-screen flex",
-    {
-        variants: {
-            role: {
-                ADMIN: "bg-gray-100",
-                TECNICO: "bg-gray-100",
-                CLIENTE: "bg-gray-100",
-            },
-        },
-        defaultVariants: {
-            role: "CLIENTE",
-        },
-    }
-)

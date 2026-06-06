@@ -7,15 +7,20 @@ import Wrench from "../../assets/icons/wrench.svg?react"
 
 interface SidebarProps {
     role?: "ADMIN" | "TECNICO" | "CLIENTE"
+    isOpen?: boolean
+    onClose?: () => void
 }
 
 export function Sidebar({ role = "CLIENTE" }: SidebarProps) {
     return (
-        <aside className="w-64 bg-gray-100 flex flex-col justify-between m-[-2rem] rounded-tl-3xl">
-            {/* Logo no topo */}
-            <div className="justify-center items-center">
 
-                <nav className="w-60 h-160 border border-t-gray-300 border-b-gray-300 mx-4 py-5 flex flex-col gap-3 flex-1 mt-8">
+
+
+        <aside className="h-full ">
+            {/* Logo no topo */}
+            <div className="flex items-center justify-center ">
+
+                <nav className="w-full flex flex-col gap-4">
                     {role === "ADMIN" && (
                         <>
                             <Link to="/chamados" icon={ClipboardList} variant="tertiary" size="lg" className="bg-blue-dark" >Chamados</Link>
@@ -41,5 +46,6 @@ export function Sidebar({ role = "CLIENTE" }: SidebarProps) {
                 </nav>
             </div>
         </aside>
+
     )
 }

@@ -56,10 +56,10 @@ export function Components() {
         <Text variant={"text-xxs-bold"}>Hello, World!</Text>
 
         <div className="flex gap-4">
-          <Avatar name="Maria Oliveira" sizePx={70} color={"green"} />
-          <Avatar name="João Souza" size="lg" color={"yellow"} />
+          <Avatar name="Maria Oliveira" sizePx={70} />
+          <Avatar name="João Souza" size="lg" />
           <Avatar name="Ana Costa" />
-          <Avatar name="Francisco Silva" color={"red"} />
+          <Avatar name="Francisco Silva" />
         </div>
 
         <div className="flex gap-4">
