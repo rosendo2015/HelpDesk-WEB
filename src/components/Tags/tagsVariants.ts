@@ -26,6 +26,7 @@ export const tagsTextVariants = cva("", {
             "info": "text-feedback-progress",
             "success": "text-feedback-done",
             "danger": "text-feedback-danger",
+            "default": "text-gray-100",
         }
     },
     defaultVariants: {
@@ -40,6 +41,7 @@ export const tagsIconVariants = cva("w-5 h-5 mr-1", {
             "info": "fill-feedback-progress",
             "success": "fill-feedback-done",
             "danger": "fill-feedback-danger",
+            "default": "fill-gray-100",
         }
     }
 })
