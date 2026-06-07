@@ -7,7 +7,7 @@ import { SignUp } from "../pages/SignUp";
 
 import { DashboardAdmin } from "../pages/admin";
 import { DashboardTecnico } from "../pages/tecnico";
-import { DashboardCliente } from "../pages/cliente";
+import { DashboardCliente } from "../pages/cliente/meusChamados";
 
 import { PrivateRoute } from "./PrivateRoute";
 

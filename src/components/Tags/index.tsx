@@ -7,7 +7,7 @@ interface TagsProps
     extends React.ComponentProps<"div">,
     VariantProps<typeof tagsVariants> {
     size?: "md";
-    children: React.ReactNode;
+    children?: React.ReactNode;
     svg?: React.FC<React.ComponentProps<"svg">>;
 }
 

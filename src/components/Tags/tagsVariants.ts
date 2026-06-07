@@ -6,7 +6,8 @@ export const tagsVariants = cva("text-xs-bold flex items-center justify-center r
             "new": "border border-feedback-open/20 bg-bg-feedback-open-20",
             "info": "border border-feedback-progress/20 bg-bg-feedback-info-20",
             "success": "border border-feedback-done/20 bg-bg-feedback-success-20",
-            "danger": "border border-feedback-danger/20 bg-bg-feedback-danger-20"
+            "danger": "border border-feedback-danger/20 bg-bg-feedback-danger-20",
+            "default": "border border-gray-500/20 bg-gray-500",
         },
         size: {
             "md": "py-1.5 px-3",

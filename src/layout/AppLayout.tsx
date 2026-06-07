@@ -14,7 +14,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ role = "CLIENTE", children }: AppLayoutProps) {
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
+        <div className=" flex flex-col lg:flex-row min-h-screen bg-gray-100 ">
             {/* Header para mobile */}
             <header className="flex items-center justify-between bg-gray-100 p-4 lg:hidden">
                 <div className="flex items-center gap-4">
@@ -40,7 +40,7 @@ export function AppLayout({ role = "CLIENTE", children }: AppLayoutProps) {
             </aside>
 
             {/* Conteúdo principal */}
-            <main className="w-full bg-gray-600 p-4 h-screen rounded-tl-4xl rounded-tr-4xl lg:mt-3  lg:rounded-tl-4xl lg:rounded-tr-none lg:p-8 lg:h-auto">
+            <main className="px-6 py-7 w-full bg-gray-600 p-4 h-screen rounded-tl-4xl rounded-tr-4xl lg:mt-3  lg:rounded-tl-4xl lg:rounded-tr-none lg:p-8 lg:h-auto">
                 {children}
             </main>
         </div>
