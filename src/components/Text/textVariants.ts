@@ -9,6 +9,7 @@ export const textVariants = cva("font-sans", {
             "text-sm-regular": "text-sm leading-5 font-normal",
             "text-sm-bold": "text-sm leading-5 font-bold",
             "text-xs-regular": "text-xs leading-4 font-normal",
+            "text-xxs-regular": "text-[0.54688rem] leading-4 font-normal",
             "text-xs-bold": "text-xs leading-4 font-bold",
             "text-xxs-bold": "text-[10px] leading-4 font-bold"
         }

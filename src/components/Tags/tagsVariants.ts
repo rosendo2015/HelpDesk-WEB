@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 
-export const tagsVariants = cva("text-xs-bold flex items-center justify-center rounded-full", {
+export const tagsVariants = cva("flex items-center justify-center text-xs-bold rounded-full", {
     variants: {
         variant: {
             "new": "border border-feedback-open/20 bg-bg-feedback-open-20",
@@ -10,12 +10,24 @@ export const tagsVariants = cva("text-xs-bold flex items-center justify-center r
             "default": "border border-gray-500/20 bg-gray-500",
         },
         size: {
-            "md": "py-1.5 px-3",
+            "md-width-text": "px-1.5 py-1.5 rounded-full",
+            "md-height-text": "w-7 h-7 rounded-full",
+        },
+        display: {
+            "text": "gap-1",
+            "icon": "flex items-center justify-center",
+        },
+        format: {
+            "default": "",
+            "circle": "rounded-full",
+            "squared": "p-1.5 rounded-sm hover:bg-gray-100/20",
         }
     },
     defaultVariants: {
         variant: "new",
-        size: "md"
+        size: "md-width-text",
+        display: "text",
+        format: "default"
     }
 })
 
@@ -34,7 +46,7 @@ export const tagsTextVariants = cva("", {
     }
 })
 
-export const tagsIconVariants = cva("w-5 h-5 mr-1", {
+export const tagsIconVariants = cva("w-4 h-4", {
     variants: {
         variant: {
             "new": "fill-feedback-open",

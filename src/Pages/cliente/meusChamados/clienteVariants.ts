@@ -10,3 +10,4 @@ export const clienteVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
         variant: "default",
     },
 });
+

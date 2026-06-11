@@ -6,7 +6,7 @@ import { Icon } from "../Icon";
 interface TagsProps
     extends React.ComponentProps<"div">,
     VariantProps<typeof tagsVariants> {
-    size?: "md";
+    size?: "md-width-text" | "md-height-text";
     children?: React.ReactNode;
     svg?: React.FC<React.ComponentProps<"svg">>;
 }
@@ -17,12 +17,18 @@ export function Tags({
     className,
     children,
     svg,
+    display,
+    format,
     ...props
 }: TagsProps) {
     return (
-        <div className={tagsVariants({ variant, className, size, })} {...props}>
+        <div className={tagsVariants({ variant, className, size, display, format })} {...props}>
             {svg && <Icon svg={svg} className={tagsIconVariants({ variant })} />}
-            <Text variant={"text-xs-bold"} className={tagsTextVariants({ variant })}>{children}</Text>
+            <Text
+                variant={"text-xs-bold"}
+                className={`hidden md:block ${tagsTextVariants({ variant })}`}>
+                {children}
+            </Text>
         </div>
     )
 }
