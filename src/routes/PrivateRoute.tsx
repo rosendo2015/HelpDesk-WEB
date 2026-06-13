@@ -6,12 +6,12 @@ interface Props {
     children: JSX.Element;
     roles?: string[];
 }
-
 export function PrivateRoute({
     children,
     roles
 }: Props) {
     const { user } = useAuth();
+    console.log("PrivateRoute rendered", user?.role);
 
     if (!user) {
         return <Navigate to="/login" replace />;

@@ -2,18 +2,20 @@
 import { cva } from "class-variance-authority";
 
 export const linkVariants = cva(
-    "inline-flex items-center justify-center transition rounded-[0.3125rem] group gap-2 cursor-pointer",
+    "flex items-center justify-center transition rounded-[0.3125rem] group gap-2 cursor-pointer",
     {
         variants: {
             variant: {
                 primary: "text-blue-600 hover:text-blue-800 underline",
-                secondary: "bg-gray-500 text-gray-100 hover:text-gray-200 hover:bg-gray-400",
+                secondary: "",
                 tertiary: "bg-blue-dark text-gray-100 hover:text-gray-200 hover:bg-blue-light",
                 subtle: "text-gray-400 hover:text-gray-600",
+                // 🟢 novo estado ativo
+                active: "bg-blue-600 text-white hover:bg-blue-700",
             },
             size: {
                 lg: "h-10 text-lg px-2",
-                md: "text-sm px-1.5 py-0.5",
+                md: "w-7 h-7 text-sm",
                 sm: "text-xs px-1 py-0.5",
             },
             disabled: {
@@ -27,15 +29,17 @@ export const linkVariants = cva(
             disabled: false,
         },
     }
-);
+)
+    ;
 
 export const linkIconVariants = cva("transition", {
     variants: {
         variant: {
             primary: "fill-blue-600 group-hover:fill-blue-800",
-            secondary: "fill-gray-600 group-hover:fill-gray-800",
+            secondary: "fill-gray-500 group-hover:fill-gray-400",
             tertiary: "fill-gray-500 group-hover:fill-gray-700",
             subtle: "fill-gray-400 group-hover:fill-gray-600",
+            active: "fill-white", // 🟢 ícone branco quando ativo
         },
         size: {
             lg: "w-6 h-6",
@@ -47,15 +51,16 @@ export const linkIconVariants = cva("transition", {
         variant: "primary",
         size: "md",
     },
-});
+})
 
 export const linkTextVariants = cva("", {
     variants: {
         variant: {
             primary: "text-blue-600 group-hover:text-blue-800",
-            secondary: "text-gray-100 group-hover:text-gray-800",
+            secondary: "text-gray-500 group-hover:text-gray-400",
             tertiary: "text-gray-500 group-hover:text-gray-700",
             subtle: "text-gray-400 group-hover:text-gray-600",
+            active: "text-white", // 🟢 texto branco quando ativo
         },
         size: {
             lg: "text-lg",

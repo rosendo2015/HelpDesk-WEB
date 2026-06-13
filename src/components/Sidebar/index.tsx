@@ -11,7 +11,7 @@ interface SidebarProps {
     onClose?: () => void
 }
 
-export function Sidebar({ role = "CLIENTE" }: SidebarProps) {
+export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
     return (
 
 
@@ -23,24 +23,72 @@ export function Sidebar({ role = "CLIENTE" }: SidebarProps) {
                 <nav className="w-full flex flex-col gap-4">
                     {role === "ADMIN" && (
                         <>
-                            <Link to="/chamados" icon={ClipboardList} variant="tertiary" size="lg" className="bg-blue-dark" >Chamados</Link>
-                            <Link to="/tecnicos" icon={Users} variant="tertiary" size="lg" className="bg-blue-dark" >Técnicos</Link>
-                            <Link to="/clientes" icon={BriefCase} variant="tertiary" size="lg" className="bg-blue-dark" >Clientes</Link>
-                            <Link to="/servicos" icon={Wrench} variant="tertiary" size="lg" className="bg-blue-dark" >Serviços</Link>
+                            <Link
+                                to="/chamados"
+                                icon={ClipboardList}
+                                variant="tertiary"
+                                size="lg" className="bg-blue-dark"
+                                onClick={onClose}>Chamados
+                            </Link>
+                            <Link
+                                to="/tecnicos"
+                                icon={Users}
+                                variant="tertiary"
+                                size="lg" className="bg-blue-dark" onClick={onClose}>Técnicos</Link>
+                            <Link
+                                to="/clientes"
+                                icon={BriefCase}
+                                variant="tertiary"
+                                size="lg"
+                                className="bg-blue-dark"
+                                onClick={onClose}>
+                                Clientes
+                            </Link>
+                            <Link
+                                to="/servicos"
+                                icon={Wrench}
+                                variant="tertiary"
+                                size="lg"
+                                className="bg-blue-dark"
+                                onClick={onClose}>
+                                Serviços
+                            </Link>
                         </>
                     )}
 
                     {role === "TECNICO" && (
                         <>
-                            <Link to="/meus-chamados" icon={ClipboardList} variant="tertiary" size="lg" className="bg-blue-dark" >Meus chamados</Link>
+                            <Link
+                                to="/meus-chamados"
+                                icon={ClipboardList}
+                                variant="tertiary"
+                                size="lg"
+                                className="bg-blue-dark"
+                                onClick={onClose}>
+                                Meus chamados
+                            </Link>
 
                         </>
                     )}
 
                     {role === "CLIENTE" && (
                         <>
-                            <Link to="/meus-chamados" icon={ClipboardList} variant="tertiary" size="lg" className="bg-blue-dark"  >Meus chamados</Link>
-                            <Link to="/criar-chamado" icon={Plus} variant="tertiary" size="lg" className="bg-blue-dark" >Criar chamado</Link>
+                            <Link
+                                to="/meus-chamados"
+                                icon={ClipboardList} variant="tertiary"
+                                size="lg"
+                                className="bg-blue-dark"
+                                onClick={onClose}>
+                                Meus chamados
+                            </Link>
+                            <Link
+                                to="/criar-chamado"
+                                icon={Plus}
+                                variant="secondary"
+                                size="lg"
+                                onClick={onClose}>
+                                Criar chamado
+                            </Link>
                         </>
                     )}
                 </nav>

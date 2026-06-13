@@ -1,42 +1,63 @@
-// Link/index.tsx
-import React from "react"
+//Link/index.tsx
+import { NavLink, type NavLinkProps } from "react-router-dom"
 import { Icon } from "../Icon"
-import type { VariantProps } from "class-variance-authority"
 import { Text } from "../Text"
 import clsx from "clsx"
 import { linkIconVariants, linkTextVariants, linkVariants } from "./linkVariants"
 
-interface LinkProps extends
-    Omit<React.ComponentProps<"a">, "disabled">,
-    VariantProps<typeof linkVariants> {
-    icon?: React.ComponentProps<typeof Icon>["svg"]
+interface LinkProps extends Omit<NavLinkProps, "className" | "children"> {
+    variant?: "primary" | "secondary" | "tertiary" | "subtle" | "active"
+    size?: "lg" | "md" | "sm"
     disabled?: boolean
+    className?: string
+    children: React.ReactNode
+    icon?: React.ComponentProps<typeof Icon>["svg"]
 }
 
 export function Link({
-    variant,
-    size,
-    disabled,
+    to,
+    variant = "primary",
+    size = "md",
+    disabled = false,
     className,
     children,
     icon,
     ...props
 }: LinkProps) {
     return (
-        <a
-            className={clsx(linkVariants({ variant, size, disabled }), className)}
-            aria-disabled={disabled}
+        <NavLink
+            to={to}
             {...props}
+            className={({ isActive }) =>
+                clsx(
+                    linkVariants({
+                        variant: isActive ? "active" : variant,
+                        size,
+                        disabled,
+                    }),
+                    "group",
+                    className
+                )
+            }
+            aria-disabled={disabled}
         >
             {icon && (
                 <Icon
                     svg={icon}
-                    className={linkIconVariants({ variant, size })}
+                    className={linkIconVariants({
+                        variant: variant,
+                        size,
+                    })}
                 />
             )}
-            <Text variant="text-sm-bold" className={linkTextVariants({ variant })}>
+            <Text
+                variant="text-sm-bold"
+                className={linkTextVariants({
+                    variant: variant,
+                })}
+            >
                 {children}
             </Text>
-        </a>
+        </NavLink>
     )
 }
