@@ -5,28 +5,21 @@ import { AuthLayout } from "../layout/AuthLayout";
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
 
-import { DashboardAdmin } from "../pages/admin";
-import { DashboardTecnico } from "../pages/tecnico";
-import { DashboardCliente } from "../pages/cliente/meusChamados";
-
+import { DashboardCliente } from "../pages/cliente/DashboardCliente";
+import { DashboardAdmin } from "../pages/admin/DashboardAdmin";
+import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
 import { PrivateRoute } from "./PrivateRoute";
 
 export function AppRoutes() {
     return (
         <Routes>
-
+            {/* Rotas públicas */}
             <Route element={<AuthLayout />}>
-                <Route
-                    path="/login"
-                    element={<SignIn />}
-                />
-
-                <Route
-                    path="/register"
-                    element={<SignUp />}
-                />
+                <Route path="/login" element={<SignIn />} />
+                <Route path="/register" element={<SignUp />} />
             </Route>
 
+            {/* Rotas do ADMIN */}
             <Route
                 path="/admin"
                 element={
@@ -34,16 +27,32 @@ export function AppRoutes() {
                         <DashboardAdmin />
                     </PrivateRoute>
                 }
-            />
+            >
+                {/* Subrotas do ADMIN */}
+                <Route path="chamados" element={<ChamadosAdmin />} />
+                {/* Futuras rotas */}
+                {/*
+        <Route path="tecnicos" element={<TecnicosAdmin />} />
+        <Route path="clientes" element={<ClientesAdmin />} />
+        <Route path="servicos" element={<ServicosAdmin />} />
+        */}
+            </Route>
 
-            <Route
-                path="/tecnico"
-                element={
-                    <PrivateRoute roles={["TECNICO"]}>
-                        <DashboardTecnico />
-                    </PrivateRoute>
-                }
-            />
+            {/* Rotas do TÉCNICO */}
+            {/*
+      <Route
+        path="/tecnico"
+        element={
+          <PrivateRoute roles={["TECNICO"]}>
+            <DashboardTecnico />
+          </PrivateRoute>
+        }
+      >
+        <Route path="chamados" element={<ChamadosTecnico />} />
+      </Route>
+      */}
+
+            {/* Rotas do CLIENTE */}
 
             <Route
                 path="/cliente"
@@ -52,13 +61,17 @@ export function AppRoutes() {
                         <DashboardCliente />
                     </PrivateRoute>
                 }
-            />
+            >
+                {/*
+                <Route path="meus-chamados" element={<MeusChamados />} />
+                <Route path="novo-chamado" element={<NovoChamado />} />
+                */}
+            </Route>
 
-            <Route
-                path="*"
-                element={<Navigate to="/login" />}
-            />
 
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
     );
 }
+

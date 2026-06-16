@@ -24,7 +24,7 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                     {role === "ADMIN" && (
                         <>
                             <Link
-                                to="/chamados"
+                                to="/admin/chamados"
                                 icon={ClipboardList}
                                 variant="tertiary"
                                 size="lg" className="bg-blue-dark"

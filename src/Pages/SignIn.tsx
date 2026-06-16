@@ -12,7 +12,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
 
-const signUpSchema = z.object({
+const signInSchema = z.object({
     email: z.string().email({ message: "E-Mail inválido." }),
     password: z.string().min(6, { message: "A senha deve ter pelo menos 6 digitos" })
 })
@@ -27,7 +27,7 @@ export function SignIn() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const data = signUpSchema.parse({
+            const data = signInSchema.parse({
                 email, password
             })
             const response = await api.post("/sessions", data);
@@ -103,7 +103,7 @@ export function SignIn() {
                     <Text variant="text-xs-regular" className="text-gray-300">
                         Cadastre agora mesmo
                     </Text>
-                    <Link href="/register" size="lg" variant="secondary" className="mt-5">
+                    <Link to="/register" size="lg" variant="secondary" className="mt-5">
                         Criar conta
                     </Link>
                 </Card>

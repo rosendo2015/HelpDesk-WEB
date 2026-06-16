@@ -6,8 +6,8 @@ export const linkVariants = cva(
     {
         variants: {
             variant: {
-                primary: "text-blue-600 hover:text-blue-800 underline",
-                secondary: "",
+                primary: "hover:text-blue-800 underline",
+                secondary: "bg-gray-500  hover:bg-gray-300",
                 tertiary: "bg-blue-dark text-gray-100 hover:text-gray-200 hover:bg-blue-light",
                 subtle: "text-gray-400 hover:text-gray-600",
                 // 🟢 novo estado ativo
@@ -36,7 +36,7 @@ export const linkIconVariants = cva("transition", {
     variants: {
         variant: {
             primary: "fill-blue-600 group-hover:fill-blue-800",
-            secondary: "fill-gray-500 group-hover:fill-gray-400",
+            secondary: "fill-gray-100 group-hover:fill-gray-100",
             tertiary: "fill-gray-500 group-hover:fill-gray-700",
             subtle: "fill-gray-400 group-hover:fill-gray-600",
             active: "fill-white", // 🟢 ícone branco quando ativo

@@ -10,7 +10,7 @@ interface LinkProps extends Omit<NavLinkProps, "className" | "children"> {
     size?: "lg" | "md" | "sm"
     disabled?: boolean
     className?: string
-    children: React.ReactNode
+    children?: React.ReactNode
     icon?: React.ComponentProps<typeof Icon>["svg"]
 }
 

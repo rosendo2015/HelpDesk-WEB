@@ -81,7 +81,7 @@ export function SignUp() {
                 <Card className="flex flex-col w-full p-6">
                     <Text as="h2" variant="text-lg-bold">Já tem uma conta?</Text>
                     <Text variant="text-xs-regular" className="text-gray-300">Entre agora mesmo</Text>
-                    <Link href="/login" size="lg" variant="secondary" className="mt-5">Acessar conta</Link>
+                    <Link to="/login" size="lg" variant="secondary" className="mt-5">Acessar conta</Link>
 
                 </Card>
             </main>

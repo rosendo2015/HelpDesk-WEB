@@ -1,20 +1,20 @@
-import { AppLayout } from "../../../layout/AppLayout";
-import { clienteVariants } from "../clienteVariants";
+import { AppLayout } from "../../layout/AppLayout";
+import { clienteVariants } from "./clienteVariants";
 import type { VariantProps } from "class-variance-authority";
 import CircleClockIcon from "../../../assets/icons/clock-2.svg?react";
 import CircleHelpIcon from "../../../assets/icons/circle-help.svg?react";
 import EyeIcon from "../../../assets/icons/eye.svg?react";
-import { Tags } from "../../../components/Tags";
-import { Avatar } from "../../../components/Avatar";
-import { ButtonIcon } from "../../../components/ButtonIcon";
-import { Link } from "../../../components/Link";
+import { Tags } from "../../components/Tags";
+import { Avatar } from "../../components/Avatar";
+import { ButtonIcon } from "../../components/ButtonIcon";
+import { Link } from "../../components/Link";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
     role?: "CLIENTE" | "ADMIN" | "TECNICO";
 }
 
-export function DashboardCliente({ role = "CLIENTE" }: ClienteProps) {
+export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
     return (
         <AppLayout role={role}>
             <h2 className="text-xl font-bold mb-2 text-blue-dark">MEUS CHAMADOS</h2>
@@ -80,7 +80,8 @@ export function DashboardCliente({ role = "CLIENTE" }: ClienteProps) {
 
                         <td className="px-2 py-2">
                             <div className="inline-flex items-center">
-                                <ButtonIcon size="md" variant="secondary" icon={EyeIcon} />
+                                <Link to="/cliente/meus-chamados/00003" size="sm" variant="secondary" icon={EyeIcon} />
+
                             </div>
                         </td>
 
