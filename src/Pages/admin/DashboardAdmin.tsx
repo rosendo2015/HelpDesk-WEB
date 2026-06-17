@@ -5,7 +5,6 @@ import type { VariantProps } from "class-variance-authority";
 
 interface AdminProps extends VariantProps<typeof adminVariants> { }
 
-
 export function DashboardAdmin({ }: AdminProps) {
     return (
         <AppLayout role="ADMIN">

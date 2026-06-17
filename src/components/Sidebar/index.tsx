@@ -33,12 +33,12 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                             <Link
                                 to="/tecnicos"
                                 icon={Users}
-                                variant="tertiary"
+                                variant="secondary"
                                 size="lg" className="bg-blue-dark" onClick={onClose}>Técnicos</Link>
                             <Link
                                 to="/clientes"
                                 icon={BriefCase}
-                                variant="tertiary"
+                                variant="secondary"
                                 size="lg"
                                 className="bg-blue-dark"
                                 onClick={onClose}>
@@ -47,7 +47,7 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                             <Link
                                 to="/servicos"
                                 icon={Wrench}
-                                variant="tertiary"
+                                variant="secondary"
                                 size="lg"
                                 className="bg-blue-dark"
                                 onClick={onClose}>
@@ -74,7 +74,7 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                     {role === "CLIENTE" && (
                         <>
                             <Link
-                                to="/meus-chamados"
+                                to="/cliente/chamados-cliente"
                                 icon={ClipboardList} variant="tertiary"
                                 size="lg"
                                 className="bg-blue-dark"
@@ -82,7 +82,7 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                                 Meus chamados
                             </Link>
                             <Link
-                                to="/criar-chamado"
+                                to="/cliente/criar-chamado"
                                 icon={Plus}
                                 variant="secondary"
                                 size="lg"

@@ -3,10 +3,9 @@ import { AppLayout } from "../../layout/AppLayout";
 import { adminVariants } from "../admin/adminVariants";
 import type { VariantProps } from "class-variance-authority";
 
-interface DashboardClienteProps extends VariantProps<typeof adminVariants> { }
+interface ClienteProps extends VariantProps<typeof adminVariants> { }
 
-
-export function DashboardCliente({ }: DashboardClienteProps) {
+export function DashboardCliente({ }: ClienteProps) {
     return (
         <AppLayout role="CLIENTE">
             <Outlet />

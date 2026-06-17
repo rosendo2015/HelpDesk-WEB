@@ -1,13 +1,15 @@
-import { AppLayout } from "../../layout/AppLayout";
+
 import { clienteVariants } from "./clienteVariants";
 import type { VariantProps } from "class-variance-authority";
-import CircleClockIcon from "../../../assets/icons/clock-2.svg?react";
-import CircleHelpIcon from "../../../assets/icons/circle-help.svg?react";
-import EyeIcon from "../../../assets/icons/eye.svg?react";
+import CircleClockIcon from "../../assets/icons/clock-2.svg?react";
+import CircleHelpIcon from "../../assets/icons/circle-help.svg?react";
+import EyeIcon from "../../assets/icons/eye.svg?react";
+import PenLineIcon from "../../assets/icons/pen-line.svg?react"
 import { Tags } from "../../components/Tags";
 import { Avatar } from "../../components/Avatar";
-import { ButtonIcon } from "../../components/ButtonIcon";
+
 import { Link } from "../../components/Link";
+import { Icon } from "../../components/Icon";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -16,8 +18,10 @@ interface ClienteProps extends VariantProps<typeof clienteVariants> {
 
 export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
     return (
-        <AppLayout role={role}>
-            <h2 className="text-xl font-bold mb-2 text-blue-dark">MEUS CHAMADOS</h2>
+        <>
+            <h2 className="text-xl font-bold mb-2 text-blue-dark">
+                {role === "CLIENTE" ? "MEUS CHAMADOS" : "CHAMADOS"}
+            </h2>
             <table className="w-full border border-gray-500 bg-white rounded-lg">
                 <thead>
                     <tr className="text-left text-gray-400">
@@ -52,9 +56,9 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
                         </td>
 
                         <td className="px-2 py-2">
-                            <div className="inline-flex items-center">
-                                <ButtonIcon size="sm" variant="secondary" icon={EyeIcon} />
-                            </div>
+                            <Link to={`/admin/chamados/0003`} variant="subtitle" size="md">
+                                <Icon svg={EyeIcon} className="w-4 h-4 fill-gray-200" />
+                            </Link>
                         </td>
 
                     </tr>
@@ -79,16 +83,16 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
                         </td>
 
                         <td className="px-2 py-2">
-                            <div className="inline-flex items-center">
-                                <Link to="/cliente/meus-chamados/00003" size="sm" variant="secondary" icon={EyeIcon} />
-
-                            </div>
+                            <Link to={`/admin/chamados/0003`} variant="subtitle" size="md">
+                                <Icon svg={EyeIcon} className="w-4 h-4 fill-gray-200" />
+                            </Link>
                         </td>
 
                     </tr>
 
                 </tbody>
             </table>
-        </AppLayout>
+
+        </>
     );
 }

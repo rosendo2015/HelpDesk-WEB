@@ -9,9 +9,11 @@ import { Tags } from "../../components/Tags"
 import { Avatar } from "../../components/Avatar"
 
 interface Servico {
+
     id: string
-    name: string
+    nome: string
     price: number
+
 }
 
 interface ChamadoFormatado {
@@ -21,22 +23,17 @@ interface ChamadoFormatado {
     status: "ABERTO" | "EM_ATENDIMENTO" | "ENCERRADO"
     totalPrice: number
     updatedAt: string
-    createdAt: string
-    servicos: Servico[]
+    createdAt?: string
+    services: Servico[]
 }
-
-
 
 export function ChamadosAdmin() {
     const [chamados, setChamados] = useState<ChamadoFormatado[]>([])
 
     useEffect(() => {
-        const token = localStorage.getItem("@helpdesk:token")
-        console.log("Token enviado:", token)
-
         api.get(`/chamados`)
             .then(res => {
-                console.log("Chamados recebidos:", res.data)
+
                 setChamados(res.data)
             })
             .catch(err => console.error("Erro ao buscar chamados:", err))
@@ -58,9 +55,11 @@ export function ChamadosAdmin() {
 
     return (
         <div className="p-4 sm:p-6">
-            <Text variant="text-lg-bold" className="text-blue-600 mb-4">
-                Chamados
-            </Text>
+            <header>
+                <Text variant="text-lg-bold" className="text-blue-600 mb-4">
+                    Chamados
+                </Text>
+            </header>
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <table className="w-full text-left text-sm sm:text-base">
@@ -90,10 +89,9 @@ export function ChamadosAdmin() {
                                 </td>
 
                                 <td className="px-3 py-2 sm:px-4">
-                                    {chamado.servicos && chamado.servicos.map(item => (
+                                    {chamado.services && chamado.services.map(item => (
                                         <div key={item.id}>
-                                            <Text variant="text-sm-bold">{item.name}</Text>
-
+                                            <Text variant="text-sm-bold">{item.nome}</Text>
                                         </div>
                                     ))}
                                 </td>
@@ -106,15 +104,21 @@ export function ChamadosAdmin() {
                                     </Text>
                                 </td>
                                 <td className="px-3 py-2 sm:px-4">
-                                    <Text variant="text-sm-bold">
-                                        {chamado.cliente}
-                                    </Text>
+                                    <div className="flex items-center gap-2">
+                                        <Avatar name={chamado.cliente} size="xs" />
+                                        <Text variant="text-sm-bold">
+                                            {chamado.cliente}
+                                        </Text>
+                                    </div>
                                 </td>
-                                <td className="px-3 py-2 sm:px-4 flex items-center gap-2">
-                                    <Avatar name={chamado.tecnico} size="xs" />
-                                    <Text variant="text-sm-bold">
-                                        {chamado.tecnico}
-                                    </Text>
+
+                                <td className="px-3 py-2 sm:px-4">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar name={chamado.tecnico} size="xs" />
+                                        <Text variant="text-sm-bold">
+                                            {chamado.tecnico}
+                                        </Text>
+                                    </div>
                                 </td>
                                 <td className="">
                                     {renderStatus(chamado.status)}

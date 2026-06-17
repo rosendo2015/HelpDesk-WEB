@@ -41,23 +41,28 @@ export function Link({
             }
             aria-disabled={disabled}
         >
-            {icon && (
-                <Icon
-                    svg={icon}
-                    className={linkIconVariants({
-                        variant: variant,
-                        size,
-                    })}
-                />
+            {({ isActive }) => (
+                <>
+                    {icon && (
+                        <Icon
+                            svg={icon}
+                            className={linkIconVariants({
+                                variant: isActive ? "active" : variant,
+                                size,
+                            })}
+                        />
+                    )}
+                    <Text
+                        variant="text-sm-bold"
+                        className={linkTextVariants({
+                            variant: isActive ? "active" : variant,
+                        })}
+                    >
+                        {children}
+                    </Text>
+                </>
             )}
-            <Text
-                variant="text-sm-bold"
-                className={linkTextVariants({
-                    variant: variant,
-                })}
-            >
-                {children}
-            </Text>
         </NavLink>
     )
 }
+

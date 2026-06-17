@@ -9,6 +9,8 @@ import { DashboardCliente } from "../pages/cliente/DashboardCliente";
 import { DashboardAdmin } from "../pages/admin/DashboardAdmin";
 import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
 import { PrivateRoute } from "./PrivateRoute";
+import { ChamadosCliente } from "../pages/cliente/ChamadosCliente";
+import { NovoChamado } from "../pages/cliente/NovoChamado";
 
 export function AppRoutes() {
     return (
@@ -28,7 +30,6 @@ export function AppRoutes() {
                     </PrivateRoute>
                 }
             >
-                {/* Subrotas do ADMIN */}
                 <Route path="chamados" element={<ChamadosAdmin />} />
                 {/* Futuras rotas */}
                 {/*
@@ -62,10 +63,11 @@ export function AppRoutes() {
                     </PrivateRoute>
                 }
             >
-                {/*
-                <Route path="meus-chamados" element={<MeusChamados />} />
+
+                <Route index element={<ChamadosCliente />} />
+                <Route path="chamados-cliente" element={<ChamadosCliente />} />
                 <Route path="novo-chamado" element={<NovoChamado />} />
-                */}
+
             </Route>
 
 

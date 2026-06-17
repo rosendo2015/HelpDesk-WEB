@@ -16,13 +16,17 @@ interface DecodedToken {
 export function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const loadStoredData = async () => {
       const storedUser = localStorage.getItem("@helpdesk:user")
       const storedToken = localStorage.getItem("@helpdesk:token")
 
-      if (!storedUser || !storedToken) return
+      if (!storedUser || !storedToken) {
+        setIsLoading(false)
+        return
+      }
 
       try {
         const decoded: DecodedToken = jwtDecode(storedToken)
@@ -30,6 +34,7 @@ export function AuthProvider({ children }: Props) {
 
         if (isExpired) {
           signOut()
+          setIsLoading(false)
           return
         }
 
@@ -43,6 +48,8 @@ export function AuthProvider({ children }: Props) {
       } catch (error) {
         console.error("Erro ao carregar token:", error)
         signOut()
+      } finally {
+        setTimeout(() => setIsLoading(false), 100)
       }
     }
 
@@ -66,8 +73,8 @@ export function AuthProvider({ children }: Props) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, signIn, signOut }}>
-      {children}
+    <AuthContext.Provider value={{ user, token, signIn, signOut, isLoading }}>
+      {isLoading ? <div>Carregando...</div> : children}
     </AuthContext.Provider>
   )
 }
