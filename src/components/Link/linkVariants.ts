@@ -38,7 +38,7 @@ export const linkIconVariants = cva("transition", {
             primary: "fill-blue-600 group-hover:fill-blue-800",
             secondary: "fill-gray-600 group-hover:fill-gray-400",
             tertiary: "fill-gray-500 group-hover:fill-gray-700",
-            subtle: "fill-gray-400 group-hover:fill-gray-600",
+            subtitle: "fill-gray-400 group-hover:fill-gray-600",
             active: "fill-white", // 🟢 ícone branco quando ativo
         },
         size: {
@@ -59,7 +59,7 @@ export const linkTextVariants = cva("", {
             primary: "text-blue-600 group-hover:text-blue-800",
             secondary: "text-gray-500 group-hover:text-gray-400",
             tertiary: "text-gray-500 group-hover:text-gray-700",
-            subtle: "text-gray-400 group-hover:text-gray-600",
+            subtitle: "text-gray-400 group-hover:text-gray-600",
             active: "text-white", // 🟢 texto branco quando ativo
         },
         size: {

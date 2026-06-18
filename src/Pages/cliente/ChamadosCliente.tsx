@@ -1,15 +1,28 @@
-
 import { clienteVariants } from "./clienteVariants";
 import type { VariantProps } from "class-variance-authority";
 import CircleClockIcon from "../../assets/icons/clock-2.svg?react";
 import CircleHelpIcon from "../../assets/icons/circle-help.svg?react";
 import EyeIcon from "../../assets/icons/eye.svg?react";
-import PenLineIcon from "../../assets/icons/pen-line.svg?react"
 import { Tags } from "../../components/Tags";
 import { Avatar } from "../../components/Avatar";
-
 import { Link } from "../../components/Link";
 import { Icon } from "../../components/Icon";
+import { useEffect, useState } from "react";
+import { api } from "../../services/api";
+
+interface Chamado {
+    id: string
+    title: string
+    status: "ABERTO" | "EM_ANDAMENTO" | "CONCLUIDO"
+    updatedAt: string
+    totalPrice: number
+    cliente: string
+    tecnico: string
+    services: {
+        nome: string
+        valor: number
+    }[]
+}
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -17,6 +30,23 @@ interface ClienteProps extends VariantProps<typeof clienteVariants> {
 }
 
 export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
+    const [chamados, setChamados] = useState<Chamado[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchChamados() {
+            try {
+                const response = await api.get<Chamado[]>("/chamados")
+                setChamados(response.data)
+            } catch (error) {
+                console.error("Erro ao buscar chamados:", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchChamados()
+    }, [])
+
     return (
         <>
             <h2 className="text-xl font-bold mb-2 text-blue-dark">
@@ -35,61 +65,69 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className="border border-gray-500">
-                        <td className="px-4 py-2">13/04/25 20:56</td>
-                        <td className="px-4 py-2 font-bold hidden md:table-cell">00003</td>
-                        <td className="px-4 py-2 font-bold">Rede lenta</td>
-                        <td className="px-4 py-2 hidden md:table-cell">Instalação de Rede</td>
-                        <td className="px-4 py-2 hidden md:table-cell">R$ 180,00</td>
+                    {isLoading ? (
+                        <tr>
+                            <td colSpan={8} className="text-center py-4">Carregando...</td>
+                        </tr>
+                    ) : (
+                        chamados.map(chamado => (
+                            <tr key={chamado.id} className="border border-gray-500">
+                                <td className="px-4 py-2">
+                                    {new Date(chamado.updatedAt).toLocaleString("pt-BR")}
+                                </td>
 
-                        <td className="px-4 py-2 hidden md:table-cell">
-                            <div className="flex items-center">
-                                <Avatar size="xs" name="John Doe" />
-                                <span className="ml-2">John Doe</span>
-                            </div>
-                        </td>
+                                <td className="px-4 py-2 font-bold hidden md:table-cell max-w-20 truncate">{chamado.id}</td>
 
-                        <td className="px-2 py-2">
-                            <div className="inline-flex items-center">
-                                <Tags variant="danger" size="md-width-text" display="text" svg={CircleHelpIcon} > Aberto</Tags>
-                            </div>
-                        </td>
+                                <td className="px-4 py-2 font-bold max-w-50.5 truncate">{chamado.title}</td>
 
-                        <td className="px-2 py-2">
-                            <Link to={`/admin/chamados/0003`} variant="subtitle" size="md">
-                                <Icon svg={EyeIcon} className="w-4 h-4 fill-gray-200" />
-                            </Link>
-                        </td>
+                                <td className="px-4 py-2 hidden md:table-cell max-w-44 truncate">
+                                    {chamado.services.map(s => s.nome).join(", ")}
+                                </td>
 
-                    </tr>
-                    <tr className="border border-gray-500">
-                        <td className="px-4 py-2">13/04/25 20:56</td>
-                        <td className="px-4 py-2 font-bold hidden md:table-cell">00003</td>
-                        <td className="px-4 py-2 font-bold">Rede lenta</td>
-                        <td className="px-4 py-2 hidden md:table-cell">Instalação de Rede</td>
-                        <td className="px-4 py-2 hidden md:table-cell">R$ 180,00</td>
+                                <td className="px-4 py-2 hidden md:table-cell">
+                                    R$ {chamado.totalPrice.toFixed(2)}
+                                </td>
 
-                        <td className="px-4 py-2 hidden md:table-cell">
-                            <div className="flex items-center">
-                                <Avatar size="xs" name="John Doe" />
-                                <span className="ml-2">John Doe</span>
-                            </div>
-                        </td>
+                                <td className="px-4 py-2 hidden md:table-cell">
+                                    <div className="flex items-center">
+                                        <Avatar size="xs" name={chamado.tecnico} />
+                                        <span className="ml-2">{chamado.tecnico}</span>
+                                    </div>
+                                </td>
 
-                        <td className="px-2 py-2">
-                            <div className="inline-flex items-center">
-                                <Tags variant="info" size="md-width-text" display="text" svg={CircleClockIcon} > Em Andamento</Tags>
-                            </div>
-                        </td>
+                                <td className="px-2 py-2">
+                                    <Tags
+                                        variant={
+                                            chamado.status === "ABERTO"
+                                                ? "danger"
+                                                : chamado.status === "EM_ANDAMENTO"
+                                                    ? "info"
+                                                    : "success"
+                                        }
+                                        size="md-width-text"
+                                        display="text"
+                                        svg={
+                                            chamado.status === "ABERTO"
+                                                ? CircleHelpIcon
+                                                : CircleClockIcon
+                                        }
+                                    >
+                                        {chamado.status === "ABERTO"
+                                            ? "Aberto"
+                                            : chamado.status === "EM_ANDAMENTO"
+                                                ? "Em andamento"
+                                                : "Concluído"}
+                                    </Tags>
+                                </td>
 
-                        <td className="px-2 py-2">
-                            <Link to={`/admin/chamados/0003`} variant="subtitle" size="md">
-                                <Icon svg={EyeIcon} className="w-4 h-4 fill-gray-200" />
-                            </Link>
-                        </td>
-
-                    </tr>
-
+                                <td className="px-2 py-2">
+                                    <Link to={`/cliente/chamados/${chamado.id}`} variant="subtitle" size="md">
+                                        <Icon svg={EyeIcon} className="w-4 h-4 fill-gray-200" />
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
 

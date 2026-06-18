@@ -6,7 +6,7 @@ import clsx from "clsx"
 import { linkIconVariants, linkTextVariants, linkVariants } from "./linkVariants"
 
 interface LinkProps extends Omit<NavLinkProps, "className" | "children"> {
-    variant?: "primary" | "secondary" | "tertiary" | "subtle" | "active"
+    variant?: "primary" | "secondary" | "tertiary" | "subtitle" | "active"
     size?: "lg" | "md" | "sm"
     disabled?: boolean
     className?: string
