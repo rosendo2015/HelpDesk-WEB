@@ -59,7 +59,7 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                     {role === "TECNICO" && (
                         <>
                             <Link
-                                to="/meus-chamados"
+                                to="/tecnico/meus-chamados"
                                 icon={ClipboardList}
                                 variant="tertiary"
                                 size="lg"

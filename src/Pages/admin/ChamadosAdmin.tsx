@@ -1,12 +1,16 @@
-import { useEffect, useState, type JSX } from "react"
+import { useEffect, useState } from "react"
 import { Text } from "../../components/Text"
 import { Icon } from "../../components/Icon"
-import PenLineIcon from "../../assets/icons/pen-line.svg?react"
-import AlertIcon from "../../assets/icons/circle-alert.svg?react"
-import { api } from "../../services/api"
 import { Link } from "../../components/Link"
 import { Tags } from "../../components/Tags"
 import { Avatar } from "../../components/Avatar"
+
+import PenLineIcon from "../../assets/icons/pen-line.svg?react"
+
+import CircleClockIcon from "../../assets/icons/clock-2.svg?react";
+import CircleHelpIcon from "../../assets/icons/circle-help.svg?react";
+
+import { api } from "../../services/api"
 
 interface Servico {
 
@@ -18,6 +22,7 @@ interface Servico {
 
 interface ChamadoFormatado {
     id: string
+    title: string
     cliente: string
     tecnico: string
     status: "ABERTO" | "EM_ATENDIMENTO" | "ENCERRADO"
@@ -38,64 +43,50 @@ export function ChamadosAdmin() {
             })
             .catch(err => console.error("Erro ao buscar chamados:", err))
     }, [])
-
-    const renderStatus = (status: ChamadoFormatado["status"]): JSX.Element => {
-        switch (status) {
-            case "ABERTO":
-                return <Tags svg={AlertIcon} variant="danger" size="md-width-text" display="text" format="default">{status}</Tags>
-            case "EM_ATENDIMENTO":
-                return <Tags variant="success" size="md-width-text" display="text">{status}</Tags>
-            case "ENCERRADO":
-                return <Tags variant="danger" size="md-width-text" display="text">{status}</Tags>
-            default:
-                return <Tags variant="default" size="md-width-text" display="text">{status}</Tags>
-        }
-    }
-
-
     return (
         <div className="p-4 sm:p-6">
-            <header>
-                <Text variant="text-lg-bold" className="text-blue-600 mb-4">
+            <header className="mb-4">
+                <Text variant="text-lg-bold" className="text-blue-dark">
                     Chamados
                 </Text>
             </header>
 
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm sm:text-base">
-                    <thead className="bg-gray-500 text-gray-100">
+            <div className="border border-gray-500 rounded-lg overflow-hidden">
+                <table className="w-full">
+                    <thead className=" text-gray-400 ">
                         <tr>
-                            <th className="px-3 py-2 sm:px-4">Atualizado em</th>
-                            <th className="px-3 py-2 sm:px-4">Id</th>
+                            <th className="px-3 py-2 md:max-w-20 md:truncate sm:px-4 ">Atualizado em</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Id</th>
                             <th className="px-3 py-2 sm:px-4">Título e Serviço</th>
-                            <th className="px-3 py-2 sm:px-4">Valor total</th>
-                            <th className="px-3 py-2 sm:px-4">Cliente</th>
-                            <th className="px-3 py-2 sm:px-4">Técnico</th>
-                            <th className="px-3 py-2 sm:px-4">Status</th>
-                            <th className="px-3 py-2 sm:px-4"></th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Valor total</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Cliente</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Técnico</th>
+                            <th className="px-3 py-2 sm:px-4 ">Status</th>
+                            <th className="px-3 py-2 sm:px-4 "></th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {chamados.map((chamado) => (
-                            <tr key={chamado.id} className="border-t hover:bg-gray-50">
+                            <tr key={chamado.id} className="border-t border-gray-500">
 
                                 <td className="px-3 py-2 sm:px-4 whitespace-nowrap">
                                     {new Date(chamado.updatedAt).toLocaleString()}
                                 </td>
 
-                                <td className="px-3 py-2 sm:px-4">
-                                    <Text variant="text-sm-bold">{chamado.id}</Text>
+                                <td className="px-3 py-2 sm:px-4 max-w-20 truncate hidden md:table-cell">
+                                    <Text variant="text-sm-bold" >{chamado.id}</Text>
                                 </td>
 
                                 <td className="px-3 py-2 sm:px-4">
+                                    <Text variant="text-sm-bold">{chamado.title}</Text>
                                     {chamado.services && chamado.services.map(item => (
                                         <div key={item.id}>
-                                            <Text variant="text-sm-bold">{item.nome}</Text>
+                                            <Text variant="text-sm-regular" className="hidden md:table-cell">{item.nome}</Text>
                                         </div>
                                     ))}
                                 </td>
-                                <td>
+                                <td className="hidden md:table-cell">
                                     <Text variant="text-sm-bold">
                                         {chamado.totalPrice.toLocaleString("pt-BR", {
                                             style: "currency",
@@ -103,7 +94,7 @@ export function ChamadosAdmin() {
                                         })}
                                     </Text>
                                 </td>
-                                <td className="px-3 py-2 sm:px-4">
+                                <td className="px-3 py-2 sm:px-4 hidden md:table-cell">
                                     <div className="flex items-center gap-2">
                                         <Avatar name={chamado.cliente} size="xs" />
                                         <Text variant="text-sm-bold">
@@ -112,7 +103,7 @@ export function ChamadosAdmin() {
                                     </div>
                                 </td>
 
-                                <td className="px-3 py-2 sm:px-4">
+                                <td className="px-3 py-2 sm:px-4 hidden md:table-cell">
                                     <div className="flex items-center gap-2">
                                         <Avatar name={chamado.tecnico} size="xs" />
                                         <Text variant="text-sm-bold">
@@ -121,10 +112,33 @@ export function ChamadosAdmin() {
                                     </div>
                                 </td>
                                 <td className="">
-                                    {renderStatus(chamado.status)}
+                                    <td className="px-2 py-2">
+                                        <Tags
+                                            variant={
+                                                chamado.status === "ABERTO"
+                                                    ? "danger"
+                                                    : chamado.status === "EM_ATENDIMENTO"
+                                                        ? "info"
+                                                        : "success"
+                                            }
+                                            size="md-width-text"
+                                            display="text"
+                                            svg={
+                                                chamado.status === "ABERTO"
+                                                    ? CircleHelpIcon
+                                                    : CircleClockIcon
+                                            }
+                                        >
+                                            {chamado.status === "ABERTO"
+                                                ? "Aberto"
+                                                : chamado.status === "EM_ATENDIMENTO"
+                                                    ? "Em andamento"
+                                                    : "Concluído"}
+                                        </Tags>
+                                    </td>
                                 </td>
                                 <td className="px-3 py-2 sm:px-4 text-center">
-                                    <Link to={`/admin/chamados/${chamado.id}`} variant="secondary" size="md">
+                                    <Link to={`/admin/chamados/${chamado.id}`} variant="subtitle" size="md">
                                         <Icon svg={PenLineIcon} className="w-4 h-4 fill-gray-100" />
                                     </Link>
                                 </td>

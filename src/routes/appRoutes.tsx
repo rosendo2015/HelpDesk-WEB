@@ -11,6 +11,8 @@ import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
 import { PrivateRoute } from "./PrivateRoute";
 import { ChamadosCliente } from "../pages/cliente/ChamadosCliente";
 import { NovoChamado } from "../pages/cliente/NovoChamado";
+import { DashboardTecnico } from "../pages/tecnico/DashboardTecnico";
+import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
 
 export function AppRoutes() {
     return (
@@ -30,6 +32,7 @@ export function AppRoutes() {
                     </PrivateRoute>
                 }
             >
+                <Route index element={<ChamadosAdmin />} />
                 <Route path="chamados" element={<ChamadosAdmin />} />
                 {/* Futuras rotas */}
                 {/*
@@ -40,18 +43,19 @@ export function AppRoutes() {
             </Route>
 
             {/* Rotas do TÉCNICO */}
-            {/*
-      <Route
-        path="/tecnico"
-        element={
-          <PrivateRoute roles={["TECNICO"]}>
-            <DashboardTecnico />
-          </PrivateRoute>
-        }
-      >
-        <Route path="chamados" element={<ChamadosTecnico />} />
-      </Route>
-      */}
+
+            <Route
+                path="/tecnico"
+                element={
+                    <PrivateRoute roles={["TECNICO"]}>
+                        <DashboardTecnico />
+                    </PrivateRoute>
+                }
+            >
+                <Route index element={<ChamadosTecnico />} />
+                <Route path="meus-chamados" element={<ChamadosTecnico />} />
+            </Route>
+
 
             {/* Rotas do CLIENTE */}
 
