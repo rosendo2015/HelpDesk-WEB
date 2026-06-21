@@ -11,7 +11,7 @@ export const linkVariants = cva(
                 tertiary: "bg-blue-dark text-gray-100 hover:text-gray-200 hover:bg-blue-light",
                 subtitle: "bg-gray-500 hover:bg-gray-500",
                 // 🟢 novo estado ativo
-                active: "bg-blue-600 text-white hover:bg-blue-700",
+                active: "bg-blue-dark text-white hover:bg-blue-dark",
             },
             size: {
                 lg: "h-10 text-lg px-2",

@@ -13,9 +13,6 @@ interface SidebarProps {
 
 export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
     return (
-
-
-
         <aside className="h-full ">
             {/* Logo no topo */}
             <div className="flex items-center justify-center ">
@@ -26,30 +23,30 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                             <Link
                                 to="/admin/chamados"
                                 icon={ClipboardList}
-                                variant="tertiary"
-                                size="lg" className="bg-blue-dark"
+                                variant="secondary"
+                                size="lg" className=""
                                 onClick={onClose}>Chamados
                             </Link>
                             <Link
-                                to="/tecnicos"
+                                to="/admin/tecnicos"
                                 icon={Users}
                                 variant="secondary"
-                                size="lg" className="bg-blue-dark" onClick={onClose}>Técnicos</Link>
+                                size="lg" className="" onClick={onClose}>Técnicos</Link>
                             <Link
-                                to="/clientes"
+                                to="/admin/clientes"
                                 icon={BriefCase}
                                 variant="secondary"
                                 size="lg"
-                                className="bg-blue-dark"
+                                className=""
                                 onClick={onClose}>
                                 Clientes
                             </Link>
                             <Link
-                                to="/servicos"
+                                to="/admin/servicos"
                                 icon={Wrench}
                                 variant="secondary"
                                 size="lg"
-                                className="bg-blue-dark"
+                                className=""
                                 onClick={onClose}>
                                 Serviços
                             </Link>
@@ -63,7 +60,7 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                                 icon={ClipboardList}
                                 variant="tertiary"
                                 size="lg"
-                                className="bg-blue-dark"
+                                className=""
                                 onClick={onClose}>
                                 Meus chamados
                             </Link>
@@ -75,14 +72,14 @@ export function Sidebar({ role = "CLIENTE", onClose }: SidebarProps) {
                         <>
                             <Link
                                 to="/cliente/chamados-cliente"
-                                icon={ClipboardList} variant="tertiary"
+                                icon={ClipboardList} variant="secondary"
                                 size="lg"
-                                className="bg-blue-dark"
+                                className=""
                                 onClick={onClose}>
                                 Meus chamados
                             </Link>
                             <Link
-                                to="/cliente/criar-chamado"
+                                to="/cliente/novo-chamado"
                                 icon={Plus}
                                 variant="secondary"
                                 size="lg"

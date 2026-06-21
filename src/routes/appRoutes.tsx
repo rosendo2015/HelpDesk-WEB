@@ -13,6 +13,9 @@ import { ChamadosCliente } from "../pages/cliente/ChamadosCliente";
 import { NovoChamado } from "../pages/cliente/NovoChamado";
 import { DashboardTecnico } from "../pages/tecnico/DashboardTecnico";
 import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
+import { TecnicosAdmin } from "../pages/admin/ListTecnicos";
+import { ClientesAdmin } from "../pages/admin/ListClientes";
+import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
 
 export function AppRoutes() {
     return (
@@ -34,16 +37,12 @@ export function AppRoutes() {
             >
                 <Route index element={<ChamadosAdmin />} />
                 <Route path="chamados" element={<ChamadosAdmin />} />
-                {/* Futuras rotas */}
-                {/*
-        <Route path="tecnicos" element={<TecnicosAdmin />} />
-        <Route path="clientes" element={<ClientesAdmin />} />
-        <Route path="servicos" element={<ServicosAdmin />} />
-        */}
+                <Route path="tecnicos" element={<TecnicosAdmin />} />
+                <Route path="clientes" element={<ClientesAdmin />} />
+                <Route path="servicos" element={<ServicosAdmin />} />
             </Route>
 
             {/* Rotas do TÉCNICO */}
-
             <Route
                 path="/tecnico"
                 element={
