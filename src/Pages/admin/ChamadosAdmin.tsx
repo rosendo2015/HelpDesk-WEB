@@ -55,14 +55,14 @@ export function ChamadosAdmin() {
                 <table className="w-full">
                     <thead className=" text-gray-400 ">
                         <tr>
-                            <th className="px-3 py-2 md:max-w-20 md:truncate sm:px-4 ">Atualizado em</th>
-                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Id</th>
-                            <th className="px-3 py-2 sm:px-4">Título e Serviço</th>
-                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Valor total</th>
-                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Cliente</th>
-                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell">Técnico</th>
-                            <th className="px-3 py-2 sm:px-4 ">Status</th>
-                            <th className="px-3 py-2 sm:px-4 "></th>
+                            <th className="px-3 py-2 md:max-w-20 md:truncate sm:px-4 text-left">Atualizado em</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">Id</th>
+                            <th className="px-3 py-2 sm:px-4 text-left">Título e Serviço</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">Valor total</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">Cliente</th>
+                            <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">Técnico</th>
+                            <th className="px-3 py-2 sm:px-4 text-left">Status</th>
+                            <th className="px-3 py-2 sm:px-4 text-left"></th>
                         </tr>
                     </thead>
 
@@ -137,10 +137,12 @@ export function ChamadosAdmin() {
                                         </Tags>
                                     </td>
                                 </td>
-                                <td className="px-3 py-2 sm:px-4 text-center">
-                                    <Link to={`/admin/chamados/${chamado.id}`} variant="subtitle" size="md">
-                                        <Icon svg={PenLineIcon} className="w-4 h-4 fill-gray-100" />
-                                    </Link>
+                                <td className="px-3 py-2 sm:px-4 ">
+                                    <div className="flex items-center justify-end">
+                                        <Link to={`/admin/chamados/${chamado.id}`} variant="subtitle" size="md">
+                                            <Icon svg={PenLineIcon} className="w-4 h-4 fill-gray-100" />
+                                        </Link>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

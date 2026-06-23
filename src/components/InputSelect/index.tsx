@@ -8,6 +8,7 @@ import ChevronUp from "../../assets/icons/chevron-up.svg?react"
 import Check from "../../assets/icons/check.svg?react"
 import AlertCircle from "../../assets/icons/circle-alert.svg?react"
 import { Icon } from "../Icon"
+import { Text } from "../Text"
 
 interface inputSelectProps
     extends VariantProps<typeof inputSelectVariants> {
@@ -15,9 +16,10 @@ interface inputSelectProps
     options: string[]
     helperText?: string
     error?: boolean
+    placeholder?: string
 }
 
-export function InputSelect({ label, options, helperText, error }: inputSelectProps) {
+export function InputSelect({ label, options, helperText, placeholder, error }: inputSelectProps) {
     const [open, setOpen] = useState(false)
     const [selected, setSelected] = useState<string | null>(null)
 
@@ -42,7 +44,7 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
                             : "text-gray-400"
                 )}
             >
-                {label}
+                <Text variant="text-sm-bold">{label}</Text>
             </label>
 
             <div
@@ -50,7 +52,7 @@ export function InputSelect({ label, options, helperText, error }: inputSelectPr
                 className={cx(inputSelectVariants({ state }))}
             >
                 <span className={selected ? "text-gray-800" : "text-gray-400"}>
-                    {selected || "Selecione uma opção"}
+                    {selected || placeholder || "Selecione uma opção"}
                 </span>
                 {open ? (
                     <Icon
