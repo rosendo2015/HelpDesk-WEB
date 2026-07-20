@@ -1,13 +1,14 @@
-import { createContext } from "react"
-import type { User } from "../types/User"
+import { createContext } from "react";
+import type { Users } from "../contexts/User/model/users";
 
 interface AuthContextData {
-    user: User | null
-    token: string | null
-    signIn: (data: { token: string; user: User }) => void
-    signOut: () => void
-    isLoading: boolean
+  user: Users | null;
+  token: string | null;
+  signIn: (data: { token: string; user: Users }) => void;
+  signOut: () => void;
+  isLoading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
-
+export const AuthContext = createContext<AuthContextData>(
+  {} as AuthContextData,
+);

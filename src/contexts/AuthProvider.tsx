@@ -1,80 +1,80 @@
-import { useState, useEffect, type ReactNode, startTransition } from "react"
-import { AuthContext } from "./AuthContext"
-import type { User } from "../types/User"
-import { jwtDecode } from "jwt-decode"
-import { api } from "../services/api"
+import { useState, useEffect, type ReactNode, startTransition } from "react";
+import { AuthContext } from "./AuthContext";
+import type { Users } from "../contexts/User/model/users";
+import { jwtDecode } from "jwt-decode";
+import { api } from "../services/api";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 interface DecodedToken {
-  exp: number
-  sub: string
+  exp: number;
+  sub: string;
 }
 
 export function AuthProvider({ children }: Props) {
-  const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<Users | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadStoredData = async () => {
-      const storedUser = localStorage.getItem("@helpdesk:user")
-      const storedToken = localStorage.getItem("@helpdesk:token")
+      const storedUser = localStorage.getItem("@helpdesk:user");
+      const storedToken = localStorage.getItem("@helpdesk:token");
 
       if (!storedUser || !storedToken) {
-        setIsLoading(false)
-        return
+        setIsLoading(false);
+        return;
       }
 
       try {
-        const decoded: DecodedToken = jwtDecode(storedToken)
-        const isExpired = decoded.exp * 1000 < Date.now()
+        const decoded: DecodedToken = jwtDecode(storedToken);
+        const isExpired = decoded.exp * 1000 < Date.now();
 
         if (isExpired) {
-          signOut()
-          setIsLoading(false)
-          return
+          signOut();
+          setIsLoading(false);
+          return;
         }
 
-        api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`
+        api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
 
         // 🔹 Usa startTransition para evitar render síncrono
         startTransition(() => {
-          setUser(JSON.parse(storedUser))
-          setToken(storedToken)
-        })
+          setUser(JSON.parse(storedUser));
+          setToken(storedToken);
+        });
       } catch (error) {
-        console.error("Erro ao carregar token:", error)
-        signOut()
+        console.error("Erro ao carregar token:", error);
+        signOut();
       } finally {
-        setTimeout(() => setIsLoading(false), 100)
+        setTimeout(() => setIsLoading(false), 100);
       }
-    }
+    };
 
-    loadStoredData()
-  }, [])
+    loadStoredData();
+  }, []);
 
-  function signIn({ token, user }: { token: string; user: User }) {
-    localStorage.setItem("@helpdesk:user", JSON.stringify(user))
-    localStorage.setItem("@helpdesk:token", token)
-    setUser(user)
-    setToken(token)
-    api.defaults.headers.common["Authorization"] = `Bearer ${token}`
+  function signIn({ token, user }: { token: string; user: Users }) {
+    localStorage.setItem("@helpdesk:user", JSON.stringify(user));
+    localStorage.setItem("@helpdesk:token", token);
+    setUser(user);
+    setToken(token);
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 
   function signOut() {
-    localStorage.removeItem("@helpdesk:user")
-    localStorage.removeItem("@helpdesk:token")
-    setUser(null)
-    setToken(null)
-    delete api.defaults.headers.common["Authorization"]
+    localStorage.removeItem("@helpdesk:user");
+    localStorage.removeItem("@helpdesk:token");
+    setUser(null);
+    setToken(null);
+    delete api.defaults.headers.common["Authorization"];
   }
 
   return (
     <AuthContext.Provider value={{ user, token, signIn, signOut, isLoading }}>
       {isLoading ? <div>Carregando...</div> : children}
     </AuthContext.Provider>
-  )
+  );
 }
