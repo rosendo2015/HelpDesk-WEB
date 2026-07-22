@@ -1,6 +1,7 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/theme";
 @import "tailwindcss/utilities";
+@import "tw-animate-css";
 
 /* Defina o tema diretamente aqui */
 @theme {

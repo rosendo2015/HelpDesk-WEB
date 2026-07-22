@@ -5,7 +5,9 @@ import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: "automatic",
+    }),
     tailwindcss(),
     svgr(),
   ],

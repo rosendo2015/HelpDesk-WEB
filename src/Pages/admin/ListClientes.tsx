@@ -8,6 +8,17 @@ import { useEffect, useState } from "react";
 import type { Users } from "../../contexts/User/model/users";
 import { api } from "../../services/api";
 import { Skeleton } from "../../components/Skeleton";
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "../../components/Dialog";
+
+import { Button } from "../../components/Button";
 
 export function ClientesAdmin() {
   const [clientes, setClientes] = useState<Users[]>([]);
@@ -32,7 +43,7 @@ export function ClientesAdmin() {
   }, []);
   return (
     <div className="p-4 sm:p-6">
-      <header className="mb-4">
+      <header className="mb-4 flex justify-between">
         <Text variant="text-lg-bold" className="text-blue-dark">
           Clientes
         </Text>
@@ -78,7 +89,33 @@ export function ClientesAdmin() {
                   <tr key={cliente.id} className="border-t border-gray-500">
                     <td className="px-3 py-2 text-left">
                       <div className="flex items-center gap-3">
-                        <Avatar name={cliente.name} />
+                        <Dialog>
+                          <DialogTrigger>
+                            <Avatar name={cliente.name} />
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <Text>Cliente</Text>
+                            </DialogHeader>
+                            <DialogBody>
+                              <Avatar name={cliente.name} />
+                              <div className="flex flex-col gap-2 border-b border-gray-500 py-2">
+                                <Text>Nome</Text>
+                                <Text>{cliente.name}</Text>
+                              </div>
+                              <div className="flex flex-col gap-2 border-b border-gray-500 py-2">
+                                <Text>Email</Text>
+                                <Text>{cliente.email}</Text>
+                              </div>
+                            </DialogBody>
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button size={"lg"}>Fechar</Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+
                         <Text variant="text-sm-bold">{cliente.name}</Text>
                       </div>
                     </td>
@@ -91,7 +128,7 @@ export function ClientesAdmin() {
                         <ActionLink to={`#`} variant="subtitle" size="md">
                           <Icon
                             svg={TrachIcon}
-                            className="w-4 h-4 fill-red-500"
+                            className="w-4 h-4 fill-feedback-danger"
                           />
                         </ActionLink>
 
