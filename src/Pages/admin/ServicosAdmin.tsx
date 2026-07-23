@@ -16,7 +16,23 @@ export function ServicosAdmin() {
         <Text variant="text-lg-bold" className="text-blue-dark">
           Serviços
         </Text>
-        <Button icon={PlusIcon}>Novo</Button>
+        <div>
+          <ActionLink
+            to=""
+            variant="tertiary"
+            size="md"
+            icon={PlusIcon}
+            className="md:hidden"
+          />
+          <ActionLink
+            variant="tertiary"
+            size="md"
+            className=" md:block hidden justify-center hover:bg-gray-200"
+            icon={PlusIcon}
+          >
+            Novo
+          </ActionLink>
+        </div>
       </header>
       <div className="border border-gray-500 rounded-lg overflow-hidden">
         <table className="w-full">

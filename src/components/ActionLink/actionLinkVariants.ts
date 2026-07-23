@@ -7,14 +7,13 @@ export const actionLinkVariants = cva(
       variant: {
         primary: "hover:text-blue-800 underline",
         secondary: "bg-transparent",
-        tertiary:
-          "bg-gray-700 text-gray-100 hover:text-gray-200 hover:bg-gray-600",
+        tertiary: "bg-gray-100 text-gray-100",
         subtitle: "bg-gray-500 hover:bg-gray-400",
       },
       size: {
-        lg: "h-10 text-lg px-2",
-        md: "w-7 h-7 text-sm",
-        sm: "text-xs px-1 py-0.5",
+        lg: "h-10 px-4 text-lg",
+        md: "h-8 px-2 py-1 text-sm",
+        sm: "w-5 h-5 px-2 text-xs ",
       },
       disabled: {
         false: "",
@@ -34,7 +33,7 @@ export const actionLinkIconVariants = cva("transition", {
     variant: {
       primary: "fill-blue-600 group-hover:fill-blue-800",
       secondary: "fill-gray-600 group-hover:fill-gray-400",
-      tertiary: "fill-gray-500 group-hover:fill-gray-700",
+      tertiary: "fill-gray-500 ",
       subtitle: "fill-gray-400 group-hover:fill-gray-600",
     },
     size: {
@@ -54,7 +53,7 @@ export const actionLinkTextVariants = cva("", {
     variant: {
       primary: "text-blue-600 group-hover:text-blue-800",
       secondary: "text-gray-500 group-hover:text-gray-400",
-      tertiary: "text-gray-500 group-hover:text-gray-700",
+      tertiary: "text-gray-500",
       subtitle: "text-gray-200 group-hover:text-gray-200",
     },
     size: {

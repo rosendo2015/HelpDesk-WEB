@@ -16,67 +16,66 @@ import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
 import { TecnicosAdmin } from "../pages/admin/ListTecnicos";
 import { ClientesAdmin } from "../pages/admin/ListClientes";
 import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
+import { Components } from "../pages/PageComponents";
+import { NovoTecnico } from "../pages/admin/NovoTecnico";
 
 export function AppRoutes() {
-    return (
-        <Routes>
-            {/* Rotas públicas */}
-            <Route element={<AuthLayout />}>
-                <Route path="/login" element={<SignIn />} />
-                <Route path="/register" element={<SignUp />} />
-            </Route>
+  return (
+    <Routes>
+      {/* Rotas públicas */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<SignIn />} />
+        <Route path="/register" element={<SignUp />} />
+        <Route path="/components" element={<Components />} />
+      </Route>
 
-            {/* Rotas do ADMIN */}
-            <Route
-                path="/admin"
-                element={
-                    <PrivateRoute roles={["ADMIN"]}>
-                        <DashboardAdmin />
-                    </PrivateRoute>
-                }
-            >
-                <Route index element={<ChamadosAdmin />} />
-                <Route path="chamados" element={<ChamadosAdmin />} />
-                <Route path="tecnicos" element={<TecnicosAdmin />} />
-                <Route path="clientes" element={<ClientesAdmin />} />
-                <Route path="servicos" element={<ServicosAdmin />} />
-            </Route>
+      {/* Rotas do ADMIN */}
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute roles={["ADMIN"]}>
+            <DashboardAdmin />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<ChamadosAdmin />} />
+        <Route path="chamados" element={<ChamadosAdmin />} />
+        <Route path="tecnicos" element={<TecnicosAdmin />} />
+        <Route path="clientes" element={<ClientesAdmin />} />
+        <Route path="servicos" element={<ServicosAdmin />} />
+        <Route path="novoTecnico" element={<NovoTecnico />} />
+      </Route>
 
-            {/* Rotas do TÉCNICO */}
-            <Route
-                path="/tecnico"
-                element={
-                    <PrivateRoute roles={["TECNICO"]}>
-                        <DashboardTecnico />
-                    </PrivateRoute>
-                }
-            >
-                <Route index element={<ChamadosTecnico />} />
-                <Route path="meus-chamados" element={<ChamadosTecnico />} />
-            </Route>
+      {/* Rotas do TÉCNICO */}
+      <Route
+        path="/tecnico"
+        element={
+          <PrivateRoute roles={["TECNICO"]}>
+            <DashboardTecnico />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<ChamadosTecnico />} />
+        <Route path="meus-chamados" element={<ChamadosTecnico />} />
+      </Route>
 
+      {/* Rotas do CLIENTE */}
 
-            {/* Rotas do CLIENTE */}
+      <Route
+        path="/cliente"
+        element={
+          <PrivateRoute roles={["CLIENTE"]}>
+            <DashboardCliente />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<ChamadosCliente />} />
+        <Route path="chamados-cliente" element={<ChamadosCliente />} />
+        <Route path="novo-chamado" element={<NovoChamado />} />
+      </Route>
 
-            <Route
-                path="/cliente"
-                element={
-                    <PrivateRoute roles={["CLIENTE"]}>
-                        <DashboardCliente />
-                    </PrivateRoute>
-                }
-            >
-
-                <Route index element={<ChamadosCliente />} />
-                <Route path="chamados-cliente" element={<ChamadosCliente />} />
-                <Route path="novo-chamado" element={<NovoChamado />} />
-
-            </Route>
-
-
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-    );
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  );
 }
-

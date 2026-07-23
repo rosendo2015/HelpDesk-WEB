@@ -34,34 +34,47 @@ export function DialogOverlay({
   );
 }
 
+type DialogContentProps = React.ComponentProps<
+  typeof DialogPrimitive.Content
+> & {
+  variant?: "default" | "bottom";
+};
+
 export function DialogContent({
   className,
   ref,
   children,
+  variant = "default",
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+}: DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          `            
-        fixed left-[50%] top-[50%] w-full max-w-md z-60
-        translate-x-[50%] translate-y-[50%]
-        md:translate-x-[-50%] md:translate-y-[-50%]
-        data-[state=open]:animate-in 
-        data-[state=open]:fade-in-0
-        data-[state=open]:slide-in-from-bottom-[48%]
-        data-[state=closed]:animate-out
-        data-[state=closed]:fade-out-0
-        data-[state=closed]:slide-out-to-bottom-[48%]
-        `,
+          `
+          fixed z-60 data-[state=open]:animate-in data-[state=closed]:animate-out
+          data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0
+          `,
+          variant === "default" &&
+            `left-[50%] top-[50%] w-full max-w-md
+             translate-x-[50%] translate-y-[50%]
+             md:translate-x-[-50%] md:translate-y-[-50%]
+             data-[state=open]:slide-in-from-bottom-[48%]
+             data-[state=closed]:slide-out-to-bottom-[48%]`,
+          variant === "bottom" &&
+            `bottom-4 left-1/2 -translate-x-1/2 w-full max-w-sm
+            bg-gray-100
+             data-[state=open]:slide-in-from-bottom
+             data-[state=closed]:slide-out-to-bottom`,
           className,
         )}
         {...props}
       >
-        <Card size={"md"}>{children}</Card>
+        <Card variant={"default"} size={"md"}>
+          {children}
+        </Card>
       </DialogPrimitive.Content>
     </DialogPrimitive.Portal>
   );

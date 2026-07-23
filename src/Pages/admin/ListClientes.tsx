@@ -134,7 +134,7 @@ export function ClientesAdmin() {
                           <DialogTrigger>
                             <Avatar name={cliente.name} />
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent variant="default">
                             <DialogHeader>
                               <Text>Cliente</Text>
                             </DialogHeader>
@@ -185,7 +185,7 @@ export function ClientesAdmin() {
                         <ActionLink to={`#`} variant="subtitle" size="md">
                           <Icon
                             svg={TrachIcon}
-                            className="w-4 h-4 fill-feedback-danger"
+                            className=" fill-feedback-danger"
                           />
                         </ActionLink>
 
@@ -194,9 +194,9 @@ export function ClientesAdmin() {
                             <DialogTrigger asChild>
                               <ButtonIcon
                                 variant="secondary"
-                                size="sm"
+                                size="md"
                                 icon={PenLineIcon}
-                                className="w-4 h-4 fill-gray-100"
+                                className="fill-gray-100"
                               />
                             </DialogTrigger>
                             <DialogContent>
@@ -250,9 +250,11 @@ export function ClientesAdmin() {
                                 <Divider className="my-4" />
 
                                 <DialogFooter>
-                                  <Button type="submit" size={"lg"}>
-                                    Salvar
-                                  </Button>
+                                  <DialogClose asChild>
+                                    <Button type="submit" size={"lg"}>
+                                      Salvar
+                                    </Button>
+                                  </DialogClose>
                                 </DialogFooter>
                               </form>
                             </DialogContent>

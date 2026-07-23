@@ -4,14 +4,36 @@ import { Text } from "../../components/Text";
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import { Avatar } from "../../components/Avatar";
 import { TagTime } from "../../components/TagTime";
+import { Button } from "../../components/Button";
+import PlusIcon from "../../assets/icons/plus.svg?react";
+import { ButtonIcon } from "../../components/ButtonIcon";
+import { NavLink } from "../../components/NavLink";
 
 export function TecnicosAdmin() {
   return (
     <div className="p-4 sm:p-6">
-      <header className="mb-4">
+      <header className="flex items-center justify-between mb-4">
         <Text variant="text-lg-bold" className="text-blue-dark">
           Técnicos
         </Text>
+        <div>
+          <ActionLink
+            to="/admin/novoTecnico"
+            variant="tertiary"
+            size="md"
+            icon={PlusIcon}
+            className="md:hidden"
+          />
+          <ActionLink
+            to="/admin/novoTecnico"
+            variant="tertiary"
+            size="md"
+            className=" md:block hidden justify-center hover:bg-gray-200"
+            icon={PlusIcon}
+          >
+            Novo
+          </ActionLink>
+        </div>
       </header>
       <div className="border border-gray-500 rounded-lg overflow-hidden">
         <table className="w-full">
