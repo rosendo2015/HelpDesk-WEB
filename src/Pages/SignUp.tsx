@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
@@ -41,8 +41,26 @@ export function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("CLIENTE");
+  const [dbStatus, setDbStatus] = useState<"ok" | "error" | "">("");
 
   const navigate = useNavigate();
+
+  // Verifica o health check ao montar
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await api.get("/health");
+        if (response.data.status === "ok") {
+          setDbStatus("ok");
+        } else {
+          setDbStatus("error");
+        }
+      } catch {
+        setDbStatus("error");
+      }
+    };
+    checkHealth();
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,7 +71,6 @@ export function SignUp() {
         password,
       });
 
-      // força cadastro como CLIENTE
       await api.post("/users", { ...data, role });
 
       if (confirm("Cadastrado com sucesso.")) {
@@ -67,12 +84,21 @@ export function SignUp() {
       alert("Não foi possivel cadastrar.");
     }
   }
+
   return (
     <Container className="flex flex-col items-center justify-center gap-6 py-8 px-6 mx-auto bg-gray-600 rounded-3xl">
       <header>
         <Logo color="blue" />
       </header>
       <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+        {dbStatus === "error" && (
+          <Card className="w-full p-4 bg-red-600">
+            <Text as="span" variant="text-xs-bold" className="text-white">
+              ⚠️ Sistema indisponível: banco de dados fora do ar.
+            </Text>
+          </Card>
+        )}
+
         <Card className="w-full p-6">
           <Text as="h2" variant="text-lg-bold">
             Crie sua conta
@@ -106,11 +132,11 @@ export function SignUp() {
                 options={roleOptions}
                 placeholder="Escolha o perfil do usuário"
                 error={false}
-                onChange={(option) => setRole(option.nome)} // pega o nome do objeto
+                onChange={(option) => setRole(option.nome)}
               />
             )}
 
-            <Button size="lg" className="mt-4">
+            <Button size="lg" className="mt-4" disabled={dbStatus === "error"}>
               Cadastrar
             </Button>
           </form>

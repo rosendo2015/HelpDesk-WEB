@@ -3,7 +3,7 @@ export const dividerVariants = tv({
   base: "w-full h-px ",
   variants: {
     variant: {
-      default: "bg-border-primary",
+      default: "bg-gray-500",
     },
     orientation: {
       horizontal: "w-full h-px",

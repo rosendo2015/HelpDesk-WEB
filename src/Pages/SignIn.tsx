@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
@@ -22,8 +22,26 @@ export function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [dbStatus, setDbStatus] = useState<"ok" | "error" | "">("");
   const navigate = useNavigate();
   const { signIn } = useAuth();
+
+  // Verifica o health check ao montar
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await api.get("/health");
+        if (response.data.status === "ok") {
+          setDbStatus("ok");
+        } else {
+          setDbStatus("error");
+        }
+      } catch {
+        setDbStatus("error");
+      }
+    };
+    checkHealth();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +85,15 @@ export function SignIn() {
         <Logo color="blue" />
       </header>
       <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+        {/* Aviso do banco de dados */}
+        {dbStatus === "error" && (
+          <Card className="w-full p-4 bg-red-600">
+            <Text as="span" variant="text-xs-bold" className="text-white">
+              ⚠️ Sistema indisponível: banco de dados fora do ar.
+            </Text>
+          </Card>
+        )}
+
         <Card className="w-full p-6">
           <Text as="h2" variant="text-lg-bold">
             Acesse o portal
@@ -97,7 +124,12 @@ export function SignIn() {
               </Text>
             )}
 
-            <Button size="lg" className="mt-4" type="submit">
+            <Button
+              size="lg"
+              className="mt-4"
+              type="submit"
+              disabled={dbStatus === "error"}
+            >
               Enviar
             </Button>
           </form>

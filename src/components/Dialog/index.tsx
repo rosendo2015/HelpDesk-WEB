@@ -47,7 +47,7 @@ export function DialogContent({
         ref={ref}
         className={cn(
           `            
-        fixed left-[50%] top-[50%] w-full max-w-lg z-60
+        fixed left-[50%] top-[50%] w-full max-w-md z-60
         translate-x-[50%] translate-y-[50%]
         md:translate-x-[-50%] md:translate-y-[-50%]
         data-[state=open]:animate-in 

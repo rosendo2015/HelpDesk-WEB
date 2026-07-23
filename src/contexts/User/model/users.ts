@@ -4,7 +4,7 @@ export interface Users {
   email: string;
   password: string;
   avatarUrl: string;
-  role: string;
+  role: "CLIENTE" | "ADMIN" | "TECNICO";
   createdAt: string;
   updatedAt: string;
 }
