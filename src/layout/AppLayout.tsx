@@ -201,7 +201,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 onClick={handleLogout}
               >
                 <Icon svg={LogoutIcon} className="fill-feedback-danger mr-2" />
-                <Text className="text-feedback-danger">Perfil</Text>
+                <Text className="text-feedback-danger">Sair</Text>
               </Button>
             </div>
           </PopoverContent>

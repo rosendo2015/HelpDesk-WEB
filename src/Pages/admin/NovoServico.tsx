@@ -7,7 +7,7 @@ import { InputText } from "../../components/InputText";
 import { useState } from "react";
 import { TagTime } from "../../components/TagTime";
 
-export function NovoTecnico() {
+export function NovoServico() {
   const [error, setError] = useState(false);
   return (
     <div className="mx-auto md:w-full max-w-[800px] ">

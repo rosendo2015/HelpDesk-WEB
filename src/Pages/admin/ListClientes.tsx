@@ -83,23 +83,23 @@ export function ClientesAdmin() {
   }
 
   return (
-    <div className="p-4 sm:p-6">
-      <header className="mb-4 flex justify-between">
-        <Text variant="text-lg-bold" className="text-blue-dark">
+    <div className="mx-auto max-w-267.5 p-4 sm:p-6">
+      <header className="flex items-center justify-between mb-4">
+        <Text as="h1" variant="text-lg-bold" className="text-blue-dark">
           Clientes
         </Text>
       </header>
-      <div className="border border-gray-500 rounded-lg overflow-hidden">
+      <div className="border border-gray-500 rounded-lg overflow-x-auto">
         <table className="w-full">
           <thead className=" text-gray-400 ">
             <tr className="border-t border-gray-500">
-              <th className="px-3 py-2 md:max-w-20 md:truncate sm:px-4 text-left">
+              <th className="px-3 py-2 sm:px-4 text-left w-[134px] md:w-[582px]">
                 Nome
               </th>
-              <th className="px-3 py-2 sm:px-4 md:truncate md:w-30 hidden md:table-cell text-left">
+              <th className="px-3 py-2 sm:px-4 w-[96px] md:w-[400px] text-left">
                 Email
               </th>
-              <th className="px-3 py-2 sm:px-4  hidden md:table-cell text-left"></th>
+              <th className="px-3 py-2 sm:px-4  md:table-cell text-left w-[88px]"></th>
             </tr>
           </thead>
           <tbody>
@@ -109,16 +109,16 @@ export function ClientesAdmin() {
                     key={`sckeleton-${index}`}
                     className="border-t border-gray-500"
                   >
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-2 w-[134px] md:w-[582px]">
                       <div className="flex items-center gap-3">
                         <Skeleton className="w-8 h-8 rounded-full" />
                         <Skeleton className="h-4 w-32" />
                       </div>
                     </td>
-                    <td className="px-3 py-2 hidden md:table-cell">
+                    <td className="px-3 py-2 hidden md:table-cell w-[96px] md:w-[400px]">
                       <Skeleton className="h-4 w-48" />
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-2 w-[88px]">
                       <div className="flex justify-end gap-3">
                         <Skeleton className="h-4 w-4" />
                         <Skeleton className="h-4 w-4" />
@@ -128,7 +128,7 @@ export function ClientesAdmin() {
                 ))
               : clientes.map((cliente) => (
                   <tr key={cliente.id} className="border-t border-gray-500">
-                    <td className="px-3 py-2 text-left">
+                    <td className="px-3 py-2 text-left w-[134px] md:w-[582px] truncate">
                       <div className="flex items-center gap-3">
                         <Dialog>
                           <DialogTrigger>
@@ -173,14 +173,21 @@ export function ClientesAdmin() {
                           </DialogContent>
                         </Dialog>
 
-                        <Text variant="text-sm-bold">{cliente.name}</Text>
+                        <Text
+                          variant="text-sm-bold"
+                          className="w-[70px] md:w-full truncate"
+                        >
+                          {cliente.name}
+                        </Text>
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-left">
-                      <Text>{cliente.email}</Text>
+                    <td className="w-[96px] md:w-[400px] px-3 py-2 text-left md:table-cell truncate max-w-30">
+                      <Text className="w-[96px] md:w-[400px] truncate">
+                        {cliente.email}
+                      </Text>
                     </td>
 
-                    <td className="px-3 py-2 sm:px-4">
+                    <td className="px-3 py-2 sm:px-4  w-[88px]">
                       <div className="flex items-center justify-end gap-3 text-right">
                         <ActionLink to={`#`} variant="subtitle" size="md">
                           <Icon
@@ -205,6 +212,7 @@ export function ClientesAdmin() {
                               </DialogHeader>
 
                               <Divider className="my-4" />
+                              <Avatar name={cliente.name} />
 
                               <form
                                 onSubmit={(e) => {

@@ -3,15 +3,13 @@ import { ActionLink } from "../../components/ActionLink";
 import { Text } from "../../components/Text";
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import { Avatar } from "../../components/Avatar";
-import { TagTime } from "../../components/TagTime";
-import { Button } from "../../components/Button";
+
 import PlusIcon from "../../assets/icons/plus.svg?react";
-import { ButtonIcon } from "../../components/ButtonIcon";
-import { NavLink } from "../../components/NavLink";
+import { HoarariosList } from "../../components/HorariosList";
 
 export function TecnicosAdmin() {
   return (
-    <div className="p-4 sm:p-6">
+    <div className="mx-auto max-w-267.5 p-4 sm:p-6">
       <header className="flex items-center justify-between mb-4">
         <Text variant="text-lg-bold" className="text-blue-dark">
           Técnicos
@@ -35,18 +33,20 @@ export function TecnicosAdmin() {
           </ActionLink>
         </div>
       </header>
-      <div className="border border-gray-500 rounded-lg overflow-hidden">
+      <div className="border border-gray-500 rounded-lg overflow-x-auto">
         <table className="w-full">
           <thead className=" text-gray-400 ">
             <tr className="border-t border-gray-500">
-              <th className="px-3 py-2 md:max-w-20 md:truncate sm:px-4 text-left">
+              <th className="px-3 py-2 sm:px-4 text-left truncate w-[170px] md:w-[350px]">
                 Nome
               </th>
-              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">
+              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left md:w-[255px]">
                 Email
               </th>
-              <th className="px-3 py-2 sm:px-4 text-left">Disponibilidade</th>
-              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left"></th>
+              <th className="px-3 py-2 sm:px-4 text-left w-[120px] md:w-[328px]">
+                Disponibilidade
+              </th>
+              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left w-[52px]"></th>
             </tr>
           </thead>
           <tbody>
@@ -54,24 +54,37 @@ export function TecnicosAdmin() {
               <td className="px-3 py-2 text-left">
                 <div className="flex items-center gap-3">
                   <Avatar name="Jão Silva" />
-                  <Text variant="text-sm-bold">João Silva</Text>
+                  <Text variant="text-sm-bold" className="truncate max-w-37.5">
+                    João Silva
+                  </Text>
                 </div>
               </td>
-              <td className="px-3 py-2 text-left">
+              <td className="px-3 py-2 text-left hidden md:table-cell truncate max-w-30">
                 <Text>joao.silva@teste.com</Text>
               </td>
               <td className="px-3 py-2 text-left">
-                <div className=" flex gap-3">
-                  <TagTime>08:00</TagTime>
-                  <TagTime>09:00</TagTime>
-                  <TagTime>10:00</TagTime>
-                  <TagTime>11:00</TagTime>
-                  <TagTime>+4</TagTime>
-                </div>
+                <HoarariosList
+                  horarios={[
+                    "08:00",
+                    "09:00",
+                    "10:00",
+                    "11:00",
+                    "12:00",
+                    "15:00",
+                    "16:00",
+                    "17:00",
+                    "18:00",
+                    "19:00",
+                  ]}
+                />
               </td>
               <td className="px-3 py-2 sm:px-4 text-left">
                 <div className="flex items-center justify-end">
-                  <ActionLink to={``} variant="subtitle" size="md">
+                  <ActionLink
+                    to={`/admin/editarTecnico`}
+                    variant="subtitle"
+                    size="md"
+                  >
                     <Icon svg={PenLineIcon} className="w-4 h-4 fill-gray-100" />
                   </ActionLink>
                 </div>

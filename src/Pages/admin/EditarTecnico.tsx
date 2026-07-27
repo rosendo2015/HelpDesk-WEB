@@ -6,8 +6,10 @@ import { Text } from "../../components/Text";
 import { InputText } from "../../components/InputText";
 import { useState } from "react";
 import { TagTime } from "../../components/TagTime";
+import XIcon from "../../assets/icons/x.svg?react";
+import { Avatar } from "../../components/Avatar";
 
-export function NovoTecnico() {
+export function EditarTecnico() {
   const [error, setError] = useState(false);
   return (
     <div className="mx-auto md:w-full max-w-[800px] ">
@@ -37,22 +39,25 @@ export function NovoTecnico() {
       </header>
       <Container className="w-full md:max-w-[800px]">
         <form className="mx-auto flex flex-col gap-6 md:flex-row ">
-          <Card className="flex flex-col p-6 w-full md:max-w-[296px]">
+          <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[296px]">
             <Text as="h2" variant="heading-md-bold">
               Dados pessoais
             </Text>
             <Text as="p" variant="text-sm-regular">
               Defina as informações do perfil de técnico
             </Text>
-            <InputText label="NOME" placeholder="Nome Completo" />
-            <InputText label="E-MAIL" placeholder="exemplo@email.com" />
+            <div className="py-1">
+              <Avatar name="João Sailva" />
+            </div>
             <InputText
-              label="SENHA"
-              placeholder="Defina a senha de acesso"
-              error={error}
-              helperText={
-                error ? "A senha é obrigatório" : "Minimo de 6 dígitos"
-              }
+              label="NOME"
+              placeholder="Nome Completo"
+              value="João Silva"
+            />
+            <InputText
+              label="E-MAIL"
+              placeholder="exemplo@email.com"
+              value="joao@teste.com.br"
             />
           </Card>
           <Card className="flex flex-col p-6">
@@ -70,9 +75,15 @@ export function NovoTecnico() {
               <div className="flex gap-2 flex-wrap">
                 <TagTime>07:00</TagTime>
                 <TagTime>08:00</TagTime>
-                <TagTime>09:00</TagTime>
-                <TagTime>10:00</TagTime>
-                <TagTime>11:00</TagTime>
+                <TagTime variant="selected" svg={XIcon}>
+                  09:00
+                </TagTime>
+                <TagTime variant="selected" svg={XIcon}>
+                  10:00
+                </TagTime>
+                <TagTime variant="selected" svg={XIcon}>
+                  11:00
+                </TagTime>
                 <TagTime>12:00</TagTime>
               </div>
             </div>

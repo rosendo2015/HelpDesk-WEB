@@ -59,7 +59,7 @@ export function DialogContent({
           `,
           variant === "default" &&
             `left-[50%] top-[50%] w-full max-w-md
-             translate-x-[50%] translate-y-[50%]
+             translate-x-[-50%] translate-y-[-50%]
              md:translate-x-[-50%] md:translate-y-[-50%]
              data-[state=open]:slide-in-from-bottom-[48%]
              data-[state=closed]:slide-out-to-bottom-[48%]`,
