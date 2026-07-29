@@ -1,3 +1,7 @@
+export interface Horario {
+  horario: string;
+}
+
 export interface Users {
   id: string;
   name: string;
@@ -7,4 +11,5 @@ export interface Users {
   role: "CLIENTE" | "ADMIN" | "TECNICO";
   createdAt: string;
   updatedAt: string;
+  disponibilidades: Array<Horario>;
 }

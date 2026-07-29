@@ -1,10 +1,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
-
 import { AuthLayout } from "../layout/AuthLayout";
-
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
-
 import { DashboardCliente } from "../pages/cliente/DashboardCliente";
 import { DashboardAdmin } from "../pages/admin/DashboardAdmin";
 import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
@@ -42,12 +39,12 @@ export function AppRoutes() {
       >
         <Route index element={<ChamadosAdmin />} />
         <Route path="chamados" element={<ChamadosAdmin />} />
-        <Route path="tecnicos" element={<TecnicosAdmin />} />
         <Route path="clientes" element={<ClientesAdmin />} />
         <Route path="servicos" element={<ServicosAdmin />} />
         <Route path="novoServico" element={<NovoServico />} />
+        <Route path="tecnicos" element={<TecnicosAdmin />} />
         <Route path="novoTecnico" element={<NovoTecnico />} />
-        <Route path="editarTecnico" element={<EditarTecnico />} />
+        <Route path="editarTecnico/:id" element={<EditarTecnico />} />
       </Route>
 
       {/* Rotas do TÉCNICO */}

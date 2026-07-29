@@ -1,19 +1,83 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { Container } from "../../components/Container";
-import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
 import { Text } from "../../components/Text";
 import { InputText } from "../../components/InputText";
-import { useState } from "react";
 import { TagTime } from "../../components/TagTime";
-import XIcon from "../../assets/icons/x.svg?react";
 import { Avatar } from "../../components/Avatar";
+import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
+import XIcon from "../../assets/icons/x.svg?react";
+import z from "zod";
+import { api } from "../../services/api";
+
+const tecnicoSchema = z.object({
+  name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+  email: z.string().email("E-mail inválido"),
+  horarios: z.array(z.string()).optional(),
+});
+
+const periodos = {
+  MANHÃ: ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00"],
+  TARDE: ["13:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
+  NOITE: ["19:00", "20:00", "21:00", "22:00", "23:00"],
+};
 
 export function EditarTecnico() {
-  const [error, setError] = useState(false);
+  const { id } = useParams();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [horarios, setHorarios] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  // Buscar dados atuais do técnico
+  useEffect(() => {
+    async function fetchTecnico() {
+      try {
+        const response = await api.get(`/users/${id}`);
+        setName(response.data.name);
+        setEmail(response.data.email);
+        setHorarios(
+          response.data.disponibilidades?.map((d: any) => d.horario) || [],
+        );
+      } catch {
+        setError("Erro ao carregar dados do técnico");
+      }
+    }
+    if (id) fetchTecnico();
+  }, [id]);
+
+  // Alternar seleção de horários
+  function toggleHorario(horario: string) {
+    setHorarios((prev) =>
+      prev.includes(horario)
+        ? prev.filter((h) => h !== horario)
+        : [...prev, horario],
+    );
+  }
+
+  // Atualizar técnico
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    const result = tecnicoSchema.safeParse({ name, email, horarios });
+    if (!result.success) {
+      setError(result.error.errors[0].message);
+      return;
+    }
+
+    try {
+      await api.patch(`/users/${id}`, result.data);
+      alert("Perfil atualizado com sucesso!");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Erro ao atualizar técnico");
+    }
+  }
+
   return (
     <div className="mx-auto md:w-full max-w-[800px] ">
-      <header className="mx-auto mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4  md:w-full md:max-w-[790px] ">
+      <header className="mx-auto mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 md:w-full md:max-w-[790px] ">
         <div className="flex flex-col items-start">
           <a
             href="#"
@@ -34,9 +98,12 @@ export function EditarTecnico() {
           <Button variant="secondary" className="w-full">
             Cancelar
           </Button>
-          <Button className="w-full">Salvar</Button>
+          <Button className="w-full" onClick={handleSubmit}>
+            Salvar
+          </Button>
         </div>
       </header>
+
       <Container className="w-full md:max-w-[800px]">
         <form className="mx-auto flex flex-col gap-6 md:flex-row ">
           <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[296px]">
@@ -47,19 +114,23 @@ export function EditarTecnico() {
               Defina as informações do perfil de técnico
             </Text>
             <div className="py-1">
-              <Avatar name="João Sailva" />
+              <Avatar name={name} />
             </div>
             <InputText
               label="NOME"
               placeholder="Nome Completo"
-              value="João Silva"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
             <InputText
               label="E-MAIL"
               placeholder="exemplo@email.com"
-              value="joao@teste.com.br"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
+            {error && <Text className="text-red-500">{error}</Text>}
           </Card>
+
           <Card className="flex flex-col p-6">
             <Text as="h2" variant="heading-md-bold">
               Horários de atendimento
@@ -68,50 +139,26 @@ export function EditarTecnico() {
               Selecione os horários de disponibilidade do técnico para
               atendimento
             </Text>
-            <div className="mt-4">
-              <Text variant="text-xs-bold" className="text-gray-300">
-                MANHÃ
-              </Text>
-              <div className="flex gap-2 flex-wrap">
-                <TagTime>07:00</TagTime>
-                <TagTime>08:00</TagTime>
-                <TagTime variant="selected" svg={XIcon}>
-                  09:00
-                </TagTime>
-                <TagTime variant="selected" svg={XIcon}>
-                  10:00
-                </TagTime>
-                <TagTime variant="selected" svg={XIcon}>
-                  11:00
-                </TagTime>
-                <TagTime>12:00</TagTime>
+
+            {Object.entries(periodos).map(([periodo, horas]) => (
+              <div key={periodo} className="mt-4">
+                <Text variant="text-xs-bold" className="text-gray-300">
+                  {periodo}
+                </Text>
+                <div className="flex gap-2 flex-wrap">
+                  {horas.map((hora) => (
+                    <TagTime
+                      key={hora}
+                      svg={XIcon}
+                      checked={horarios.includes(hora)} // marcar se já está selecionado
+                      onClick={() => toggleHorario(hora)}
+                    >
+                      {hora}
+                    </TagTime>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="mt-4">
-              <Text variant="text-xs-bold" className="text-gray-300">
-                TARDE
-              </Text>
-              <div className="flex gap-2 flex-wrap">
-                <TagTime>13:00</TagTime>
-                <TagTime>14:00</TagTime>
-                <TagTime>15:00</TagTime>
-                <TagTime>16:00</TagTime>
-                <TagTime>17:00</TagTime>
-                <TagTime>18:00</TagTime>
-              </div>
-            </div>
-            <div className="mt-4">
-              <Text variant="text-xs-bold" className="text-gray-300">
-                NOITE
-              </Text>
-              <div className="flex gap-2 flex-wrap">
-                <TagTime>19:00</TagTime>
-                <TagTime>20:00</TagTime>
-                <TagTime>21:00</TagTime>
-                <TagTime>22:00</TagTime>
-                <TagTime>23:00</TagTime>
-              </div>
-            </div>
+            ))}
           </Card>
         </form>
       </Container>
