@@ -7,9 +7,21 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 export const Dialog = DialogPrimitive.Root;
 
-export const DialogTrigger = DialogPrimitive.Trigger;
-
 export const DialogClose = DialogPrimitive.Close;
+
+export function DialogTrigger({
+  className,
+  ref,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
+  return (
+    <DialogPrimitive.Trigger
+      className={cn(``, className)}
+      ref={ref}
+      {...props}
+    />
+  );
+}
 
 export function DialogOverlay({
   className,

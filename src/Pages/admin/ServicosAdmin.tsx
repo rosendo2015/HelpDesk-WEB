@@ -20,70 +20,95 @@ import Divider from "../../components/Divider";
 import { Button } from "../../components/Button";
 import { InputText } from "../../components/InputText";
 import { ButtonIcon } from "../../components/ButtonIcon";
-import z, { ZodError } from "zod";
-import { api } from "../../services/api";
-import type { Servicos } from "../../contexts/Servico/model/servicos";
-import { useEffect, useState } from "react";
+import { z, ZodError } from "zod";
+import { useContext, useState } from "react";
+import { ServicesContext } from "../../contexts/Servico/ServicesContext";
+import { formatCurrencyBRL } from "../../utils/formatCurrency";
+import { NumericFormat } from "react-number-format";
 
 const servicoSchema = z.object({
   name: z
     .string()
     .trim()
     .min(3, { message: "O nome deve ter pelo menos 3 caracteres." }),
-  email: z.string().email("E-Mail inválido"),
+  price: z.number().positive("O preço deve ser maior que zero"),
+  active: z.boolean(),
 });
 
 export function ServicosAdmin() {
-  const [servicos, setServicos] = useState<Servicos[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { servicos, loading, createServico, updateServico } =
+    useContext(ServicesContext)!;
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editPrice, setEditPrice] = useState("");
 
-  useEffect(() => {
-    async function fetchServicos() {
-      try {
-        const response = await api.get<Servicos[]>("/services");
+  const [active, setActive] = useState(true);
 
-        const servicosFiltrados = response.data.filter(
-          (servico) => servico.active,
-        );
-        setServicos(servicosFiltrados);
-      } catch (error) {
-        console.error("Erro ao buscar servico:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchServicos();
-  }, []);
-
-  async function handleCreateServico(id: string, dados: Partial<Servicos>) {
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     try {
-      const parsed = servicoSchema.parse(dados);
-      const response = await api.patch(`/servicos/${id}`, parsed, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("@helpdesk:token")}`,
-        },
+      const parsed = servicoSchema.parse({
+        name,
+        price: Number(price.replace(",", ".")),
+        active: Boolean(active),
       });
-      setServicos((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...response.data } : c)),
-      );
+      await createServico(parsed);
+      setName("");
+      setPrice("");
+      setActive(true);
       setErrors({});
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as string] = err.message;
-          }
-        });
+        const fieldErrors = error.issues.reduce(
+          (acc, issue) => {
+            acc[issue.path.join(".")] = issue.message;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
         setErrors(fieldErrors);
       } else {
-        console.error("Erro ao tentar atualizar cliente", error);
+        console.error("Erro ao criar serviço", error);
       }
     }
   }
+
+  async function handleUpdateServico(
+    id: string,
+    e: React.FormEvent<HTMLFormElement>,
+  ) {
+    e.preventDefault();
+    try {
+      const parsed = servicoSchema.pick({ name: true, price: true }).parse({
+        name: editName,
+        price: Number(editPrice.replace(",", ".")),
+      });
+
+      await updateServico(id, parsed);
+
+      setEditName("");
+      setEditPrice("");
+      setErrors({});
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const fieldErrors = error.issues.reduce(
+          (acc, issue) => {
+            acc[issue.path.join(".")] = issue.message;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
+        setErrors(fieldErrors);
+      } else {
+        console.error("Erro ao atualizar serviço", error);
+      }
+    }
+  }
+
   return (
-    <div className="p-4 mx-auto  overflow-x-auto max-w-[1070px]">
+    <div className="p-4 mx-auto overflow-x-auto max-w-267.5">
       <header className="flex items-center justify-between mb-4">
         <Text variant="text-lg-bold" className="text-blue-dark">
           Serviços
@@ -101,13 +126,25 @@ export function ServicosAdmin() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <Text>Cadastro de serviços</Text>
+                <Text variant="heading-md-bold">Cadastro de serviços</Text>
               </DialogHeader>
 
-              <form>
+              <form onSubmit={handleSubmit}>
                 <Divider className="my-4" />
-                <InputText label="TÍTULO" placeholder="Nome do serviço" />
-                <InputText label="VALOR" placeholder="R$ 0,00" />
+                <InputText
+                  label="TÍTULO"
+                  placeholder="Nome do serviço"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  error={!!errors.name}
+                />
+                <InputText
+                  label="VALOR"
+                  placeholder="R$ 0,00"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  error={!!errors.price}
+                />
                 <Divider className="my-4" />
                 <DialogFooter>
                   <DialogClose asChild>
@@ -121,89 +158,137 @@ export function ServicosAdmin() {
           </Dialog>
         </div>
       </header>
+
       <div className="border border-gray-500 rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className=" text-gray-400 ">
-            <tr className="border-t border-gray-500">
-              <th className="px-3 py-2 sm:px-4 text-left">Tiítulo</th>
-              <th className="px-3 py-2 sm:px-4 text-left">Valor</th>
-              <th className="px-3 py-2 sm:px-4 text-left">Status</th>
-              <th className="px-3 py-2 sm:px-4 text-left w-5" colSpan={2}></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-t border-gray-500">
-              <td className="px-3 py-2 text-left">
-                <div className="flex items-center gap-3">
-                  <Text
-                    className="truncate overflow-hidden whitespace-nowrap"
-                    variant="text-sm-bold"
-                  >
-                    Instação de Rede
-                  </Text>
-                </div>
-              </td>
-              <td className="px-3 py-2 text-left">
-                <Text variant="text-sm-regular" className="">
-                  R$ 180,00
-                </Text>
-              </td>
-              <td className="px-3 py-2 text-left">
-                <div className=" flex gap-3">
-                  <Tags variant="success" className="" svg={CircleCheckIcon}>
-                    Ativo
-                  </Tags>
-                </div>
-              </td>
-              <td className="px-3 py-2 sm:px-4 flex gap-2 text-right">
-                <Tags variant="default" svg={BanIcon}>
-                  Desativar
-                </Tags>
+        {loading ? (
+          <Text>Carregando serviços...</Text>
+        ) : (
+          <table className="w-full">
+            <thead className="text-gray-400">
+              <tr className="border-t border-gray-500">
+                <th className="px-3 py-2 sm:px-4 text-left">Título</th>
+                <th className="w-50 px-3 py-2 sm:px-4 text-left">Valor</th>
+                <th className="w-30 px-3 py-2 sm:px-4 text-left">Status</th>
+                <th
+                  className=" px-3 py-2 sm:px-4 text-left w-5"
+                  colSpan={2}
+                ></th>
+              </tr>
+            </thead>
+            <tbody>
+              {servicos.map((servico) => (
+                <tr key={servico.id} className="border-t border-gray-500">
+                  <td className="px-3 py-2 text-left">
+                    <Text variant="text-sm-bold">{servico.name}</Text>
+                  </td>
+                  <td className="px-3 py-2 text-left">
+                    <Text variant="text-sm-regular">
+                      {formatCurrencyBRL(servico.price)}
+                    </Text>
+                  </td>
+                  <td className="px-3 py-2 text-left">
+                    <Tags
+                      variant={servico.active ? "success" : "danger"}
+                      svg={servico.active ? CircleCheckIcon : BanIcon}
+                    >
+                      {servico.active ? "Ativo" : "Inativo"}
+                    </Tags>
+                  </td>
 
-                <div className="flex items-center gap-3">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <ActionLink variant="subtitle">
-                        <Icon
-                          svg={PenLineIcon}
-                          className="w-4 h-4 fill-gray-100"
-                        />
-                      </ActionLink>
-                    </DialogTrigger>
+                  <td className="px-3 py-2 sm:px-4 flex items-center gap-2 text-right ">
+                    {servico.active ? (
+                      <button
+                        onClick={() =>
+                          updateServico(servico.id, { active: false })
+                        }
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Icon svg={BanIcon} />
+                        <Text>Desativar</Text>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          updateServico(servico.id, { active: true })
+                        }
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Icon svg={CircleCheckIcon} />
+                        <Text>Reativar</Text>
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <Dialog
+                        onOpenChange={(open) => {
+                          if (open) {
+                            setEditName(servico.name);
+                            setEditPrice(servico.price.toString());
+                          }
+                        }}
+                      >
+                        <DialogTrigger asChild>
+                          <ActionLink variant="subtitle">
+                            <Icon
+                              svg={PenLineIcon}
+                              className="w-4 h-4 fill-gray-100"
+                            />
+                          </ActionLink>
+                        </DialogTrigger>
 
-                    <DialogContent>
-                      <DialogHeader>
-                        <Text>Serviço</Text>
-                      </DialogHeader>
+                        <DialogContent>
+                          <DialogHeader>
+                            <Text variant="heading-md-bold">Serviço</Text>
+                          </DialogHeader>
 
-                      <form>
-                        <Divider className="my-4" />
-                        <InputText
-                          value="Instalação de rede"
-                          label="TÍTULO"
-                          placeholder="Nome do serviço"
-                        />
-                        <InputText
-                          value="R$ 180,00"
-                          label="VALOR"
-                          placeholder="R$ 0,00"
-                        />
-                        <Divider className="my-4" />
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button type="submit" size={"lg"}>
-                              Salvar
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                          <form
+                            onSubmit={(e) => handleUpdateServico(servico.id, e)}
+                          >
+                            <Divider className="my-4" />
+                            <InputText
+                              label="TÍTULO"
+                              placeholder="Nome do serviço"
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              error={!!errors.name}
+                            />
+
+                            {/* Campo com máscara de moeda na edição */}
+                            <NumericFormat
+                              customInput={InputText}
+                              label="VALOR"
+                              placeholder="R$ 0,00"
+                              value={editPrice}
+                              onValueChange={(values: { value: string }) =>
+                                setEditPrice(values.value)
+                              }
+                              thousandSeparator="."
+                              decimalSeparator=","
+                              prefix="R$ "
+                              decimalScale={2}
+                              fixedDecimalScale
+                              error={!!errors.price}
+                            />
+
+                            <Divider className="my-4" />
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button type="submit" size={"lg"}>
+                                  Salvar
+                                </Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

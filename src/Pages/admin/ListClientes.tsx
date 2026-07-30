@@ -1,16 +1,20 @@
-import { Icon } from "../../components/Icon";
-import { ActionLink } from "../../components/ActionLink";
+import { useEffect, useState } from "react";
+import { api } from "../../services/api";
+import type { Users } from "../../contexts/User/model/users";
+import z, { ZodError } from "zod";
+
 import { Text } from "../../components/Text";
 import { Avatar } from "../../components/Avatar";
-import PenLineIcon from "../../assets/icons/pen-line.svg?react";
-import TrachIcon from "../../assets/icons/trash.svg?react";
-import { useEffect, useState } from "react";
-import type { Users } from "../../contexts/User/model/users";
-import { api } from "../../services/api";
 import { Skeleton } from "../../components/Skeleton";
+import { Icon } from "../../components/Icon";
+import { ActionLink } from "../../components/ActionLink";
+import { Button } from "../../components/Button";
+import { ButtonIcon } from "../../components/ButtonIcon";
+import { InputText } from "../../components/InputText";
+import Divider from "../../components/Divider";
+
 import {
   Dialog,
-  DialogBody,
   DialogClose,
   DialogContent,
   DialogFooter,
@@ -18,11 +22,8 @@ import {
   DialogTrigger,
 } from "../../components/Dialog";
 
-import { Button } from "../../components/Button";
-import Divider from "../../components/Divider";
-import { ButtonIcon } from "../../components/ButtonIcon";
-import { InputText } from "../../components/InputText";
-import z, { ZodError } from "zod";
+import PenLineIcon from "../../assets/icons/pen-line.svg?react";
+import TrachIcon from "../../assets/icons/trash.svg?react";
 
 const clienteSchema = z.object({
   name: z
@@ -41,7 +42,6 @@ export function ClientesAdmin() {
     async function fetchClientes() {
       try {
         const response = await api.get<Users[]>("/users");
-
         const clientesFiltrados = response.data.filter(
           (user) => user.role === "CLIENTE",
         );
@@ -69,16 +69,30 @@ export function ClientesAdmin() {
       setErrors({});
     } catch (error) {
       if (error instanceof ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as string] = err.message;
-          }
-        });
+        const fieldErrors = error.issues.reduce(
+          (acc, issue) => {
+            acc[issue.path.join(".")] = issue.message;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
         setErrors(fieldErrors);
       } else {
-        console.error("Erro ao tentar atualizar cliente", error);
+        console.error("Erro ao atualizar cliente", error);
       }
+    }
+  }
+
+  async function handleDeleteCliente(id: string) {
+    try {
+      await api.delete(`/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("@helpdesk:token")}`,
+        },
+      });
+      setClientes((prev) => prev.filter((c) => c.id !== id));
+    } catch (error) {
+      console.error("Erro ao deletar cliente:", error);
     }
   }
 
@@ -89,36 +103,37 @@ export function ClientesAdmin() {
           Clientes
         </Text>
       </header>
+
       <div className="border border-gray-500 rounded-lg overflow-x-auto">
         <table className="w-full">
-          <thead className=" text-gray-400 ">
+          <thead className="text-gray-400">
             <tr className="border-t border-gray-500">
-              <th className="px-3 py-2 sm:px-4 text-left w-[134px] md:w-[582px]">
+              <th className="px-3 py-2 sm:px-4 text-left w-33.5 md:w-145.5">
                 Nome
               </th>
-              <th className="px-3 py-2 sm:px-4 w-[96px] md:w-[400px] text-left">
+              <th className="px-3 py-2 sm:px-4 w-24 md:w-100 text-left">
                 Email
               </th>
-              <th className="px-3 py-2 sm:px-4  md:table-cell text-left w-[88px]"></th>
+              <th className="px-3 py-2 sm:px-4 text-left w-22"></th>
             </tr>
           </thead>
           <tbody>
             {loading
               ? Array.from({ length: 3 }).map((_, index) => (
                   <tr
-                    key={`sckeleton-${index}`}
+                    key={`skeleton-${index}`}
                     className="border-t border-gray-500"
                   >
-                    <td className="px-3 py-2 w-[134px] md:w-[582px]">
+                    <td className="px-3 py-2 w-33.5 md:w-145.5">
                       <div className="flex items-center gap-3">
                         <Skeleton className="w-8 h-8 rounded-full" />
                         <Skeleton className="h-4 w-32" />
                       </div>
                     </td>
-                    <td className="px-3 py-2 hidden md:table-cell w-[96px] md:w-[400px]">
+                    <td className="px-3 py-2 hidden md:table-cell w-24 md:w-100">
                       <Skeleton className="h-4 w-48" />
                     </td>
-                    <td className="px-3 py-2 w-[88px]">
+                    <td className="px-3 py-2 w-22">
                       <div className="flex justify-end gap-3">
                         <Skeleton className="h-4 w-4" />
                         <Skeleton className="h-4 w-4" />
@@ -128,146 +143,103 @@ export function ClientesAdmin() {
                 ))
               : clientes.map((cliente) => (
                   <tr key={cliente.id} className="border-t border-gray-500">
-                    <td className="px-3 py-2 text-left w-[134px] md:w-[582px] truncate">
+                    <td className="px-3 py-2 text-left w-33.5 md:w-145.5 truncate">
                       <div className="flex items-center gap-3">
-                        <Dialog>
-                          <DialogTrigger>
-                            <Avatar name={cliente.name} />
-                          </DialogTrigger>
-                          <DialogContent variant="default">
-                            <DialogHeader>
-                              <Text>Cliente</Text>
-                            </DialogHeader>
-
-                            <Divider className="my-4" />
-
-                            <DialogBody>
-                              <Avatar name={cliente.name} />
-                              <div className="flex flex-col gap-2 border-b border-gray-500 py-2">
-                                <Text
-                                  variant={"text-xs-bold"}
-                                  className="text-gray-300"
-                                >
-                                  NOME
-                                </Text>
-                                <Text>{cliente.name}</Text>
-                              </div>
-                              <div className="flex flex-col gap-2 border-b border-gray-500 py-2 mb-8">
-                                <Text
-                                  variant={"text-xs-bold"}
-                                  className="text-gray-300"
-                                >
-                                  E-MAIL
-                                </Text>
-                                <Text>{cliente.email}</Text>
-                              </div>
-                            </DialogBody>
-
-                            <Divider className="my-4" />
-
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button size={"lg"}>Fechar</Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-
+                        <Avatar name={cliente.name} className="md:w-11.25" />
                         <Text
                           variant="text-sm-bold"
-                          className="w-[70px] md:w-full truncate"
+                          className="w-17.5 md:w-full truncate"
                         >
                           {cliente.name}
                         </Text>
                       </div>
                     </td>
-                    <td className="w-[96px] md:w-[400px] px-3 py-2 text-left md:table-cell truncate max-w-30">
-                      <Text className="w-[96px] md:w-[400px] truncate">
+                    <td className="w-24 md:w-100 px-3 py-2 text-left md:table-cell truncate max-w-30">
+                      <Text className="w-24 md:w-100 truncate">
                         {cliente.email}
                       </Text>
                     </td>
-
-                    <td className="px-3 py-2 sm:px-4  w-[88px]">
+                    <td className="px-3 py-2 sm:px-4 w-22">
                       <div className="flex items-center justify-end gap-3 text-right">
-                        <ActionLink to={`#`} variant="subtitle" size="md">
-                          <Icon
-                            svg={TrachIcon}
-                            className=" fill-feedback-danger"
-                          />
-                        </ActionLink>
-
-                        <div className="flex items-center gap-3">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <ButtonIcon
-                                variant="secondary"
-                                size="md"
-                                icon={PenLineIcon}
-                                className="fill-gray-100"
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <ActionLink to="#" variant="subtitle" size="md">
+                              <Icon
+                                svg={TrachIcon}
+                                className="fill-feedback-danger"
                               />
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <Text>Cliente</Text>
-                              </DialogHeader>
+                            </ActionLink>
+                          </DialogTrigger>
 
-                              <Divider className="my-4" />
-                              <Avatar name={cliente.name} />
+                          <DialogContent>
+                            <DialogHeader>
+                              <Text variant="heading-md-bold">
+                                Excluir cliente
+                              </Text>
+                            </DialogHeader>
 
-                              <form
-                                onSubmit={(e) => {
-                                  e.preventDefault();
-                                  handleUpdateCliente(cliente.id, {
-                                    name: cliente.name,
-                                    email: cliente.email,
-                                  });
-                                }}
-                              >
-                                <InputText
-                                  label="NOME"
-                                  value={cliente.name}
-                                  onChange={(e) =>
-                                    setClientes((prev) =>
-                                      prev.map((c) =>
-                                        c.id === cliente.id
-                                          ? { ...c, name: e.target.value }
-                                          : c,
-                                      ),
-                                    )
-                                  }
-                                  error={errors.name}
-                                />
-                                <InputText
-                                  label="E-MAIL"
-                                  value={cliente.email}
-                                  onChange={(e) =>
-                                    setClientes((prev) =>
-                                      prev.map((c) =>
-                                        c.id === cliente.id
-                                          ? {
-                                              ...cliente,
-                                              email: e.target.value,
-                                            }
-                                          : c,
-                                      ),
-                                    )
-                                  }
-                                  error={errors.email}
-                                />
+                            <Divider className="my-4" />
+                            <div className="flex flex-col gap-6 py-6">
+                              <Text>
+                                Deseja realmente excluir{" "}
+                                <strong>{cliente.name}</strong>?
+                              </Text>
+                              <Text as="p" className="mt-2 text-gray-300">
+                                Ao excluir, todos os chamados deste cliente
+                                serão removidos e esta ação não poderá ser
+                                desfeita.
+                              </Text>
+                            </div>
+                            <Divider className="my-4" />
 
-                                <Divider className="my-4" />
+                            <DialogFooter>
+                              <div className="flex items-center justify-center gap-2 w-full py-6">
+                                <DialogClose asChild>
+                                  <Button variant="secondary" size="lg">
+                                    Cancelar
+                                  </Button>
+                                </DialogClose>
 
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <Button type="submit" size={"lg"}>
-                                      Salvar
-                                    </Button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </form>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
+                                <DialogClose asChild>
+                                  <Button
+                                    size="lg"
+                                    onClick={() => {
+                                      handleDeleteCliente(cliente.id);
+                                      alert(
+                                        `Cliente ${cliente.name} excluído com sucesso!`,
+                                      );
+                                    }}
+                                  >
+                                    Sim, excluir
+                                  </Button>
+                                </DialogClose>
+                              </div>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <ButtonIcon
+                              variant="secondary"
+                              size="md"
+                              icon={PenLineIcon}
+                              className="fill-gray-100"
+                            />
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <Text>Editar Cliente</Text>
+                            </DialogHeader>
+                            <Divider className="my-4" />
+                            <Avatar name={cliente.name} />
+                            <EditClienteForm
+                              cliente={cliente}
+                              onSave={handleUpdateCliente}
+                              errors={errors}
+                            />
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </td>
                   </tr>
@@ -276,5 +248,52 @@ export function ClientesAdmin() {
         </table>
       </div>
     </div>
+  );
+}
+
+function EditClienteForm({
+  cliente,
+  onSave,
+  errors,
+}: {
+  cliente: Users;
+  onSave: (id: string, dados: Partial<Users>) => void;
+  errors: Record<string, string>;
+}) {
+  const [formData, setFormData] = useState({
+    name: cliente.name,
+    email: cliente.email,
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave(cliente.id, formData);
+      }}
+    >
+      <InputText
+        label="NOME"
+        value={formData.name}
+        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        error={!!errors.name}
+      />
+      <InputText
+        label="E-MAIL"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        error={!!errors.email}
+      />
+
+      <Divider className="my-4" />
+
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button type="submit" size="lg">
+            Salvar
+          </Button>
+        </DialogClose>
+      </DialogFooter>
+    </form>
   );
 }

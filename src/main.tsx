@@ -5,13 +5,16 @@ import { AppRoutes } from "./routes/appRoutes";
 import "./index.css";
 
 import { AuthProvider } from "./contexts/AuthProvider";
+import { ServicesProvider } from "./contexts/Servico/ServicesProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <ServicesProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </ServicesProvider>
     </AuthProvider>
   </StrictMode>,
 );

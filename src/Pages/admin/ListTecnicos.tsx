@@ -8,22 +8,11 @@ import { HorariosList } from "../../components/HorariosList";
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import PlusIcon from "../../assets/icons/plus.svg?react";
 import { api } from "../../services/api";
-import z, { ZodError } from "zod";
 import type { Users } from "../../contexts/User/model/users";
-
-const tecnicoSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(3, { message: "O nome deve conter pelo menos 3 caracteres" }),
-  email: z.string().email({ message: "E-mail inválido" }),
-  disponibilidades: z.array(z.string()).optional(),
-});
 
 export function TecnicosAdmin() {
   const [tecnicos, setTecnicos] = useState<Users[]>([]);
   const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function fetchTecnicos() {
@@ -38,14 +27,11 @@ export function TecnicosAdmin() {
           (user) => user.role === "TECNICO",
         );
         setTecnicos(tecnicosFiltrados);
-      } catch (error: any) {
-        if (error.response) {
-          console.error(
-            "Erro ao buscar técnicos:",
-            error.response.data.message,
-          );
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Erro ao buscar técnicos:", error.message);
         } else {
-          console.error("Erro de conexão com o servidor:", error.message);
+          console.error("Erro de conexão com o servidor:", error);
         }
       } finally {
         setLoading(false);
@@ -85,16 +71,16 @@ export function TecnicosAdmin() {
         <table className="w-full">
           <thead className="text-gray-400">
             <tr className="border-t border-gray-500">
-              <th className="px-3 py-2 sm:px-4 text-left w-[170px] md:w-[350px]">
+              <th className="px-3 py-2 sm:px-4 text-left w-42.5 md:w-87.5">
                 Nome
               </th>
-              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left md:w-[255px]">
+              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left md:w-63.75">
                 Email
               </th>
-              <th className="px-3 py-2 sm:px-4 text-left w-[120px] md:w-[328px]">
+              <th className="px-3 py-2 sm:px-4 text-left w-30 md:w-82">
                 Disponibilidade
               </th>
-              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left w-[52px]"></th>
+              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left w-13"></th>
             </tr>
           </thead>
           <tbody>

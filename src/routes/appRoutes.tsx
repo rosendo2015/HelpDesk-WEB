@@ -13,7 +13,7 @@ import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
 import { TecnicosAdmin } from "../pages/admin/ListTecnicos";
 import { ClientesAdmin } from "../pages/admin/ListClientes";
 import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
-import { NovoServico } from "../pages/admin/NovoServico";
+
 import { Components } from "../pages/PageComponents";
 import { NovoTecnico } from "../pages/admin/NovoTecnico";
 import { EditarTecnico } from "../pages/admin/EditarTecnico";
@@ -41,7 +41,7 @@ export function AppRoutes() {
         <Route path="chamados" element={<ChamadosAdmin />} />
         <Route path="clientes" element={<ClientesAdmin />} />
         <Route path="servicos" element={<ServicosAdmin />} />
-        <Route path="novoServico" element={<NovoServico />} />
+
         <Route path="tecnicos" element={<TecnicosAdmin />} />
         <Route path="novoTecnico" element={<NovoTecnico />} />
         <Route path="editarTecnico/:id" element={<EditarTecnico />} />
