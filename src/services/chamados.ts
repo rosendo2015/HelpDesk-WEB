@@ -1,18 +1,35 @@
-import { api } from "./api"; // importa o cliente axios já configurado
+import { api } from "./api";
+
+// DTO para criação de chamado
+export interface CriarChamadoDTO {
+  clienteId: string;
+  tecnicoId: string;
+  services: string[];
+  disponibilidadeId?: string;
+  adminId?: string;
+  title?: string;
+}
 
 // Criar chamado
-export async function criarChamado(chamadoData: {
-  clienteId: number;
-  tecnicoId: number;
-  servicos: number[];
-}) {
-  const response = await api.post("/chamados", chamadoData);
+export async function criarChamado(data: CriarChamadoDTO) {
+  const token = localStorage.getItem("@helpdesk:token");
+
+  const response = await api.post("/chamados", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 }
 
 // Listar chamados
 export async function listarChamados() {
-  const response = await api.get("/chamados");
+  const token = localStorage.getItem("@helpdesk:token");
+  const response = await api.get("/chamados", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 }
 

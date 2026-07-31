@@ -5,36 +5,55 @@ import { InputText } from "../../components/InputText";
 import { Textarea } from "../../components/InputTextArea";
 import { InputSelect } from "../../components/InputSelect";
 import { Button } from "../../components/Button";
-import { useState } from "react";
-import { criarChamado, getServicos } from "../../services/chamados";
-
-interface NovoChamado {
-  id: string;
-  title: string;
-  status: "ABERTO" | "EM_ANDAMENTO" | "CONCLUIDO";
-  updatedAt: string;
-  totalPrice: number;
-  cliente: string;
-  tecnico: string;
-  services: {
-    nome: string;
-    valor: number;
-  }[];
-}
+import { useState, useEffect, useContext } from "react";
+import { criarChamado } from "../../services/chamados";
+import { useAuth } from "../../hooks/useAuth";
+import { ServicesContext } from "../../contexts/Servico/ServicesContext";
 
 export function NovoChamado() {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [categoria, setCategoria] = useState<{
+    id: string;
+    nome: string;
+    valor: number;
+  } | null>(null);
 
-  // Função externa que recebe os dados e cria o chamado
-  async function enviarChamado(title: string, desc: string, categoria: string) {
-    const clienteId = Number(localStorage.getItem("clienteId"));
-    const tecnicoId = 1; // depois você pode trocar por um select de técnicos
-    const servicos = [Number(categoria)];
+  const { user } = useAuth();
+  const servicesCtx = useContext(ServicesContext);
 
-    const chamado = await criarChamado({ clienteId, tecnicoId, servicos });
-    return chamado;
+  useEffect(() => {
+    servicesCtx?.fetchServicos();
+  }, []);
+
+  async function enviarChamado() {
+    try {
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const tecnicoId = "";
+      const disponibilidadeId = "";
+      const adminId = "";
+
+      // 🔍 Loga o objeto que será enviado
+      const chamadoData = {
+        title,
+        clienteId: user.id,
+        tecnicoId,
+        disponibilidadeId,
+        adminId,
+        services: categoria ? [String(categoria.id ?? "")] : [],
+      };
+
+      console.log("Dados enviados para criarChamado:", chamadoData);
+
+      const chamado = await criarChamado(chamadoData);
+
+      alert("Chamado criado com sucesso!");
+      console.log(chamado);
+    } catch (error) {
+      alert("Erro ao criar chamado");
+      console.error(error);
+    }
   }
 
   return (
@@ -44,27 +63,16 @@ export function NovoChamado() {
           Novo chamado
         </Text>
       </header>
-      <Container className="w-full flex  flex-col gap-6 md:flex-row md:min-w-200">
+      <Container className="w-full flex flex-col gap-6 md:flex-row md:min-w-200">
         <Card className="p-8 md:max-w-120 w-full md:min-w-120">
           <Text as="h2" variant="heading-md-bold">
             Informações
           </Text>
-          <Text variant="text-xs-regular" className="text-gray-400">
-            Configure os dias e horários em que você está disponível para
-            atender chamados
-          </Text>
           <form
             id="novoChamado"
-            onSubmit={async (e) => {
+            onSubmit={(e) => {
               e.preventDefault();
-              try {
-                const chamado = await enviarChamado(title, desc, categoria);
-                alert("Chamado criado com sucesso!");
-                console.log(chamado);
-              } catch (error) {
-                alert("Erro ao criar chamado");
-                console.error(error);
-              }
+              enviarChamado();
             }}
           >
             <InputText
@@ -82,9 +90,14 @@ export function NovoChamado() {
             <InputSelect
               label="Categoria"
               placeholder="Selecione a categoria de atendimento"
-              value={categoria}
-              options={["1 - Software", "2 - Hardware", "3 - Rede"]}
-              onChange={(e) => setCategoria(e.target.value)}
+              options={
+                servicesCtx?.servicos.map((s) => ({
+                  id: s.id,
+                  nome: s.name,
+                  valor: s.price,
+                })) ?? []
+              }
+              onChange={(option) => setCategoria(option)}
             />
           </form>
         </Card>
@@ -97,18 +110,18 @@ export function NovoChamado() {
               Valores e detalhes
             </Text>
           </div>
-          <div>
-            <Text as="h3" variant="text-xs-regular" className="text-gray-400">
-              Categoria de serviço
-            </Text>
-            <Text variant="text-sm-regular" className="text-gray-200">
-              Erro de rede
-            </Text>
-          </div>
-          <div>
-            <Text as="h3">Custo inicial</Text>
-            <Text>R$ 200,00</Text>
-          </div>
+          {categoria && (
+            <div>
+              <Text as="h3" variant="text-xs-regular" className="text-gray-400">
+                Categoria de serviço
+              </Text>
+              <Text variant="text-sm-regular" className="text-gray-200">
+                {categoria.nome}
+              </Text>
+              <Text as="h3">Custo inicial</Text>
+              <Text>R$ {categoria.valor}</Text>
+            </div>
+          )}
           <Text variant="text-xs-regular" className="text-gray-300">
             O chamado será automaticamente atribuído a um técnico disponível
           </Text>
