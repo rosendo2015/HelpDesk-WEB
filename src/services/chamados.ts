@@ -3,7 +3,7 @@ import { api } from "./api";
 // DTO para criação de chamado
 export interface CriarChamadoDTO {
   clienteId: string;
-  tecnicoId: string;
+  tecnicoId?: string;
   services: string[];
   disponibilidadeId?: string;
   adminId?: string;

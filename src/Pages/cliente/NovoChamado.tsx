@@ -9,6 +9,7 @@ import { useState, useEffect, useContext } from "react";
 import { criarChamado } from "../../services/chamados";
 import { useAuth } from "../../hooks/useAuth";
 import { ServicesContext } from "../../contexts/Servico/ServicesContext";
+import { useNavigate } from "react-router-dom";
 
 export function NovoChamado() {
   const [title, setTitle] = useState("");
@@ -21,6 +22,7 @@ export function NovoChamado() {
 
   const { user } = useAuth();
   const servicesCtx = useContext(ServicesContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     servicesCtx?.fetchServicos();
@@ -30,26 +32,20 @@ export function NovoChamado() {
     try {
       if (!user) throw new Error("Usuário não autenticado");
 
-      const tecnicoId = "";
-      const disponibilidadeId = "";
-      const adminId = "";
-
       // 🔍 Loga o objeto que será enviado
       const chamadoData = {
         title,
         clienteId: user.id,
-        tecnicoId,
-        disponibilidadeId,
-        adminId,
+        description: desc,
         services: categoria ? [String(categoria.id ?? "")] : [],
       };
 
       console.log("Dados enviados para criarChamado:", chamadoData);
 
-      const chamado = await criarChamado(chamadoData);
+      await criarChamado(chamadoData);
 
       alert("Chamado criado com sucesso!");
-      console.log(chamado);
+      navigate("/cliente/chamados-cliente");
     } catch (error) {
       alert("Erro ao criar chamado");
       console.error(error);

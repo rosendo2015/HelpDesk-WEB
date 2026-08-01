@@ -4,12 +4,9 @@ import { Icon } from "../../components/Icon";
 import { ActionLink } from "../../components/ActionLink";
 import { Tags } from "../../components/Tags";
 import { Avatar } from "../../components/Avatar";
-
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
-
 import CircleClockIcon from "../../assets/icons/clock-2.svg?react";
 import CircleHelpIcon from "../../assets/icons/circle-help.svg?react";
-
 import { api } from "../../services/api";
 
 interface Servico {
@@ -50,17 +47,22 @@ export function ChamadosAdmin() {
       </header>
 
       <div className="border border-gray-500 rounded-lg overflow-hidden">
-        <table className="w-full">
+        <table className="md:w-full">
           <thead className=" text-gray-400 ">
             <tr>
-              <th className="px-3 py-2 md:max-w-20 md:truncate sm:px-4 text-left">
-                Atualizado em
+              <th className="px-3 py-2 sm:px-4 text-left truncate w-[80px] md:w-[150px]">
+                <Text variant="heading-md-bold" className="w-[56px]">
+                  Atualizado em
+                </Text>
               </th>
-              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">
+
+              <th className="w-[146px] px-3 py-2 sm:px-4 hidden md:table-cell text-left md:w-[64px]">
                 Id
               </th>
-              <th className="px-3 py-2 sm:px-4 text-left">Título e Serviço</th>
-              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">
+              <th className="px-3 py-2 sm:px-4 text-left md:max-w-[266px]">
+                Título e Serviço
+              </th>
+              <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left md:max-w-[104px]">
                 Valor total
               </th>
               <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">
@@ -69,16 +71,18 @@ export function ChamadosAdmin() {
               <th className="px-3 py-2 sm:px-4 hidden md:table-cell text-left">
                 Técnico
               </th>
-              <th className="px-3 py-2 sm:px-4 text-left">Status</th>
-              <th className="px-3 py-2 sm:px-4 text-left"></th>
+              <th className="w-[64px] px-3 py-2 sm:px-4 text-left">Status</th>
+              <th className="w-[52px] px-3 py-2 sm:px-4 text-left"></th>
             </tr>
           </thead>
 
           <tbody>
             {chamados.map((chamado) => (
               <tr key={chamado.id} className="border-t border-gray-500">
-                <td className="px-3 py-2 sm:px-4 whitespace-nowrap">
-                  {new Date(chamado.updatedAt).toLocaleString()}
+                <td className="px-3 py-2 sm:px-4">
+                  <Text variant="text-xs-regular">
+                    {new Date(chamado.updatedAt).toLocaleString()}
+                  </Text>
                 </td>
 
                 <td className="px-3 py-2 sm:px-4 max-w-20 truncate hidden md:table-cell">
@@ -148,11 +152,7 @@ export function ChamadosAdmin() {
                 </td>
                 <td className="px-3 py-2 sm:px-4 ">
                   <div className="flex items-center justify-end">
-                    <ActionLink
-                      to={`/admin/chamados/${chamado.id}`}
-                      variant="subtitle"
-                      size="md"
-                    >
+                    <ActionLink to={``} variant="subtitle" size="md">
                       <Icon
                         svg={PenLineIcon}
                         className="w-4 h-4 fill-gray-100"
