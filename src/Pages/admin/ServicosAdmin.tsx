@@ -22,7 +22,7 @@ import { InputText } from "../../components/InputText";
 import { ButtonIcon } from "../../components/ButtonIcon";
 import { z, ZodError } from "zod";
 import { useContext, useState } from "react";
-import { ServicesContext } from "../../contexts/Servico/ServicesContext";
+import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
 import { formatCurrencyBRL } from "../../utils/formatCurrency";
 import { NumericFormat } from "react-number-format";
 
@@ -36,7 +36,7 @@ const servicoSchema = z.object({
 });
 
 export function ServicosAdmin() {
-  const { servicos, loading, createServico, updateServico } =
+  const { categoryServices, loading, createServico, updateServico } =
     useContext(ServicesContext)!;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [name, setName] = useState("");
@@ -166,9 +166,11 @@ export function ServicosAdmin() {
           <table className="w-full">
             <thead className="text-gray-400">
               <tr className="border-t border-gray-500">
-                <th className="px-3 py-2 sm:px-4 text-left">Título</th>
-                <th className="w-50 px-3 py-2 sm:px-4 text-left">Valor</th>
-                <th className="w-30 px-3 py-2 sm:px-4 text-left">Status</th>
+                <th className="max-w-[87px] md:w-full px-3 py-2 sm:px-4 text-left">
+                  Título
+                </th>
+                <th className="md:w-full px-3 py-2 sm:px-4 text-left">Valor</th>
+                <th className=" px-3 py-2 sm:px-4 text-center">Status</th>
                 <th
                   className=" px-3 py-2 sm:px-4 text-left w-5"
                   colSpan={2}
@@ -176,26 +178,37 @@ export function ServicosAdmin() {
               </tr>
             </thead>
             <tbody>
-              {servicos.map((servico) => (
+              {categoryServices.map((servico) => (
                 <tr key={servico.id} className="border-t border-gray-500">
-                  <td className="px-3 py-2 text-left">
-                    <Text variant="text-sm-bold">{servico.name}</Text>
+                  <td className="max-w-[87px] truncate px-3 py-2 text-left">
+                    <Text
+                      variant="text-sm-bold"
+                      className="max-w-[87px] truncate"
+                    >
+                      {servico.name}
+                    </Text>
                   </td>
-                  <td className="px-3 py-2 text-left">
+                  <td className="max-w-full px-3 py-2 text-left">
                     <Text variant="text-sm-regular">
                       {formatCurrencyBRL(servico.price)}
                     </Text>
                   </td>
-                  <td className="px-3 py-2 text-left">
+                  <td className="max-w-[30px] px-3 py-2 text-right hidden md:table-cell">
                     <Tags
                       variant={servico.active ? "success" : "danger"}
-                      svg={servico.active ? CircleCheckIcon : BanIcon}
+                      className="max-w-[30px] md:max-w-[152px]"
                     >
                       {servico.active ? "Ativo" : "Inativo"}
                     </Tags>
                   </td>
+                  <td className="px-12 py-2 text-right md:hidden table-cell">
+                    <Tags
+                      variant={servico.active ? "success" : "danger"}
+                      svg={servico.active ? CircleCheckIcon : BanIcon}
+                    />
+                  </td>
 
-                  <td className="px-3 py-2 sm:px-4 flex items-center gap-2 text-right ">
+                  <td className="px-3 py-6  flex items-center justify-end gap-2">
                     {servico.active ? (
                       <button
                         onClick={() =>
@@ -204,7 +217,7 @@ export function ServicosAdmin() {
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <Icon svg={BanIcon} />
-                        <Text>Desativar</Text>
+                        <Text className="hidden md:block">Desativar</Text>
                       </button>
                     ) : (
                       <button
@@ -214,12 +227,12 @@ export function ServicosAdmin() {
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <Icon svg={CircleCheckIcon} />
-                        <Text>Reativar</Text>
+                        <Text className="hidden md:block">Reativar</Text>
                       </button>
                     )}
                   </td>
-                  <td>
-                    <div className="flex items-center gap-3">
+                  <td className="w-[20px] py-2 text-right">
+                    <div className="px-3 py-2 flex items-center justify-end gap-3">
                       <Dialog
                         onOpenChange={(open) => {
                           if (open) {

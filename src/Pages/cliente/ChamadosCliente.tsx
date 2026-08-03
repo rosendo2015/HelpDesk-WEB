@@ -1,28 +1,15 @@
 import { clienteVariants } from "./clienteVariants";
 import type { VariantProps } from "class-variance-authority";
-import CircleClockIcon from "../../assets/icons/clock-2.svg?react";
-import CircleHelpIcon from "../../assets/icons/circle-help.svg?react";
 import EyeIcon from "../../assets/icons/eye.svg?react";
+import EditIcon from "../../assets/icons/pen-line.svg?react";
 import { Tags } from "../../components/Tags";
 import { Avatar } from "../../components/Avatar";
 import { ActionLink } from "../../components/ActionLink";
 import { Icon } from "../../components/Icon";
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
-
-interface Chamado {
-  id: string;
-  title: string;
-  status: "ABERTO" | "EM_ANDAMENTO" | "CONCLUIDO";
-  updatedAt: string;
-  totalPrice: number;
-  cliente: string;
-  tecnico: string;
-  services: {
-    nome: string;
-    valor: number;
-  }[];
-}
+import type { Chamado } from "../../contexts/Chamado/model/Chamado";
+import { getStatusConfig } from "../../utils/statusConfig";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -99,43 +86,40 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
 
                   <td className="px-4 py-2 hidden md:table-cell">
                     <div className="flex items-center">
-                      <Avatar size="xs" name={chamado.tecnico} />
-                      <span className="ml-2">{chamado.tecnico}</span>
+                      <Avatar
+                        size="xs"
+                        name={chamado.tecnico?.name ?? "Sem técnico"}
+                      />
+                      <span className="ml-2">
+                        {chamado.tecnico?.name ?? "Sem técnico"}
+                      </span>
                     </div>
                   </td>
 
                   <td className="px-2 py-2">
                     <Tags
-                      variant={
-                        chamado.status === "ABERTO"
-                          ? "danger"
-                          : chamado.status === "EM_ANDAMENTO"
-                            ? "info"
-                            : "success"
-                      }
-                      size="md-width-text"
-                      display="text"
-                      svg={
-                        chamado.status === "ABERTO"
-                          ? CircleHelpIcon
-                          : CircleClockIcon
-                      }
+                      variant={getStatusConfig(chamado.status).variant}
+                      svg={getStatusConfig(chamado.status).icon}
                     >
-                      {chamado.status === "ABERTO"
-                        ? "Aberto"
-                        : chamado.status === "EM_ANDAMENTO"
-                          ? "Em andamento"
-                          : "Concluído"}
+                      {getStatusConfig(chamado.status).label}
                     </Tags>
                   </td>
 
-                  <td className="px-2 py-2">
+                  <td className="flex gap-2 px-2 py-2">
                     <ActionLink
-                      to={`/cliente/chamados/${chamado.id}`}
+                      to={`/cliente/detail-chamado/${chamado.id}`}
                       variant="subtitle"
                       size="md"
                     >
                       <Icon svg={EyeIcon} className="w-4 h-4 fill-gray-200" />
+                    </ActionLink>
+
+                    <ActionLink
+                      to={`/cliente/editar-chamado/${chamado.id}`}
+                      variant="tertiary"
+                      size="md"
+                    >
+                      <Icon svg={EditIcon} className="w-4 h-4 fill-gray-600" />
                     </ActionLink>
                   </td>
                 </tr>

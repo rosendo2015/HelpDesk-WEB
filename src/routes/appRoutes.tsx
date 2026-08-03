@@ -17,6 +17,10 @@ import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
 import { Components } from "../pages/PageComponents";
 import { NovoTecnico } from "../pages/admin/NovoTecnico";
 import { EditarTecnico } from "../pages/admin/EditarTecnico";
+import { EditarChamadoCliente } from "../pages/cliente/EditarChamadoCliente";
+import { DetailChamadoCliente } from "../pages/cliente/DetailChamadoCliente";
+
+import { EditarChamadoAdmin } from "../pages/admin/EditarChamadoAdmin";
 
 export function AppRoutes() {
   return (
@@ -39,6 +43,7 @@ export function AppRoutes() {
       >
         <Route index element={<ChamadosAdmin />} />
         <Route path="chamados" element={<ChamadosAdmin />} />
+        <Route path="editarChamados/:id" element={<EditarChamadoAdmin />} />
         <Route path="clientes" element={<ClientesAdmin />} />
         <Route path="servicos" element={<ServicosAdmin />} />
 
@@ -73,6 +78,8 @@ export function AppRoutes() {
         <Route index element={<ChamadosCliente />} />
         <Route path="chamados-cliente" element={<ChamadosCliente />} />
         <Route path="novo-chamado" element={<NovoChamado />} />
+        <Route path="editar-chamado/:id" element={<EditarChamadoCliente />} />
+        <Route path="detail-chamado/:id" element={<DetailChamadoCliente />} />
       </Route>
 
       {/* Fallback */}

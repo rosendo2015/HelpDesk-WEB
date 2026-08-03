@@ -106,7 +106,7 @@ export function EditarTecnico() {
 
       <Container className="w-full md:max-w-[800px]">
         <form className="mx-auto flex flex-col gap-6 md:flex-row ">
-          <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[296px]">
+          <Card className="flex flex-col gap-4 p-6 w-full h-fit md:max-w-[296px]">
             <Text as="h2" variant="heading-md-bold">
               Dados pessoais
             </Text>

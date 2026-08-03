@@ -2,31 +2,33 @@
 import type { ReactNode } from "react";
 import { useState, useEffect, startTransition, useContext } from "react";
 import { api } from "../../services/api";
-import { ServicesContext } from "../../contexts/Servico/ServicesContext";
+import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
 import { AuthContext } from "../../contexts/AuthContext";
-import type { Servicos } from "../../contexts/Servico/model/servicos";
+import type { CategoryServices } from "../CategoryServices/model/categoryServices";
 
 export function ServicesProvider({ children }: { children: ReactNode }) {
-  const [servicos, setServicos] = useState<Servicos[]>([]);
+  const [categoryServices, setCategoryServices] = useState<CategoryServices[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const { token, user } = useContext(AuthContext); // 🔹 Pega o token do contexto de autenticação
 
   // 🔹 Buscar serviços ativos
-  async function fetchServicos() {
+  async function fetchCategoryServices() {
     setLoading(true);
     try {
       // 🔹 Se for admin, busca todos (ativos + inativos)
       const url =
         user?.role === "ADMIN" ? "/services?includeInactive=true" : "/services";
 
-      const response = await api.get<Servicos[]>(url, {
+      const response = await api.get<CategoryServices[]>(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       startTransition(() => {
-        setServicos(response.data);
+        setCategoryServices(response.data);
       });
     } catch (error) {
       console.error("Erro ao buscar serviços:", error);
@@ -37,19 +39,19 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!token) return;
     async function carregarServicos() {
-      await fetchServicos();
+      await fetchCategoryServices();
     }
     carregarServicos();
   }, [token, user?.role]); // ✅ recarrega se o role mudar
 
   // 🔹 Criar novo serviço (corrigido para aceitar apenas os campos necessários)
   async function createServico(
-    dados: Pick<Servicos, "name" | "price" | "active">,
+    dados: Pick<CategoryServices, "name" | "price" | "active">,
   ) {
     try {
       const response = await api.post("/services", dados);
       startTransition(() => {
-        setServicos((prev) => [...prev, response.data]);
+        setCategoryServices((prev) => [...prev, response.data]);
       });
     } catch (error) {
       console.error("Erro ao criar serviço:", error);
@@ -57,11 +59,11 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   }
 
   // 🔹 Atualizar serviço existente
-  async function updateServico(id: string, dados: Partial<Servicos>) {
+  async function updateServico(id: string, dados: Partial<CategoryServices>) {
     try {
       const response = await api.patch(`/services/${id}`, dados);
       startTransition(() => {
-        setServicos((prev) =>
+        setCategoryServices((prev) =>
           prev.map((s) => (s.id === id ? { ...s, ...response.data } : s)),
         );
       });
@@ -75,7 +77,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     try {
       await api.delete(`/services/${id}`);
       startTransition(() => {
-        setServicos((prev) => prev.filter((s) => s.id !== id));
+        setCategoryServices((prev) => prev.filter((s) => s.id !== id));
       });
     } catch (error) {
       console.error("Erro ao excluir serviço:", error);
@@ -87,7 +89,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     if (!token) return; // ✅ Garante que só busca se o token estiver disponível
 
     async function carregarServicos() {
-      await fetchServicos();
+      await fetchCategoryServices();
     }
 
     carregarServicos();
@@ -96,9 +98,9 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   return (
     <ServicesContext.Provider
       value={{
-        servicos,
+        categoryServices,
         loading,
-        fetchServicos,
+        fetchCategoryServices,
         createServico,
         updateServico,
         deleteServico,

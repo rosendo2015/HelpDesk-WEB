@@ -8,7 +8,7 @@ import { Button } from "../../components/Button";
 import { useState, useEffect, useContext } from "react";
 import { criarChamado } from "../../services/chamados";
 import { useAuth } from "../../hooks/useAuth";
-import { ServicesContext } from "../../contexts/Servico/ServicesContext";
+import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
 import { useNavigate } from "react-router-dom";
 
 export function NovoChamado() {
@@ -25,7 +25,7 @@ export function NovoChamado() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    servicesCtx?.fetchServicos();
+    servicesCtx?.fetchCategoryServices();
   }, []);
 
   async function enviarChamado() {
@@ -87,7 +87,7 @@ export function NovoChamado() {
               label="Categoria"
               placeholder="Selecione a categoria de atendimento"
               options={
-                servicesCtx?.servicos.map((s) => ({
+                servicesCtx?.categoryServices.map((s) => ({
                   id: s.id,
                   nome: s.name,
                   valor: s.price,

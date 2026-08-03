@@ -1,49 +1,67 @@
-import { useState } from "react";
-import { type VariantProps } from "class-variance-authority";
+import { useEffect, useState } from "react";
 import { cx } from "class-variance-authority";
 import { inputSelectVariants } from "./inputSelectVariants";
-
+import { api } from "../../services/api";
 import ChevronDown from "../../assets/icons/chevron-down.svg?react";
 import ChevronUp from "../../assets/icons/chevron-up.svg?react";
 import Check from "../../assets/icons/check.svg?react";
 import AlertCircle from "../../assets/icons/circle-alert.svg?react";
 import { Icon } from "../Icon";
 import { Text } from "../Text";
+import type { CategoryServices } from "../../contexts/CategoryServices/model/categoryServices";
 
-// 🔹 Agora o Option é um objeto vindo da API
 interface Option {
   id: string;
   nome: string;
   valor: number;
 }
 
-interface inputSelectProps extends VariantProps<typeof inputSelectVariants> {
+interface InputSelectProps {
   label: string;
-  options: Option[]; // recebe objetos
   helperText?: string;
   error?: boolean;
   placeholder?: string;
-  onChange?: (value: Option) => void; // retorna o objeto selecionado
+  value?: Option;
+  onChange?: (value: Option) => void;
 }
 
 export function InputSelect({
   label,
-  options,
   helperText,
   placeholder,
   error,
+  value,
   onChange,
-}: inputSelectProps) {
+}: InputSelectProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Option | null>(null);
+  const [selected, setSelected] = useState<Option | null>(value ?? null);
+  const [options, setOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    async function fetchOptions() {
+      const response = await api.get<CategoryServices[]>("/services");
+      const fetched = response.data.map((s) => ({
+        id: s.id,
+        nome: s.name,
+        valor: s.price,
+      }));
+      setOptions(fetched);
+    }
+    fetchOptions();
+  }, []);
+
+  useEffect(() => {
+    if (value && value.id !== selected?.id) {
+      Promise.resolve().then(() => setSelected(value));
+    }
+  }, [value]);
 
   const toggleOpen = () => setOpen(!open);
 
-  // 🔹 Atualiza estado interno e dispara para o pai
   const handleSelect = (option: Option) => {
     setSelected(option);
     setOpen(false);
-    onChange?.(option); // envia o objeto inteiro para o pai
+    onChange?.(option);
   };
 
   const state = error ? "error" : open ? "focus" : "default";

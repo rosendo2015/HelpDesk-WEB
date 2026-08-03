@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 
 export const tagsVariants = cva(
-  "flex items-center justify-center text-xs-bold rounded-full",
+  "flex items-center justify-center text-xs-bold",
   {
     variants: {
       variant: {
@@ -12,7 +12,7 @@ export const tagsVariants = cva(
         default: "border border-gray-500/20 bg-gray-500",
       },
       size: {
-        "md-width-text": "px-3 py-1 rounded-full",
+        "md-width-text": "p-1 rounded-full",
         "md-height-text": "w-7 h-7 rounded-full",
       },
       display: {

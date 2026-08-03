@@ -1,6 +1,6 @@
 import type { Users } from "../../User/model/users";
 
-export interface Servicos {
+export interface CategoryServices {
   id: string;
   name: string;
   active: boolean;
