@@ -6,10 +6,9 @@ import { Tags } from "../../components/Tags";
 import { Avatar } from "../../components/Avatar";
 import { ActionLink } from "../../components/ActionLink";
 import { Icon } from "../../components/Icon";
-import { useEffect, useState } from "react";
-import { api } from "../../services/api";
-import type { Chamado } from "../../contexts/Chamado/model/Chamado";
+
 import { getStatusConfig } from "../../utils/statusConfig";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -17,22 +16,7 @@ interface ClienteProps extends VariantProps<typeof clienteVariants> {
 }
 
 export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
-  const [chamados, setChamados] = useState<Chamado[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchChamados() {
-      try {
-        const response = await api.get<Chamado[]>("/chamados");
-        setChamados(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar chamados:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchChamados();
-  }, []);
+  const { chamados, loading } = useChamados();
 
   return (
     <>
@@ -55,7 +39,7 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
+            {loading ? (
               <tr>
                 <td colSpan={8} className="text-center py-4">
                   Carregando...
@@ -81,7 +65,7 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
                   </td>
 
                   <td className="px-4 py-2 hidden md:table-cell">
-                    R$ {chamado.totalPrice.toFixed(2)}
+                    R$ {(chamado.totalPrice ?? 0.0).toFixed(2)}
                   </td>
 
                   <td className="px-4 py-2 hidden md:table-cell">

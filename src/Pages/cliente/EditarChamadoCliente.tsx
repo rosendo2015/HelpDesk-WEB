@@ -6,7 +6,7 @@ import { Textarea } from "../../components/InputTextArea";
 import { InputSelect } from "../../components/InputSelect";
 import { Button } from "../../components/Button";
 import { useParams, useNavigate } from "react-router-dom";
-import { useChamados } from "../../contexts/Chamado/hooks/useCahmados";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
 import { useEffect, useState } from "react";
 
 export function EditarChamadoCliente() {

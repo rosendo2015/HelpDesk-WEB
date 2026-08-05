@@ -5,7 +5,7 @@ import { Tags } from "../../components/Tags";
 import { Avatar } from "../../components/Avatar";
 import Divider from "../../components/Divider";
 import { useParams } from "react-router-dom";
-import { useChamados } from "../../contexts/Chamado/hooks/useCahmados";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
 import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
 
 import { getStatusConfig } from "../../utils/statusConfig";
