@@ -7,72 +7,17 @@ import { ButtonIcon } from "../components/ButtonIcon";
 
 import MenuIcon from "../assets/icons/menu.svg?react";
 import XIcon from "../assets/icons/x.svg?react";
-import LogoutIcon from "../assets/icons/log-out.svg?react";
-import UserIcon from "../assets/icons/circle-user.svg?react";
 
 import { useAuth } from "../hooks/useAuth";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/Popover";
-import { Text } from "../components/Text";
-
-import { Icon } from "../components/Icon";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTrigger,
-} from "../components/Dialog";
-import Divider from "../components/Divider";
-import { Button } from "../components/Button";
-import { InputText } from "../components/InputText";
-import { TagTime } from "../components/TagTime";
-import { api } from "../services/api";
-import { UpdatePasswordDialog } from "../components/UpdatePasswordDialog";
-import { InputFile } from "../components/InputFile";
+import { UserMenu } from "../components/UserMenu.tsx";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
-function handleLogout() {
-  // Remove todas as informações salvas no localStorage
-  localStorage.removeItem("@helpdesk:token"); // se você usa token JWT
-  localStorage.removeItem("@helpdesk:user"); // se guarda dados do usuário
-  localStorage.removeItem("permissions"); // se tiver permissões específicas
-
-  // ou, se quiser limpar tudo:
-  // localStorage.clear();
-
-  // Redireciona para a página de login
-  window.location.href = "/login";
-}
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { user, signIn } = useAuth();
-  const [name, setName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
-  const [password, setPassword] = useState(user?.password);
+  const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    try {
-      const response = await api.patch(`/users/${user?.id}`, {
-        name,
-        email,
-        ...(password ? { password } : {}), // só envia se tiver senha
-      });
-
-      // Atualiza contexto com dados novos
-      signIn({
-        token: localStorage.getItem("@helpdesk:token")!,
-        user: response.data,
-      });
-    } catch (err) {
-      console.error("Erro ao atualizar perfil:", err);
-    }
-  }
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
@@ -91,7 +36,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             role={user?.role ?? "CLIENTE"}
           />
         </div>
-        <Avatar name={user?.name ?? "Usuário"} size="sm" />
+        <UserMenu>
+          <div>
+            <Avatar name={user?.name ?? "Usuário"} size="sm" />
+          </div>
+        </UserMenu>
       </header>
 
       {/* Sidebar mobile com animação */}
@@ -112,7 +61,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             orientation="horizontal"
             role={user?.role ?? "CLIENTE"}
           />
-          <Avatar name={user?.name ?? "Usuário"} size="sm" />
+          <UserMenu>
+            <div>
+              <Avatar name={user?.name ?? "Usuário"} size="sm" />
+            </div>
+          </UserMenu>
         </div>
         <Sidebar
           role={user?.role ?? "CLIENTE"}
@@ -132,115 +85,16 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
 
         <Sidebar role={user?.role ?? "CLIENTE"} />
-        <Popover>
-          <PopoverTrigger>
-            <footer className="border-t border-gray-300 flex items-center gap-4 text-gray-400 pt-5 cursor-pointer">
-              <Avatar name={user?.name ?? "CLIENTE"} size="sm" />
-              <div className="text-left">
-                <p className="truncate w-37.5">{user?.name}</p>
-                <p className="truncate w-37.5">{user?.email}</p>
-              </div>
-            </footer>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Text
-              as="div"
-              variant={"text-xxs-bold"}
-              className="text-gray-400 pt-4"
-            >
-              OPÇÕES
-            </Text>
-            <div className="flex flex-col gap-3 px-4 mt-4">
-              <div className="flex items-center gap-3">
-                <form onSubmit={handleSubmit}>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="-ml-7.5 bg-transparent">
-                        <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
-                        <Text className="text-gray-500">Perfil</Text>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <Text>Perfil</Text>
-                      </DialogHeader>
-                      <Divider className="my-4" />
-                      <div className="flex items-center gap-2 mb-5">
-                        <InputFile
-                          avatarUrl={user?.avatarUrl}
-                          onChange={(file) =>
-                            console.log("Arquivo selecionado:", file)
-                          }
-                          onDelete={() => console.log("remover imagem")}
-                        />
-                      </div>
-                      <InputText
-                        label="NOME"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                      <InputText
-                        label="E-MAIL"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                      <div className="flex py-1 items-end">
-                        <InputText
-                          readOnly
-                          placeholder="******"
-                          type="password"
-                          label="SENHA"
-                          value="123456"
-                          onChange={(e) => setPassword(e.target.value)}
-                          helperText="Para atualizar a senha clique no botão Alterar"
-                        />
-
-                        <UpdatePasswordDialog userId={user!.id} />
-                      </div>
-                      <Divider className="my-4" />
-                      {user?.role === "TECNICO" && (
-                        <>
-                          <div className="flex flex-col mb-4">
-                            <Text variant="text-sm-bold">Disponibilidade</Text>
-                            <Text variant="text-xs-regular">
-                              Horários de atendimento definidos pelo admin.
-                            </Text>
-                          </div>
-                          <div className="flex gap-2">
-                            <TagTime>09:00</TagTime>
-                            <TagTime>10:00</TagTime>
-                            <TagTime>12:00</TagTime>
-                            <TagTime>13:00</TagTime>
-                            <TagTime>15:00</TagTime>
-                            <TagTime>16:00</TagTime>
-                          </div>
-                          <Divider className="my-4" />
-                        </>
-                      )}
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button type="submit" size={"lg"}>
-                            Salvar
-                          </Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </form>
-              </div>
-
-              <Button
-                className="-ml-25 bg-transparent hover:bg-transparent mb-2"
-                onClick={handleLogout}
-              >
-                <Icon svg={LogoutIcon} className="fill-feedback-danger mr-2" />
-                <Text className="text-feedback-danger">Sair</Text>
-              </Button>
+        <UserMenu>
+          <footer className="border-t border-gray-300 flex items-center gap-4 text-gray-400 pt-5 cursor-pointer">
+            <Avatar name={user?.name ?? "CLIENTE"} size="sm" />
+            <div className="text-left">
+              <p className="truncate w-37.5">{user?.name}</p>
+              <p className="truncate w-37.5">{user?.email}</p>
             </div>
-          </PopoverContent>
-        </Popover>
+          </footer>
+        </UserMenu>
       </aside>
-
       {/* Conteúdo principal */}
       <main className="px-6 py-7 w-full bg-gray-600 p-4 h-screen rounded-tl-4xl rounded-tr-4xl lg:mt-3 lg:rounded-tl-4xl lg:rounded-tr-none lg:p-8 lg:h-auto">
         {children}

@@ -64,6 +64,12 @@ export function AuthProvider({ children }: Props) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
 
+  function updateUser(updatedUser: Users) {
+    localStorage.setItem("@helpdesk:user", JSON.stringify(updatedUser));
+
+    setUser(updatedUser);
+  }
+
   function signOut() {
     localStorage.removeItem("@helpdesk:user");
     localStorage.removeItem("@helpdesk:token");
@@ -73,7 +79,9 @@ export function AuthProvider({ children }: Props) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, signIn, signOut, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, token, signIn, signOut, updateUser, isLoading }}
+    >
       {isLoading ? <div>Carregando...</div> : children}
     </AuthContext.Provider>
   );

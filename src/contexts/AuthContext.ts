@@ -6,6 +6,7 @@ interface AuthContextData {
   token: string | null;
   signIn: (data: { token: string; user: Users }) => void;
   signOut: () => void;
+  updateUser: (user: Users) => void;
   isLoading: boolean;
 }
 

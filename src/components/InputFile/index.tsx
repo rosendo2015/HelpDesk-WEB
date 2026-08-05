@@ -14,11 +14,12 @@ import {
 import Divider from "../Divider";
 import { Text } from "../Text";
 import { api } from "../../services/api";
+import type { Users } from "../../contexts/User/model/users";
 
 interface InputFileProps {
   avatarUrl?: string;
-  onChange: (avatarUrl: string) => void;
-  onDelete?: () => void;
+  onChange: (user: Users) => void;
+  onDelete?: () => Promise<void>;
 }
 
 export function InputFile({ avatarUrl, onChange, onDelete }: InputFileProps) {
@@ -50,7 +51,7 @@ export function InputFile({ avatarUrl, onChange, onDelete }: InputFileProps) {
 
       console.log("Resposta do backend:", response.data);
 
-      onChange(response.data.avatarUrl);
+      onChange(response.data);
       setIsDialogOpen(false);
       alert("Imagem atualizada com sucesso!");
     } catch (err) {
