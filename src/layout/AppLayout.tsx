@@ -9,14 +9,11 @@ import MenuIcon from "../assets/icons/menu.svg?react";
 import XIcon from "../assets/icons/x.svg?react";
 import LogoutIcon from "../assets/icons/log-out.svg?react";
 import UserIcon from "../assets/icons/circle-user.svg?react";
-import UploadIcon from "../assets/icons/upload.svg?react";
-import TrachIcon from "../assets/icons/trash.svg?react";
 
 import { useAuth } from "../hooks/useAuth";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/Popover";
 import { Text } from "../components/Text";
 
-import { ActionLink } from "../components/ActionLink";
 import { Icon } from "../components/Icon";
 import {
   Dialog,
@@ -30,6 +27,9 @@ import Divider from "../components/Divider";
 import { Button } from "../components/Button";
 import { InputText } from "../components/InputText";
 import { TagTime } from "../components/TagTime";
+import { api } from "../services/api";
+import { UpdatePasswordDialog } from "../components/UpdatePasswordDialog";
+import { InputFile } from "../components/InputFile";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -48,8 +48,31 @@ function handleLogout() {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const { user, signIn } = useAuth();
+  const [name, setName] = useState(user?.name);
+  const [email, setEmail] = useState(user?.email);
+  const [password, setPassword] = useState(user?.password);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user } = useAuth();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    try {
+      const response = await api.patch(`/users/${user?.id}`, {
+        name,
+        email,
+        ...(password ? { password } : {}), // só envia se tiver senha
+      });
+
+      // Atualiza contexto com dados novos
+      signIn({
+        token: localStorage.getItem("@helpdesk:token")!,
+        user: response.data,
+      });
+    } catch (err) {
+      console.error("Erro ao atualizar perfil:", err);
+    }
+  }
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
@@ -129,61 +152,71 @@ export function AppLayout({ children }: AppLayoutProps) {
             </Text>
             <div className="flex flex-col gap-3 px-4 mt-4">
               <div className="flex items-center gap-3">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="-ml-7.5 bg-transparent">
-                      <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
-                      <Text className="text-gray-500">Perfil</Text>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <Text>Perfil</Text>
-                    </DialogHeader>
-                    <Divider className="my-4" />
-                    <form>
+                <form onSubmit={handleSubmit}>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="-ml-7.5 bg-transparent">
+                        <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
+                        <Text className="text-gray-500">Perfil</Text>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <Text>Perfil</Text>
+                      </DialogHeader>
+                      <Divider className="my-4" />
                       <div className="flex items-center gap-2 mb-5">
-                        <img
-                          src="/a911cc6a6aee5d15662b-photo-francisco.jpg"
-                          alt="user"
-                          className="w-12 h-12 rounded-full"
+                        <InputFile
+                          avatarUrl={user?.avatarUrl}
+                          onChange={(file) =>
+                            console.log("Arquivo selecionado:", file)
+                          }
+                          onDelete={() => console.log("remover imagem")}
                         />
-                        <Button icon={UploadIcon} variant="secondary" size="sm">
-                          {" "}
-                          Nova imagem
-                        </Button>
-                        <ActionLink to={`#`} variant="subtitle" size="md">
-                          <Icon
-                            size="sm"
-                            svg={TrachIcon}
-                            className="w-4 h-4  fill-feedback-danger"
-                          />
-                        </ActionLink>
                       </div>
-                      <InputText label="NOME" />
-                      <InputText label="E-MAIL" />
-                      <div className="flex items-end border-b border-gray-400">
-                        <InputText type="password" label="SENHA" />
-                        <Button variant="secondary" className="mb-2">
-                          Alterar
-                        </Button>
-                      </div>
-                      <Divider className="my-4" />
-                      <div className="flex flex-col mb-4">
-                        <Text variant="text-sm-bold">Disponibilidade</Text>
-                        <Text variant="text-xs-regular">
-                          Horários de atendimento definidos pelo admin.
-                        </Text>
-                      </div>
-                      <div className="flex gap-2">
-                        <TagTime>09:00</TagTime>
-                        <TagTime>10:00</TagTime>
-                        <TagTime>12:00</TagTime>
-                        <TagTime>13:00</TagTime>
-                        <TagTime>15:00</TagTime>
-                        <TagTime>16:00</TagTime>
+                      <InputText
+                        label="NOME"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                      <InputText
+                        label="E-MAIL"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                      <div className="flex py-1 items-end">
+                        <InputText
+                          readOnly
+                          placeholder="******"
+                          type="password"
+                          label="SENHA"
+                          value="123456"
+                          onChange={(e) => setPassword(e.target.value)}
+                          helperText="Para atualizar a senha clique no botão Alterar"
+                        />
+
+                        <UpdatePasswordDialog userId={user!.id} />
                       </div>
                       <Divider className="my-4" />
+                      {user?.role === "TECNICO" && (
+                        <>
+                          <div className="flex flex-col mb-4">
+                            <Text variant="text-sm-bold">Disponibilidade</Text>
+                            <Text variant="text-xs-regular">
+                              Horários de atendimento definidos pelo admin.
+                            </Text>
+                          </div>
+                          <div className="flex gap-2">
+                            <TagTime>09:00</TagTime>
+                            <TagTime>10:00</TagTime>
+                            <TagTime>12:00</TagTime>
+                            <TagTime>13:00</TagTime>
+                            <TagTime>15:00</TagTime>
+                            <TagTime>16:00</TagTime>
+                          </div>
+                          <Divider className="my-4" />
+                        </>
+                      )}
                       <DialogFooter>
                         <DialogClose asChild>
                           <Button type="submit" size={"lg"}>
@@ -191,9 +224,9 @@ export function AppLayout({ children }: AppLayoutProps) {
                           </Button>
                         </DialogClose>
                       </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
+                </form>
               </div>
 
               <Button

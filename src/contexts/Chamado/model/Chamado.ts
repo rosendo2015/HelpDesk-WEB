@@ -21,7 +21,7 @@ export interface Chamado {
   services: {
     id: string;
     nome: string;
-    valor: number;
+    price: number;
   }[];
 }
 export type ChamadoPayload = {

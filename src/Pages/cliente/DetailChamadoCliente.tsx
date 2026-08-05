@@ -53,6 +53,7 @@ export function DetailChamadoCliente() {
             <Tags
               variant={getStatusConfig(chamado.status).variant}
               svg={getStatusConfig(chamado.status).icon}
+              className="flex w-1/3"
             >
               {getStatusConfig(chamado.status).label}
             </Tags>
@@ -125,7 +126,7 @@ export function DetailChamadoCliente() {
             {chamado.services.slice(1).map((service) => (
               <div key={service.id} className="flex justify-between">
                 <Text>{service.nome}</Text>
-                <Text>R$ {service.valor.toFixed(2)}</Text>
+                <Text>R$ {service.price.toFixed(2)}</Text>
               </div>
             ))}
           </div>

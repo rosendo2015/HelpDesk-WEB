@@ -1,6 +1,6 @@
 import HelpIcon from "../assets/icons/circle-help.svg?react";
 import CircleClockIcon from "../assets/icons/clock-2.svg?react";
-import CheckIcon from "../assets/icons/check.svg?react";
+import CheckIcon from "../assets/icons/circle-check-big.svg?react";
 
 type TagVariant =
   | "danger"

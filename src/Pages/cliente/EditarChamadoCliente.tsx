@@ -7,7 +7,7 @@ import { InputSelect } from "../../components/InputSelect";
 import { Button } from "../../components/Button";
 import { useParams, useNavigate } from "react-router-dom";
 import { useChamados } from "../../contexts/Chamado/hooks/useCahmados";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function EditarChamadoCliente() {
   const { id } = useParams();
@@ -32,6 +32,18 @@ export function EditarChamadoCliente() {
     alert("Chamado atualizado com sucesso!");
     navigate("/cliente/chamados-cliente");
   }
+  useEffect(() => {
+    if (!chamado) return;
+
+    // Executa o setState de forma assíncrona, evitando renderizações em cascata
+    const timeout = setTimeout(() => {
+      setTitle(chamado.title ?? "");
+      setDesc(chamado.description ?? "");
+      setServices(chamado.services?.map((s) => s.id) ?? []);
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [chamado]);
 
   return (
     <div className="md:max-w-200 mt-14 mx-auto">
@@ -40,12 +52,12 @@ export function EditarChamadoCliente() {
           Editar chamado
         </Text>
       </header>
-      <Container className="w-full flex flex-col gap-6 md:flex-row md:min-w-200">
-        <Card className="p-8 md:max-w-120 w-full md:min-w-120">
-          <Text as="h2" variant="heading-md-bold">
-            Informações
-          </Text>
-          <form onSubmit={salvarChamado}>
+      <form onSubmit={salvarChamado}>
+        <Container className="w-full flex flex-col gap-6 md:flex-row md:min-w-200">
+          <Card className="p-8 md:max-w-120 w-full md:min-w-120">
+            <Text as="h2" variant="heading-md-bold">
+              Informações
+            </Text>
             <InputText
               label="Título"
               placeholder="Digite um título para o chamado"
@@ -60,43 +72,60 @@ export function EditarChamadoCliente() {
             />
             <InputSelect
               label="Categoria"
-              value={chamado?.services[0]}
+              value={
+                chamado?.services[0]
+                  ? {
+                      id: chamado.services[0].id,
+                      nome: chamado.services[0].nome,
+                      valor: chamado.services[0].price,
+                    }
+                  : undefined
+              }
               onChange={(option) => setServices([option.id])}
             />
-          </form>
-        </Card>
-        <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 w-full">
-          <div>
-            <Text as="h2" variant="heading-md-bold">
-              Resumo
-            </Text>
+          </Card>
+          <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 w-full">
+            <div>
+              <Text as="h2" variant="heading-md-bold">
+                Resumo
+              </Text>
+              <Text variant="text-xs-regular" className="text-gray-300">
+                Valores e detalhes
+              </Text>
+            </div>
+
+            <div>
+              <Text as="h3" variant="text-xs-regular" className="text-gray-400">
+                Categoria de serviço
+              </Text>
+              <Text variant="text-sm-regular" className="text-gray-200">
+                Categoria selecionada
+              </Text>
+              <Text as="h3">Custo inicial</Text>
+              <Text>
+                {chamado?.services[0]?.price
+                  ? Number(chamado.services[0].price).toFixed(2)
+                  : "0,00"}
+              </Text>
+            </div>
+
             <Text variant="text-xs-regular" className="text-gray-300">
-              Valores e detalhes
+              O chamado será automaticamente atribuído a um técnico disponível
             </Text>
-          </div>
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => navigate("/cliente/chamados-cliente")}
+              >
+                Cancelar
+              </Button>
 
-          <div>
-            <Text as="h3" variant="text-xs-regular" className="text-gray-400">
-              Categoria de serviço
-            </Text>
-            <Text variant="text-sm-regular" className="text-gray-200">
-              Categoria selecionada
-            </Text>
-            <Text as="h3">Custo inicial</Text>
-            <Text>{chamado?.services[0]?.valor?.toFixed(2) || "0.00"}</Text>
-          </div>
-
-          <Text variant="text-xs-regular" className="text-gray-300">
-            O chamado será automaticamente atribuído a um técnico disponível
-          </Text>
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="secondary" type="reset">
-              Cancelar
-            </Button>
-            <Button type="submit">Salvar</Button>
-          </div>
-        </Card>
-      </Container>
+              <Button type="submit">Salvar</Button>
+            </div>
+          </Card>
+        </Container>
+      </form>
     </div>
   );
 }

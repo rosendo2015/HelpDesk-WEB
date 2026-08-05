@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { Container } from "../../components/Container";
@@ -30,6 +30,7 @@ export function EditarTecnico() {
   const [email, setEmail] = useState("");
   const [horarios, setHorarios] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Buscar dados atuais do técnico
   useEffect(() => {
@@ -66,7 +67,7 @@ export function EditarTecnico() {
       setError(result.error.errors[0].message);
       return;
     }
-
+    navigate("/admin/tecnicos");
     try {
       await api.patch(`/users/${id}`, result.data);
       alert("Perfil atualizado com sucesso!");
@@ -95,7 +96,11 @@ export function EditarTecnico() {
           </Text>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" className="w-full">
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => navigate("/admin/tecnicos")}
+          >
             Cancelar
           </Button>
           <Button className="w-full" onClick={handleSubmit}>

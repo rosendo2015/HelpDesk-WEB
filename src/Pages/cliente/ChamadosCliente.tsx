@@ -72,11 +72,11 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
                     {chamado.id}
                   </td>
 
-                  <td className="px-4 py-2 font-bold max-w-50.5 truncate">
+                  <td className="px-4 py-2 font-bold max-w-40 truncate">
                     {chamado.title}
                   </td>
 
-                  <td className="px-4 py-2 hidden md:table-cell max-w-44 truncate">
+                  <td className="px-4 py-2 hidden md:table-cell max-w-40 truncate">
                     {chamado.services.map((s) => s.nome).join(", ")}
                   </td>
 
@@ -100,6 +100,7 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
                     <Tags
                       variant={getStatusConfig(chamado.status).variant}
                       svg={getStatusConfig(chamado.status).icon}
+                      className="w-max px-2 py-1 flex items-center gap-1"
                     >
                       {getStatusConfig(chamado.status).label}
                     </Tags>
