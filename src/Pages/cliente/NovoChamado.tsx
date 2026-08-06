@@ -6,12 +6,15 @@ import { Textarea } from "../../components/InputTextArea";
 import { InputSelect } from "../../components/InputSelect";
 import { Button } from "../../components/Button";
 import { useState, useEffect, useContext } from "react";
-import { criarChamado } from "../../services/chamados";
 import { useAuth } from "../../hooks/useAuth";
 import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
 import { useNavigate } from "react-router-dom";
 
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+
 export function NovoChamado() {
+  const { createChamado } = useChamados();
+
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [categoria, setCategoria] = useState<{
@@ -42,9 +45,10 @@ export function NovoChamado() {
 
       console.log("Dados enviados para criarChamado:", chamadoData);
 
-      await criarChamado(chamadoData);
+      await createChamado(chamadoData);
 
       alert("Chamado criado com sucesso!");
+
       navigate("/cliente/chamados-cliente");
     } catch (error) {
       alert("Erro ao criar chamado");
@@ -86,13 +90,6 @@ export function NovoChamado() {
             <InputSelect
               label="Categoria"
               placeholder="Selecione a categoria de atendimento"
-              options={
-                servicesCtx?.categoryServices.map((s) => ({
-                  id: s.id,
-                  nome: s.name,
-                  valor: s.price,
-                })) ?? []
-              }
               onChange={(option) => setCategoria(option)}
             />
           </form>

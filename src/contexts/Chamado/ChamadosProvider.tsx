@@ -25,12 +25,12 @@ export function ChamadosProvider({ children }: { children: React.ReactNode }) {
 
   async function createChamado(dados: ChamadoPayload) {
     try {
-      const response = await api.post("/chamados", dados, {
+      await api.post("/chamados", dados, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setChamados((prev) => [...prev, response.data]);
+      await fetchChamados();
     } catch (error) {
-      console.error("Erro ao criar chamado:", error);
+      console.error(error);
     }
   }
 
