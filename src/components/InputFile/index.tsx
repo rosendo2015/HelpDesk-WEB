@@ -77,7 +77,7 @@ export function InputFile({ avatarUrl, onChange, onDelete }: InputFileProps) {
   }
 
   return (
-    <div className="flex items-center gap-3 mb-5">
+    <div className="flex items-center gap-2 mb-5">
       {/* Avatar com fallback */}
       <div className="w-12 h-12 rounded-full border border-gray-300 bg-gray-200 flex items-center justify-center overflow-hidden">
         {avatarUrl ? (
@@ -92,8 +92,8 @@ export function InputFile({ avatarUrl, onChange, onDelete }: InputFileProps) {
       </div>
 
       {/* Botão de upload */}
-      <label className="flex items-center gap-2 bg-gray-100 text-gray-600 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors duration-200">
-        <Icon svg={UploadIcon} className="w-4 h-4 fill-gray-600" />
+      <label className="flex items-center gap-2 bg-gray-500 text-gray-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-400/50 transition-colors duration-200">
+        <Icon svg={UploadIcon} className="w-4 h-4 fill-gray-100" />
         <span className="text-sm">Nova imagem</span>
         <input type="file" className="hidden" onChange={handleFileChange} />
       </label>
@@ -103,7 +103,7 @@ export function InputFile({ avatarUrl, onChange, onDelete }: InputFileProps) {
         <Button
           type="button"
           onClick={onDelete}
-          className="p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
+          className="rounded-md bg-gray-500 hover:bg-gray-400/50 transition-colors duration-200"
         >
           <Icon svg={TrashIcon} className="w-4 h-4 fill-feedback-danger" />
         </Button>

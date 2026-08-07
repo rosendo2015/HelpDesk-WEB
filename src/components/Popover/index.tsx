@@ -21,7 +21,7 @@ export function PopoverContent({
         align={align}
         className={cn(
           `
-          z-50 rounded-lg  bg-gray-100 px-4 ml-10 mb-2 w-50
+          z-50 rounded-lg mt-20 -mr-10 bg-gray-100  px-4 lg:ml-10 lg:mb-2 w-50
           data-[state=open]:animate-in
           data-[state=closed]:animate-out
           data-[state=open]:fade-in-0

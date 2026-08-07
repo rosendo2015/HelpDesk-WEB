@@ -21,6 +21,7 @@ import { EditarChamadoCliente } from "../pages/cliente/EditarChamadoCliente";
 import { DetailChamadoCliente } from "../pages/cliente/DetailChamadoCliente";
 
 import { EditarChamadoAdmin } from "../pages/admin/EditarChamadoAdmin";
+import { ChamadoDetailsTecnico } from "../pages/tecnico/ChamadoDetailsTecnico";
 
 export function AppRoutes() {
   return (
@@ -63,6 +64,7 @@ export function AppRoutes() {
       >
         <Route index element={<ChamadosTecnico />} />
         <Route path="meus-chamados" element={<ChamadosTecnico />} />
+        <Route path="chamado-details/:id" element={<ChamadoDetailsTecnico />} />
       </Route>
 
       {/* Rotas do CLIENTE */}
