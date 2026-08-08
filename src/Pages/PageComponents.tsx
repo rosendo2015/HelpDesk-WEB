@@ -18,36 +18,37 @@ import { ButtonIcon } from "../components/ButtonIcon";
 import { InputText } from "../components/InputText";
 import { InputSelect } from "../components/InputSelect";
 
-import { useState } from "react"
+import { useState } from "react";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 
 export function Components() {
-
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     // Simples validação: senha precisa ter pelo menos 8 caracteres
     if (!email || !password) {
-      setError(true)
-      return
+      setError(true);
+      return;
     }
     if (password.length < 8) {
-      setError(true)
-      return
+      setError(true);
+      return;
     } else {
-      setError(false)
-      alert("Formulário enviado com sucesso!")
+      setError(false);
+      alert("Formulário enviado com sucesso!");
     }
   }
   return (
     <Container>
       <div className="flex flex-col gap-2 p-4">
-        <Text variant={"text-xl-bold"} className="text-blue-dark">Hello, World!</Text>
+        <Text variant={"text-xl-bold"} className="text-blue-dark">
+          Hello, World!
+        </Text>
         <Text variant={"text-lg-bold"}>Hello, World!</Text>
         <Text variant={"heading-md-normal"}>Hello, World!</Text>
         <Text variant={"text-sm-regular"}>Hello, World!</Text>
@@ -68,23 +69,43 @@ export function Components() {
           <Icon svg={LogOutIcon} className="fill-feedback-danger w-5 h-5" />
         </div>
         <div className="flex gap-4">
-          <Tags variant="new" svg={NewIcon} >LABEL</Tags>
-          <Tags variant="info" svg={ClockIcon}>LABEL</Tags>
-          <Tags variant="success" svg={CircleCheckIcon}>LABEL</Tags>
-          <Tags variant="danger" svg={NewIcon}>LABEL</Tags>
+          <Tags variant="new" svg={NewIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="info" svg={ClockIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="success" svg={CircleCheckIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="danger" svg={NewIcon}>
+            LABEL
+          </Tags>
         </div>
         <div className="flex gap-4">
           <TagTime>09:00</TagTime>
-          <TagTime variant="selected" svg={XIcon}>15:00</TagTime>
-          <TagTime variant="disabled"> 08:30 </TagTime>
+          <TagTime svg={XIcon}>15:00</TagTime>
+          <TagTime> 08:30 </TagTime>
         </div>
         <div className="flex gap-4">
-          <Button icon={LinePencil} variant="primary">Primary</Button>
-          <Button icon={LinePencil} size="sm" variant="primary">Primary</Button>
-          <Button icon={LinePencil} disabled>Disabled</Button>
-          <Button icon={LinePencil} variant="secondary">Secondary</Button>
-          <Button icon={LinePencil} variant="link">Link</Button>
-          <Button icon={LinePencil} size="sm" variant="link">Link</Button>
+          <Button icon={LinePencil} variant="primary">
+            Primary
+          </Button>
+          <Button icon={LinePencil} size="sm" variant="primary">
+            Primary
+          </Button>
+          <Button icon={LinePencil} disabled>
+            Disabled
+          </Button>
+          <Button icon={LinePencil} variant="secondary">
+            Secondary
+          </Button>
+          <Button icon={LinePencil} variant="link">
+            Link
+          </Button>
+          <Button icon={LinePencil} size="sm" variant="link">
+            Link
+          </Button>
         </div>
         <div className="flex gap-4">
           <ButtonIcon icon={LinePencil} variant="primary" />
@@ -134,20 +155,15 @@ export function Components() {
             error={true}
           />
 
-
-          <Button type="submit" size="md" variant="primary">Enviar</Button>
+          <Button type="submit" size="md" variant="primary">
+            Enviar
+          </Button>
         </form>
-
 
         <div className="flex p-8 bg-gray-600">
           <Card size="md">Hello World.</Card>
         </div>
-
       </div>
     </Container>
-  )
+  );
 }
-
-
-
-

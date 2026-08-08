@@ -21,31 +21,48 @@ import { UpdatePasswordDialog } from "../UpdatePasswordDialog";
 import UserIcon from "../../assets/icons/users.svg?react";
 import LogoutIcon from "../../assets/icons/log-out.svg?react";
 
-interface UserManuProps {
+interface UserMenuProps {
   children: ReactNode;
 }
 
-export function UserMenu({ children }: UserManuProps) {
-  const { user, signIn, updateUser } = useAuth();
-  const [name, setName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
-  const [password, setPassword] = useState(user?.password);
+export function UserMenu({ children }: UserMenuProps) {
+  const { user, updateUser } = useAuth();
+
+  const [name, setName] = useState(user?.name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  function handleProfileOpen(open: boolean) {
+    setProfileOpen(open);
+
+    if (open) {
+      setName(user?.name ?? "");
+      setEmail(user?.email ?? "");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    console.log("=== SALVAR PERFIL ===");
+    console.log("Usuário:", user);
+    console.log("Nome:", name);
+    console.log("Email:", email);
+    console.log("ID:", user?.id);
 
     try {
       const response = await api.patch(`/users/${user?.id}`, {
         name,
         email,
-        ...(password ? { password } : {}), // só envia se tiver senha
       });
 
+      console.log("Resposta da API:", response.data);
+
       // Atualiza contexto com dados novos
-      signIn({
-        token: localStorage.getItem("@helpdesk:token")!,
-        user: response.data,
-      });
+      updateUser(response.data);
+      setName(response.data.name);
+      setEmail(response.data.email);
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
     }
@@ -82,15 +99,15 @@ export function UserMenu({ children }: UserManuProps) {
         </Text>
         <div className="flex flex-col gap-3 px-4 mt-4">
           <div className="flex items-center gap-3">
-            <form onSubmit={handleSubmit}>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="-ml-7.5 bg-transparent">
-                    <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
-                    <Text className="text-gray-500">Perfil</Text>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
+            <Dialog open={profileOpen} onOpenChange={handleProfileOpen}>
+              <DialogTrigger asChild>
+                <Button type="button" className="-ml-7.5 bg-transparent">
+                  <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
+                  <Text className="text-gray-500">Perfil</Text>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <form id="profile-form" onSubmit={handleSubmit}>
                   <DialogHeader>
                     <Text>Perfil</Text>
                   </DialogHeader>
@@ -124,7 +141,6 @@ export function UserMenu({ children }: UserManuProps) {
                       type="password"
                       label="SENHA"
                       value="123456"
-                      onChange={(e) => setPassword(e.target.value)}
                       helperText="Para atualizar a senha clique no botão Alterar"
                     />
 
@@ -152,14 +168,14 @@ export function UserMenu({ children }: UserManuProps) {
                   )}
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button type="submit" size={"lg"}>
+                      <Button type="submit" form="profile-form" size="lg">
                         Salvar
                       </Button>
                     </DialogClose>
                   </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </form>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <Button

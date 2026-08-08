@@ -5,17 +5,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
-  DialogClose,
+  //DialogClose,
 } from "../Dialog";
 import { InputText } from "../InputText";
 import { Button } from "../Button";
 import { Text } from "../Text";
 import Divider from "../Divider";
 import { api } from "../../services/api";
+import axios from "axios";
 
 export function UpdatePasswordDialog({ userId }: { userId: string }) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [open, setOpen] = useState(false);
+  const [oldPasswordError, setOldPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
 
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,14 +30,64 @@ export function UpdatePasswordDialog({ userId }: { userId: string }) {
       });
       setOldPassword("");
       setNewPassword("");
+      setOldPasswordError("");
+      setNewPasswordError("");
       alert("Senha atualizada com sucesso!");
+      setOpen(false);
     } catch (err) {
       console.error("Erro ao atualizar senha:", err);
+
+      // Limpa erros anteriores
+      setOldPasswordError("");
+      setNewPasswordError("");
+
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+
+        // Erros de validação do Zod
+        if (data?.issues && Array.isArray(data.issues)) {
+          data.issues.forEach((issue: { path: string; message: string }) => {
+            if (issue.path === "oldPassword") {
+              setOldPasswordError(issue.message);
+            }
+
+            if (issue.path === "newPassword") {
+              setNewPasswordError(issue.message);
+            }
+          });
+
+          return;
+        }
+
+        // Erros do AppError
+        if (data?.message) {
+          if (data.message === "Senha atual incorreta.") {
+            setOldPasswordError(data.message);
+          } else {
+            setNewPasswordError(data.message);
+          }
+
+          return;
+        }
+
+        setNewPasswordError("Não foi possível atualizar a senha.");
+      } else {
+        setNewPasswordError("Ocorreu um erro ao atualizar a senha.");
+      }
     }
   }
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        if (value) {
+          setOldPasswordError("");
+          setNewPasswordError("");
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="secondary" className="mb-6">
           Alterar
@@ -44,32 +98,40 @@ export function UpdatePasswordDialog({ userId }: { userId: string }) {
           <Text>Alterar senha</Text>
         </DialogHeader>
         <Divider className="my-4 mb-10 mt-10" />
-        <form onSubmit={handlePasswordSubmit}>
+        <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-2">
           <InputText
             type="password"
             label="Senha atual"
             placeholder="Digite sua senha atual"
             value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            className="mb-10"
+            onChange={(e) => {
+              setOldPassword(e.target.value);
+              setOldPasswordError("");
+            }}
+            error={!!oldPasswordError}
+            helperText={oldPasswordError ? oldPasswordError : "."}
           />
           <InputText
             type="password"
             label="Nova senha"
             placeholder="Digite sua nova senha"
-            helperText="mínimo 6 dígitos"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(e) => {
+              setNewPassword(e.target.value);
+              setNewPasswordError("");
+            }}
+            error={!!newPasswordError}
+            helperText={
+              newPasswordError ? newPasswordError : "mínimo 6 dígitos"
+            }
           />
 
           <Divider className="my-4 mt-10 mb-10" />
 
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="submit" size="lg" className="">
-                Salvar
-              </Button>
-            </DialogClose>
+            <Button type="submit" size="lg" className="">
+              Salvar
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
