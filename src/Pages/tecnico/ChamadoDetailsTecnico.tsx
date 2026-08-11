@@ -126,14 +126,17 @@ export function ChamadoDetailsTecnico() {
       await api.delete(`/chamados/${chamado?.id}/services/${serviceId}`);
 
       await fetchChamados();
+
+      alert("Serviço excluído com sucesso!");
     } catch (error) {
       console.error("Erro ao remover serviço:", error);
-      alert("Não foi possível remover o serviço.");
+
+      alert("Não foi possível excluir o serviço.");
     }
   }
 
   return (
-    <div className="md:max-w-200 mt-14 mx-auto">
+    <div className="md:max-w-210 mt-14 mx-auto">
       <header className="flex flex-col md:items-end justify-between max-w-199 mb-6 md:flex-row">
         <div>
           <a
@@ -186,8 +189,8 @@ export function ChamadoDetailsTecnico() {
           )}
         </div>
       </header>
-      <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-199">
-        <Card className="flex flex-col gap-5 p-8 md:max-w-115 w-full">
+      <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+        <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full">
           <div className="flex items-start justify-between mb-6">
             <div className="flex flex-col gap-2">
               <Text as="h2" variant="heading-md-normal">
@@ -245,7 +248,7 @@ export function ChamadoDetailsTecnico() {
           </div>
         </Card>
 
-        <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 w-full">
+        <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 max-w-[full]">
           <div>
             <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
               Técnico responsável
@@ -279,8 +282,8 @@ export function ChamadoDetailsTecnico() {
             </Text>
 
             {chamado.services.slice(1).map((service) => (
-              <div key={service.id} className="flex justify-between">
-                <Text>{service.nome}</Text>
+              <div key={service.id} className="flex justify-between gap-4">
+                <Text className="truncate w-[150px]">{service.nome}</Text>
 
                 <Text>R$ {service.price.toFixed(2)}</Text>
               </div>
