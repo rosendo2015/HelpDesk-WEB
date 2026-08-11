@@ -25,15 +25,111 @@ import {
   DialogTrigger,
 } from "../../components/Dialog";
 import { InputSelect } from "../../components/InputSelect";
+import { api } from "../../services/api";
+import { useEffect, useState } from "react";
 
 export function ChamadoDetailsTecnico() {
+  const [services, setServices] = useState<
+    { id: string; name: string; price: number }[]
+  >([]);
+
   const { id } = useParams();
-  const { getChamadoById } = useChamados();
+  const { getChamadoById, fetchChamados } = useChamados();
 
   const chamado = getChamadoById(id!);
 
+  const [selectedServiceId, setSelectedServiceId] = useState<{
+    id: string;
+    nome: string;
+    valor: number;
+  } | null>(null);
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
+  const [isAddingService, setIsAddingService] = useState(false);
+
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        const response = await api.get("/services");
+        setServices(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      }
+    }
+
+    fetchServices();
+  }, []);
+
   if (!chamado) {
     return <Text>Cramado não encontrado</Text>;
+  }
+
+  const precoBase = chamado?.services[0]?.price ?? 0;
+
+  const totalAdicionais = chamado?.services
+    .slice(1)
+    .reduce((total, service) => total + service.price, 0);
+
+  async function handleUpdateStatus(status: "EM_ATENDIMENTO" | "ENCERRADO") {
+    try {
+      await api.patch(`/chamados/${chamado?.id}/status`, {
+        status,
+      });
+
+      await fetchChamados();
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+    }
+  }
+
+  async function handleAddService() {
+    if (!selectedServiceId) {
+      return;
+    }
+
+    try {
+      setIsAddingService(true);
+
+      // IDs dos serviços que o chamado já possui
+      const servicesAtuais = chamado?.services.map((service) => service.id);
+
+      // Evita adicionar o mesmo serviço duas vezes
+      if (servicesAtuais?.includes(selectedServiceId.id)) {
+        alert("Esse serviço já foi adicionado ao chamado.");
+        return;
+      }
+
+      // Mantém os serviços existentes e adiciona o novo
+      const servicesAtualizados = [...servicesAtuais, selectedServiceId.id];
+
+      await api.patch(`/chamados/${chamado?.id}`, {
+        services: servicesAtualizados,
+      });
+
+      // Atualiza os chamados no contexto
+      await fetchChamados();
+
+      // Limpa seleção
+      setSelectedServiceId(null);
+
+      // Fecha modal
+      setServiceDialogOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar serviço:", error);
+      alert("Não foi possível adicionar o serviço.");
+    } finally {
+      setIsAddingService(false);
+    }
+  }
+
+  async function handleRemoveService(serviceId: string) {
+    try {
+      await api.delete(`/chamados/${chamado?.id}/services/${serviceId}`);
+
+      await fetchChamados();
+    } catch (error) {
+      console.error("Erro ao remover serviço:", error);
+      alert("Não foi possível remover o serviço.");
+    }
   }
 
   return (
@@ -64,9 +160,30 @@ export function ChamadoDetailsTecnico() {
           >
             Encerrar
           </Button>
-          <Button size="md" icon={ClockIcon} className="w-full">
-            Iniciar Atendimento
-          </Button>
+
+          {chamado.status === "ABERTO" && (
+            <Button
+              variant="primary"
+              size="md"
+              icon={ClockIcon}
+              onClick={() => handleUpdateStatus("EM_ATENDIMENTO")}
+              className="w-full"
+            >
+              Iniciar atendimento
+            </Button>
+          )}
+
+          {chamado.status === "EM_ATENDIMENTO" && (
+            <Button
+              variant="primary"
+              size="md"
+              icon={CheckIcon}
+              onClick={() => handleUpdateStatus("ENCERRADO")}
+              className="w-full"
+            >
+              Encerrar
+            </Button>
+          )}
         </div>
       </header>
       <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-199">
@@ -153,17 +270,18 @@ export function ChamadoDetailsTecnico() {
             </Text>
             <div className="flex justify-between">
               <Text>Preço Base</Text>
-              <Text>R$ {chamado.totalPrice.toFixed(2)}</Text>
+              <Text>R$ {precoBase.toFixed(2)}</Text>
             </div>
           </div>
           <div className="flex flex-col gap-1">
             <Text variant="text-sm-bold" className="text-gray-400 mb-2">
               Adicionais
             </Text>
-            {/** nessa parte deve exibir os serviços adicionais */}
+
             {chamado.services.slice(1).map((service) => (
               <div key={service.id} className="flex justify-between">
                 <Text>{service.nome}</Text>
+
                 <Text>R$ {service.price.toFixed(2)}</Text>
               </div>
             ))}
@@ -173,7 +291,7 @@ export function ChamadoDetailsTecnico() {
             <Text variant="heading-md-bold">Total</Text>
             {/** aqui deve exibir o total do preço base + adicionais */}
             <Text variant="heading-md-bold">
-              R$ {chamado.totalPrice.toFixed(2)}
+              R$ {(precoBase + totalAdicionais).toFixed(2)}
             </Text>
           </div>
         </Card>
@@ -182,30 +300,53 @@ export function ChamadoDetailsTecnico() {
             <Text variant="heading-md-bold" className="text-gray-300">
               Serviços adicionais
             </Text>
-            <Dialog>
+            <Dialog
+              open={serviceDialogOpen}
+              onOpenChange={(open) => {
+                setServiceDialogOpen(open);
+
+                if (!open) {
+                  setSelectedServiceId(null);
+                }
+              }}
+            >
               <DialogTrigger asChild>
                 <ButtonIcon size="lg" icon={PlusIcon} />
               </DialogTrigger>
+
               <DialogContent>
                 <DialogHeader>
                   <Text>Serviços adicionais</Text>
                 </DialogHeader>
+
                 <Divider className="my-4" />
+
                 <div className="flex items-center gap-2 mb-5">
-                  <InputSelect label="Serviços cadastrados" />
+                  <InputSelect
+                    label="Serviços cadastrados"
+                    placeholder="Selecione um serviço"
+                    value={selectedServiceId ?? undefined}
+                    onChange={(option) => setSelectedServiceId(option)}
+                  />
                 </div>
+
                 <Divider className="my-4" />
+
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button variant="secondary" size={"lg"}>
+                    <Button variant="secondary" size="lg">
                       Cancelar
                     </Button>
                   </DialogClose>
-                  <DialogClose asChild>
-                    <Button type="submit" size={"lg"}>
-                      Salvar
-                    </Button>
-                  </DialogClose>
+
+                  <Button
+                    type="button"
+                    size="lg"
+                    onClick={handleAddService}
+                    disabled={!selectedServiceId || isAddingService}
+                  >
+                    {isAddingService ? "Salvando..." : "Salvar"}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -219,20 +360,28 @@ export function ChamadoDetailsTecnico() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-1">
-                  <Text variant="heading-md-bold">Assinatura de backup</Text>
-                </td>
-                <td className="py-1">R$ 120,00</td>
-                <td className="w-10 py-2">
-                  <div className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer">
-                    <Icon
-                      svg={TrachIcon}
-                      className="w-6 h-6 fill-feedback-danger"
-                    />
-                  </div>
-                </td>
-              </tr>
+              {chamado.services.slice(1).map((service) => (
+                <tr key={service.id}>
+                  <td className="py-1">
+                    <Text variant="heading-md-bold">{service.nome}</Text>
+                  </td>
+
+                  <td className="py-1">R$ {service.price.toFixed(2)}</td>
+
+                  <td className="w-10 py-2">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveService(service.id)}
+                      className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer"
+                    >
+                      <Icon
+                        svg={TrachIcon}
+                        className="w-6 h-6 fill-feedback-danger"
+                      />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </Card>

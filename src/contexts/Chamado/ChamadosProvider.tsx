@@ -36,14 +36,14 @@ export function ChamadosProvider({ children }: { children: React.ReactNode }) {
 
   async function updateChamado(id: string, dados: ChamadoPayload) {
     try {
-      const response = await api.patch(`/chamados/${id}`, dados, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setChamados((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...response.data } : c)),
-      );
+      const response = await api.patch(`/chamados/${id}`, dados);
+
+      await fetchChamados();
+
+      return response.data;
     } catch (error) {
       console.error("Erro ao atualizar chamado:", error);
+      throw error;
     }
   }
 

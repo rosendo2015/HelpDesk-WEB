@@ -33,12 +33,29 @@ export function UserMenu({ children }: UserMenuProps) {
 
   const [profileOpen, setProfileOpen] = useState(false);
 
-  function handleProfileOpen(open: boolean) {
+  async function handleProfileOpen(open: boolean) {
     setProfileOpen(open);
 
-    if (open) {
-      setName(user?.name ?? "");
-      setEmail(user?.email ?? "");
+    if (!open || !user?.id) {
+      return;
+    }
+
+    try {
+      const response = await api.get(`/users/${user.id}`);
+
+      console.log("=== USUÁRIO COMPLETO ===");
+      console.log(response.data);
+
+      updateUser(response.data);
+
+      setName(response.data.name ?? "");
+      setEmail(response.data.email ?? "");
+    } catch (error) {
+      console.error("Erro ao buscar dados do usuário:", error);
+
+      // Mantém os dados que já estavam no contexto
+      setName(user.name ?? "");
+      setEmail(user.email ?? "");
     }
   }
 
@@ -155,13 +172,18 @@ export function UserMenu({ children }: UserMenuProps) {
                           Horários de atendimento definidos pelo admin.
                         </Text>
                       </div>
-                      <div className="flex gap-2">
-                        <TagTime>09:00</TagTime>
-                        <TagTime>10:00</TagTime>
-                        <TagTime>12:00</TagTime>
-                        <TagTime>13:00</TagTime>
-                        <TagTime>15:00</TagTime>
-                        <TagTime>16:00</TagTime>
+                      <div className="flex flex-wrap gap-2">
+                        {user.disponibilidades?.length > 0 ? (
+                          user.disponibilidades.map((disponibilidade) => (
+                            <TagTime key={disponibilidade.horario}>
+                              {disponibilidade.horario}
+                            </TagTime>
+                          ))
+                        ) : (
+                          <Text variant="text-xs-regular">
+                            Nenhum horário disponível.
+                          </Text>
+                        )}
                       </div>
                       <Divider className="my-4" />
                     </>
