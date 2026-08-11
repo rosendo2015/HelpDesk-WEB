@@ -139,20 +139,22 @@ export function ChamadosAdmin() {
                   </div>
                 </td>
 
-                <td className="flex max-w-[64px] px-3 py-2 lg:max-w-[152px] md:max-w-[152px]">
-                  <Tags
-                    variant={getStatusConfig(chamado.status).variant}
-                    svg={getStatusConfig(chamado.status).icon}
-                    className="max-w-[28px] lg:max-w-[152px] md:max-w-[152px] "
-                  >
-                    {getStatusConfig(chamado.status).label}
-                  </Tags>
+                <td className="max-w-[64px] px-3 py-2 lg:max-w-[152px] md:max-w-[152px]">
+                  <div className="flex items-center">
+                    <Tags
+                      variant={getStatusConfig(chamado.status).variant}
+                      svg={getStatusConfig(chamado.status).icon}
+                      className="max-w-[28px] lg:max-w-[152px] md:max-w-[152px] "
+                    >
+                      {getStatusConfig(chamado.status).label}
+                    </Tags>
+                  </div>
                 </td>
 
                 <td className="max-w-[52px] px-3 py-2">
                   <div className="flex items-center justify-end">
                     <ActionLink
-                      to={`admin/editarChamados/${chamado.id}`}
+                      to={`editarChamados/${chamado.id}`}
                       variant="subtitle"
                       size="md"
                     >

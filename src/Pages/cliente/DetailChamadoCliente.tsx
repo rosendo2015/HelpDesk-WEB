@@ -97,7 +97,7 @@ export function DetailChamadoCliente() {
             </Text>
 
             <div className="flex gap-2">
-              <Avatar name="Jhon Doe" />
+              <Avatar name={chamado.tecnico?.name || "N/A"} />
               <div className="flex flex-col">
                 <Text variant="text-xs-regular" className="text-gray-300">
                   {chamado.tecnico?.name || "Técnico não atribuído"}
@@ -125,7 +125,7 @@ export function DetailChamadoCliente() {
             {/** nessa parte deve exibir os serviços adicionais */}
             {chamado.services.slice(1).map((service) => (
               <div key={service.id} className="flex justify-between">
-                <Text>{service.nome}</Text>
+                <Text className="w-[130px] truncate">{service.nome}</Text>
                 <Text>R$ {service.price.toFixed(2)}</Text>
               </div>
             ))}

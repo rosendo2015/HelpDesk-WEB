@@ -27,6 +27,8 @@ import {
 import { InputSelect } from "../../components/InputSelect";
 import { api } from "../../services/api";
 import { useEffect, useState } from "react";
+import { formatCurrencyBRL } from "../../utils/formatCurrency";
+import { Skeleton } from "../../components/Skeleton";
 
 export function ChamadoDetailsTecnico() {
   const [services, setServices] = useState<
@@ -34,7 +36,7 @@ export function ChamadoDetailsTecnico() {
   >([]);
 
   const { id } = useParams();
-  const { getChamadoById, fetchChamados } = useChamados();
+  const { getChamadoById, fetchChamados, loading } = useChamados();
 
   const chamado = getChamadoById(id!);
 
@@ -189,206 +191,216 @@ export function ChamadoDetailsTecnico() {
           )}
         </div>
       </header>
-      <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
-        <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full">
-          <div className="flex items-start justify-between mb-6">
+      {loading ? (
+        <>
+          <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+            <Skeleton className="w-[460px] h-[400px] rounded-lg" />
+            <Skeleton className="w-[300px] h-[400px] rounded-lg" />
+            <Skeleton className="w-[460px] h-[200px] rounded-lg" />
+          </Container>
+        </>
+      ) : (
+        <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+          <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex flex-col gap-2">
+                <Text as="h2" variant="heading-md-normal">
+                  {chamado.id}
+                </Text>
+                <Text as="h2" variant="heading-md-bold">
+                  {chamado.title}
+                </Text>
+              </div>
+
+              <Tags
+                variant={getStatusConfig(chamado.status).variant}
+                svg={getStatusConfig(chamado.status).icon}
+                className="flex w-1/3"
+              >
+                {getStatusConfig(chamado.status).label}
+              </Tags>
+            </div>
             <div className="flex flex-col gap-2">
-              <Text as="h2" variant="heading-md-normal">
-                {chamado.id}
+              <Text variant="text-sm-bold" className="text-gray-400">
+                Descrição
               </Text>
-              <Text as="h2" variant="heading-md-bold">
-                {chamado.title}
+              <Text>{chamado.description}</Text>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text variant="text-sm-bold" className="text-gray-400">
+                Categoria
               </Text>
-            </div>
-
-            <Tags
-              variant={getStatusConfig(chamado.status).variant}
-              svg={getStatusConfig(chamado.status).icon}
-              className="flex w-1/3"
-            >
-              {getStatusConfig(chamado.status).label}
-            </Tags>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text variant="text-sm-bold" className="text-gray-400">
-              Descrição
-            </Text>
-            <Text>{chamado.description}</Text>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text variant="text-sm-bold" className="text-gray-400">
-              Categoria
-            </Text>
-            {chamado.services.map((service) => (
-              <Text key={service.id}>{service.nome}</Text>
-            ))}
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-20">
-              <div className="flex flex-col gap-2">
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  Criado em
-                </Text>
-                <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  Atualizado em
-                </Text>
-                <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
-              </div>
-            </div>
-          </div>
-          <div>
-            <Text>Cliente</Text>
-            <div className="flex items-center gap-2 mt-2">
-              <Avatar name={chamado.cliente.name} />
-              <Text>{chamado.cliente.name}</Text>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 max-w-[full]">
-          <div>
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
-              Técnico responsável
-            </Text>
-
-            <div className="flex gap-2">
-              <Avatar name="Jhon Doe" />
-              <div className="flex flex-col">
-                <Text variant="text-xs-regular" className="text-gray-300">
-                  {chamado.tecnico?.name || "Técnico não atribuído"}
-                </Text>
-                <Text variant="text-xs-regular" className="text-gray-300">
-                  {chamado.tecnico?.email || "Email não disponível"}
-                </Text>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2">
-              Valores
-            </Text>
-            <div className="flex justify-between">
-              <Text>Preço Base</Text>
-              <Text>R$ {precoBase.toFixed(2)}</Text>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2">
-              Adicionais
-            </Text>
-
-            {chamado.services.slice(1).map((service) => (
-              <div key={service.id} className="flex justify-between gap-4">
-                <Text className="truncate w-[150px]">{service.nome}</Text>
-
-                <Text>R$ {service.price.toFixed(2)}</Text>
-              </div>
-            ))}
-          </div>
-          <Divider />
-          <div className="flex justify-between">
-            <Text variant="heading-md-bold">Total</Text>
-            {/** aqui deve exibir o total do preço base + adicionais */}
-            <Text variant="heading-md-bold">
-              R$ {(precoBase + totalAdicionais).toFixed(2)}
-            </Text>
-          </div>
-        </Card>
-        <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
-          <header className="flex justify-between">
-            <Text variant="heading-md-bold" className="text-gray-300">
-              Serviços adicionais
-            </Text>
-            <Dialog
-              open={serviceDialogOpen}
-              onOpenChange={(open) => {
-                setServiceDialogOpen(open);
-
-                if (!open) {
-                  setSelectedServiceId(null);
-                }
-              }}
-            >
-              <DialogTrigger asChild>
-                <ButtonIcon size="lg" icon={PlusIcon} />
-              </DialogTrigger>
-
-              <DialogContent>
-                <DialogHeader>
-                  <Text>Serviços adicionais</Text>
-                </DialogHeader>
-
-                <Divider className="my-4" />
-
-                <div className="flex items-center gap-2 mb-5">
-                  <InputSelect
-                    label="Serviços cadastrados"
-                    placeholder="Selecione um serviço"
-                    value={selectedServiceId ?? undefined}
-                    onChange={(option) => setSelectedServiceId(option)}
-                  />
-                </div>
-
-                <Divider className="my-4" />
-
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="secondary" size="lg">
-                      Cancelar
-                    </Button>
-                  </DialogClose>
-
-                  <Button
-                    type="button"
-                    size="lg"
-                    onClick={handleAddService}
-                    disabled={!selectedServiceId || isAddingService}
-                  >
-                    {isAddingService ? "Salvando..." : "Salvar"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </header>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {chamado.services.slice(1).map((service) => (
-                <tr key={service.id}>
-                  <td className="py-1">
-                    <Text variant="heading-md-bold">{service.nome}</Text>
-                  </td>
-
-                  <td className="py-1">R$ {service.price.toFixed(2)}</td>
-
-                  <td className="w-10 py-2">
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveService(service.id)}
-                      className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer"
-                    >
-                      <Icon
-                        svg={TrachIcon}
-                        className="w-6 h-6 fill-feedback-danger"
-                      />
-                    </button>
-                  </td>
-                </tr>
+              {chamado.services.map((service) => (
+                <Text key={service.id}>{service.nome}</Text>
               ))}
-            </tbody>
-          </table>
-        </Card>
-      </Container>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex gap-20">
+                <div className="flex flex-col gap-2">
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    Criado em
+                  </Text>
+                  <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    Atualizado em
+                  </Text>
+                  <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Text>Cliente</Text>
+              <div className="flex items-center gap-2 mt-2">
+                <Avatar name={chamado.cliente.name} />
+                <Text>{chamado.cliente.name}</Text>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 max-w-[full]">
+            <div>
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
+                Técnico responsável
+              </Text>
+
+              <div className="flex gap-2">
+                <Avatar name="Jhon Doe" />
+                <div className="flex flex-col">
+                  <Text variant="text-xs-regular" className="text-gray-300">
+                    {chamado.tecnico?.name || "Técnico não atribuído"}
+                  </Text>
+                  <Text variant="text-xs-regular" className="text-gray-300">
+                    {chamado.tecnico?.email || "Email não disponível"}
+                  </Text>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+                Valores
+              </Text>
+              <div className="flex justify-between">
+                <Text>Preço Base</Text>
+                <Text>{formatCurrencyBRL(precoBase)}</Text>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+                Adicionais
+              </Text>
+
+              {chamado.services.slice(1).map((service) => (
+                <div key={service.id} className="flex justify-between gap-4">
+                  <Text className="truncate w-[150px]">{service.nome}</Text>
+
+                  <Text>{formatCurrencyBRL(service.price)}</Text>
+                </div>
+              ))}
+            </div>
+            <Divider />
+            <div className="flex justify-between">
+              <Text variant="heading-md-bold">Total</Text>
+              {/** aqui deve exibir o total do preço base + adicionais */}
+              <Text variant="heading-md-bold">
+                {formatCurrencyBRL(precoBase + totalAdicionais)}
+              </Text>
+            </div>
+          </Card>
+          <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
+            <header className="flex justify-between">
+              <Text variant="heading-md-bold" className="text-gray-300">
+                Serviços adicionais
+              </Text>
+              <Dialog
+                open={serviceDialogOpen}
+                onOpenChange={(open) => {
+                  setServiceDialogOpen(open);
+
+                  if (!open) {
+                    setSelectedServiceId(null);
+                  }
+                }}
+              >
+                <DialogTrigger asChild>
+                  <ButtonIcon size="lg" icon={PlusIcon} />
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <Text>Serviços adicionais</Text>
+                  </DialogHeader>
+
+                  <Divider className="my-4" />
+
+                  <div className="flex items-center gap-2 mb-5">
+                    <InputSelect
+                      label="Serviços cadastrados"
+                      placeholder="Selecione um serviço"
+                      value={selectedServiceId ?? undefined}
+                      onChange={(option) => setSelectedServiceId(option)}
+                    />
+                  </div>
+
+                  <Divider className="my-4" />
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary" size="lg">
+                        Cancelar
+                      </Button>
+                    </DialogClose>
+
+                    <Button
+                      type="button"
+                      size="lg"
+                      onClick={handleAddService}
+                      disabled={!selectedServiceId || isAddingService}
+                    >
+                      {isAddingService ? "Salvando..." : "Salvar"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </header>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {chamado.services.slice(1).map((service) => (
+                  <tr key={service.id}>
+                    <td className="py-1">
+                      <Text variant="heading-md-bold">{service.nome}</Text>
+                    </td>
+
+                    <td className="py-1">{formatCurrencyBRL(service.price)}</td>
+
+                    <td className="w-10 py-2">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveService(service.id)}
+                        className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer"
+                      >
+                        <Icon
+                          svg={TrachIcon}
+                          className="w-6 h-6 fill-feedback-danger"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </Container>
+      )}
     </div>
   );
 }

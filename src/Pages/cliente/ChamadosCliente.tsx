@@ -9,6 +9,7 @@ import { Icon } from "../../components/Icon";
 
 import { getStatusConfig } from "../../utils/statusConfig";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import { Skeleton } from "../../components/Skeleton";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -41,8 +42,31 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="text-center py-4">
-                  Carregando...
+                <td className="px-4 py-2">
+                  <Skeleton className="w-30 md:w-35 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="md:w-25 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2">
+                  <Skeleton className="w-20 md:w-60 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="w-60 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="md:w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 gap-1 md:flex hidden">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2">
+                  <Skeleton className="w-8 md:w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 flex flex-row items-center justify-center gap-1">
+                  <Skeleton className="w-8 h-8 rounded" />
+                  <Skeleton className="w-8 h-8 rounded" />
                 </td>
               </tr>
             ) : (

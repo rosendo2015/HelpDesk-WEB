@@ -1,4 +1,5 @@
 import { ChamadoCard } from "../../components/ChamadoCard";
+import { Skeleton } from "../../components/Skeleton";
 import { Tags } from "../../components/Tags";
 import { Text } from "../../components/Text";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
@@ -6,7 +7,6 @@ import { getStatusConfig } from "../../utils/statusConfig";
 
 export function ChamadosTecnico() {
   const { chamados, loading } = useChamados();
-
   const chamadosPorStatus = {
     EM_ATENDIMENTO: chamados.filter((c) => c.status === "EM_ATENDIMENTO"),
     ABERTO: chamados.filter((c) => c.status === "ABERTO"),
@@ -28,7 +28,22 @@ export function ChamadosTecnico() {
         </Text>
       </header>
       {loading ? (
-        <>{/*TODO:Criar o Skeleton*/}</>
+        <>
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+        </>
       ) : (
         <>
           <section className="mb-8">
