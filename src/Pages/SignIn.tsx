@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { ZodError, z } from "zod";
 import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";

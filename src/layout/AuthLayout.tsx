@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import backgroundImage from "../assets/images/Login_Background.png";
 import { authBackground, authContainer, authContent } from "./layoutVariants";
 
