@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 
 export const authContainer = cva(
-  "flex min-h-screen justify-center items-center relative overflow-hidden sm:justify-end sm:items-end",
+  "flex min-h-screen w-full relative overflow-hidden",
   {
     variants: {
       theme: {
@@ -31,7 +31,17 @@ export const authBackground = cva(
   },
 );
 
-// CORREÇÃO: h-206 → min-h-screen, px-35 → px-10 (classes válidas no Tailwind v4)
+// Painel branco do formulário: ocupa tela toda no mobile,
+// largura fixa ancorada à direita no desktop
 export const authContent = cva(
-  "min-h-screen sm:min-h-[47.825rem] bg-gray-600 relative z-10 rounded-tl-[1.25rem] px-10 py-12",
+  [
+    "relative z-10",
+    "w-full sm:w-[27rem]", // mobile 100%, desktop 432px
+    "min-h-screen", // sempre ocupa a tela toda verticalmente
+    "bg-gray-600", // fundo branco (#f9fafa)
+    "sm:rounded-tl-[1.25rem]", // borda arredondada só no desktop
+    "px-8 py-12", // espaçamento interno
+    "flex flex-col justify-center", // centraliza o conteúdo verticalmente
+    "ml-auto", // empurra para a direita no desktop
+  ].join(" "),
 );
