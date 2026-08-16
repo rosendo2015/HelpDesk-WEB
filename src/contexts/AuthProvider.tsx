@@ -1,8 +1,14 @@
-import { useState, useEffect, type ReactNode, startTransition } from "react";
-import { AuthContext } from "./AuthContext";
-import type { Users } from "../contexts/User/model/users";
 import { jwtDecode } from "jwt-decode";
+import {
+  type ReactNode,
+  startTransition,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import type { Users } from "../contexts/User/model/users";
 import { api } from "../services/api";
+import { AuthContext } from "./AuthContext";
 
 interface Props {
   children: ReactNode;
@@ -17,6 +23,14 @@ export function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<Users | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const signOut = useCallback(() => {
+    localStorage.removeItem("@helpdesk:user");
+    localStorage.removeItem("@helpdesk:token");
+    setUser(null);
+    setToken(null);
+    delete api.defaults.headers.common["Authorization"];
+  }, []);
 
   useEffect(() => {
     const loadStoredData = async () => {
@@ -54,7 +68,7 @@ export function AuthProvider({ children }: Props) {
     };
 
     loadStoredData();
-  }, []);
+  }, [signOut]);
 
   function signIn({ token, user }: { token: string; user: Users }) {
     localStorage.setItem("@helpdesk:user", JSON.stringify(user));
@@ -70,19 +84,11 @@ export function AuthProvider({ children }: Props) {
     setUser(updatedUser);
   }
 
-  function signOut() {
-    localStorage.removeItem("@helpdesk:user");
-    localStorage.removeItem("@helpdesk:token");
-    setUser(null);
-    setToken(null);
-    delete api.defaults.headers.common["Authorization"];
-  }
-
   return (
     <AuthContext.Provider
       value={{ user, token, signIn, signOut, updateUser, isLoading }}
     >
-      {isLoading ? <div>Carregando...</div> : children}
+      {children}
     </AuthContext.Provider>
   );
 }

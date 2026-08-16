@@ -10,14 +10,14 @@ import { ChamadosProvider } from "./contexts/Chamado/ChamadosProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <ServicesProvider>
-        <ChamadosProvider>
-          <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <ServicesProvider>
+          <ChamadosProvider>
             <AppRoutes />
-          </BrowserRouter>
-        </ChamadosProvider>
-      </ServicesProvider>
-    </AuthProvider>
+          </ChamadosProvider>
+        </ServicesProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 );

@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { ZodError, z } from "zod";
+import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 import { InputText } from "../components/InputText";
-import { ActionLink } from "../components/ActionLink";
 import { Logo } from "../components/Logo";
 import { Text } from "../components/Text";
-import { api } from "../services/api";
-import { z, ZodError } from "zod";
-import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { api } from "../services/api";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "E-Mail inválido." }),
@@ -84,7 +84,7 @@ export function SignIn() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+      <main className="flex flex-col gap-3 w-full max-w-md">
         {/* Aviso do banco de dados */}
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">

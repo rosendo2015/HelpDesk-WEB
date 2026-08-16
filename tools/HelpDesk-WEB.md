@@ -61,7 +61,7 @@ export default defineConfig([
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-number-format": "^5.4.5",
-    "react-router": "^7.15.1",
+    "react-router": "^8.3.0",
     "react-router-dom": "^7.17.0",
     "tailwind-merge": "^3.6.0",
     "tailwind-variants": "^3.2.2",
@@ -639,6 +639,8 @@ export function Card({
 ```tsx
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import CheckIcon from "../../assets/icons/circle-check-big.svg?react";
+import ClockIcon from "../../assets/icons/clock-2.svg?react";
+
 import { getStatusConfig } from "../../utils/statusConfig";
 import { Avatar } from "../Avatar";
 import { Button } from "../Button";
@@ -647,32 +649,120 @@ import Divider from "../Divider";
 import { Tags } from "../Tags";
 import { Text } from "../Text";
 import { NavLink } from "../NavLink";
-import type { Chamado } from "../../contexts/Chamado/model/Chamado";
+
+import { useState } from "react";
+import { api } from "../../services/api";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import type { Chamado, Status } from "../../contexts/Chamado/model/Chamado";
 
 interface ChamadoCardProps {
   chamado: Chamado;
 }
 
+type Status = "ABERTO" | "EM_ATENDIMENTO" | "ENCERRADO";
+
 export function ChamadoCard({ chamado }: ChamadoCardProps) {
+  const { updateChamado } = useChamados();
+  const [loading, setLoading] = useState(false);
+
+  async function handleUpdateStatus(novoStatus: Status) {
+    try {
+      setLoading(true);
+
+      await api.patch(`/chamados/${chamado.id}`, {
+        status: novoStatus,
+      });
+
+      // Recarrega os chamados para que o card
+      // mude de seção conforme o novo status
+      window.location.reload();
+    } catch (error) {
+      console.error("Erro ao atualizar status do chamado:", error);
+      alert("Não foi possível atualizar o status do chamado.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleStatusChange(status: Status) {
+    try {
+      await updateChamado(chamado.id, { status });
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+    }
+  }
+
+  function renderStatusButton() {
+    if (chamado.status === "ABERTO") {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          type="button"
+          disabled={loading}
+          onClick={() => handleUpdateStatus("EM_ATENDIMENTO")}
+        >
+          {loading ? "..." : "Iniciar"}
+        </Button>
+      );
+    }
+
+    if (chamado.status === "EM_ATENDIMENTO") {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          type="button"
+          icon={CheckIcon}
+          disabled={loading}
+          onClick={() => handleUpdateStatus("ENCERRADO")}
+        >
+          {loading ? "..." : "Encerrar"}
+        </Button>
+      );
+    }
+
+    return null;
+  }
+
   return (
     <Card className="h-fit p-5">
       <div className="w-full md:max-w-86.5 flex flex-col items-center ">
+        <header className="w-86.5 flex justify-between mb-1"></header>
         <header className="w-86.5 flex justify-between mb-1">
-          <Text variant="heading-md-normal" className="w-37.5 truncate">
-            {chamado.id}
-          </Text>
-          <div className="flex gap-2">
+          <Text>{chamado.id}</Text>
+
+          <div className="flex items-center gap-2">
             <NavLink
               variant="subtitle"
               to={`/tecnico/chamado-details/${chamado.id}`}
               icon={PenLineIcon}
             />
 
-            <Button variant="primary" size="sm" icon={CheckIcon}>
-              Encerrar
-            </Button>
+            {chamado.status === "ABERTO" && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={ClockIcon}
+                onClick={() => handleStatusChange("EM_ATENDIMENTO")}
+              >
+                Iniciar
+              </Button>
+            )}
+
+            {chamado.status === "EM_ATENDIMENTO" && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={CheckIcon}
+                onClick={() => handleStatusChange("ENCERRADO")}
+              >
+                Encerrar
+              </Button>
+            )}
           </div>
         </header>
+
         <div className="flex flex-col">
           <Text as="h3" variant="heading-md-bold">
             {chamado.title}
@@ -2243,17 +2333,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
-  DialogClose,
+  //DialogClose,
 } from "../Dialog";
 import { InputText } from "../InputText";
 import { Button } from "../Button";
 import { Text } from "../Text";
 import Divider from "../Divider";
 import { api } from "../../services/api";
+import axios from "axios";
 
 export function UpdatePasswordDialog({ userId }: { userId: string }) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [open, setOpen] = useState(false);
+  const [oldPasswordError, setOldPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
 
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -2264,14 +2358,64 @@ export function UpdatePasswordDialog({ userId }: { userId: string }) {
       });
       setOldPassword("");
       setNewPassword("");
+      setOldPasswordError("");
+      setNewPasswordError("");
       alert("Senha atualizada com sucesso!");
+      setOpen(false);
     } catch (err) {
       console.error("Erro ao atualizar senha:", err);
+
+      // Limpa erros anteriores
+      setOldPasswordError("");
+      setNewPasswordError("");
+
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+
+        // Erros de validação do Zod
+        if (data?.issues && Array.isArray(data.issues)) {
+          data.issues.forEach((issue: { path: string; message: string }) => {
+            if (issue.path === "oldPassword") {
+              setOldPasswordError(issue.message);
+            }
+
+            if (issue.path === "newPassword") {
+              setNewPasswordError(issue.message);
+            }
+          });
+
+          return;
+        }
+
+        // Erros do AppError
+        if (data?.message) {
+          if (data.message === "Senha atual incorreta.") {
+            setOldPasswordError(data.message);
+          } else {
+            setNewPasswordError(data.message);
+          }
+
+          return;
+        }
+
+        setNewPasswordError("Não foi possível atualizar a senha.");
+      } else {
+        setNewPasswordError("Ocorreu um erro ao atualizar a senha.");
+      }
     }
   }
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        if (value) {
+          setOldPasswordError("");
+          setNewPasswordError("");
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="secondary" className="mb-6">
           Alterar
@@ -2282,32 +2426,40 @@ export function UpdatePasswordDialog({ userId }: { userId: string }) {
           <Text>Alterar senha</Text>
         </DialogHeader>
         <Divider className="my-4 mb-10 mt-10" />
-        <form onSubmit={handlePasswordSubmit}>
+        <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-2">
           <InputText
             type="password"
             label="Senha atual"
             placeholder="Digite sua senha atual"
             value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            className="mb-10"
+            onChange={(e) => {
+              setOldPassword(e.target.value);
+              setOldPasswordError("");
+            }}
+            error={!!oldPasswordError}
+            helperText={oldPasswordError ? oldPasswordError : "."}
           />
           <InputText
             type="password"
             label="Nova senha"
             placeholder="Digite sua nova senha"
-            helperText="mínimo 6 dígitos"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(e) => {
+              setNewPassword(e.target.value);
+              setNewPasswordError("");
+            }}
+            error={!!newPasswordError}
+            helperText={
+              newPasswordError ? newPasswordError : "mínimo 6 dígitos"
+            }
           />
 
           <Divider className="my-4 mt-10 mb-10" />
 
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="submit" size="lg" className="">
-                Salvar
-              </Button>
-            </DialogClose>
+            <Button type="submit" size="lg" className="">
+              Salvar
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -2343,31 +2495,65 @@ import { UpdatePasswordDialog } from "../UpdatePasswordDialog";
 import UserIcon from "../../assets/icons/users.svg?react";
 import LogoutIcon from "../../assets/icons/log-out.svg?react";
 
-interface UserManuProps {
+interface UserMenuProps {
   children: ReactNode;
 }
 
-export function UserMenu({ children }: UserManuProps) {
-  const { user, signIn, updateUser } = useAuth();
-  const [name, setName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
-  const [password, setPassword] = useState(user?.password);
+export function UserMenu({ children }: UserMenuProps) {
+  const { user, updateUser } = useAuth();
+
+  const [name, setName] = useState(user?.name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  async function handleProfileOpen(open: boolean) {
+    setProfileOpen(open);
+
+    if (!open || !user?.id) {
+      return;
+    }
+
+    try {
+      const response = await api.get(`/users/${user.id}`);
+
+      console.log("=== USUÁRIO COMPLETO ===");
+      console.log(response.data);
+
+      updateUser(response.data);
+
+      setName(response.data.name ?? "");
+      setEmail(response.data.email ?? "");
+    } catch (error) {
+      console.error("Erro ao buscar dados do usuário:", error);
+
+      // Mantém os dados que já estavam no contexto
+      setName(user.name ?? "");
+      setEmail(user.email ?? "");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    console.log("=== SALVAR PERFIL ===");
+    console.log("Usuário:", user);
+    console.log("Nome:", name);
+    console.log("Email:", email);
+    console.log("ID:", user?.id);
 
     try {
       const response = await api.patch(`/users/${user?.id}`, {
         name,
         email,
-        ...(password ? { password } : {}), // só envia se tiver senha
       });
 
+      console.log("Resposta da API:", response.data);
+
       // Atualiza contexto com dados novos
-      signIn({
-        token: localStorage.getItem("@helpdesk:token")!,
-        user: response.data,
-      });
+      updateUser(response.data);
+      setName(response.data.name);
+      setEmail(response.data.email);
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
     }
@@ -2404,15 +2590,15 @@ export function UserMenu({ children }: UserManuProps) {
         </Text>
         <div className="flex flex-col gap-3 px-4 mt-4">
           <div className="flex items-center gap-3">
-            <form onSubmit={handleSubmit}>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="-ml-7.5 bg-transparent">
-                    <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
-                    <Text className="text-gray-500">Perfil</Text>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
+            <Dialog open={profileOpen} onOpenChange={handleProfileOpen}>
+              <DialogTrigger asChild>
+                <Button type="button" className="-ml-7.5 bg-transparent">
+                  <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
+                  <Text className="text-gray-500">Perfil</Text>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <form id="profile-form" onSubmit={handleSubmit}>
                   <DialogHeader>
                     <Text>Perfil</Text>
                   </DialogHeader>
@@ -2446,7 +2632,6 @@ export function UserMenu({ children }: UserManuProps) {
                       type="password"
                       label="SENHA"
                       value="123456"
-                      onChange={(e) => setPassword(e.target.value)}
                       helperText="Para atualizar a senha clique no botão Alterar"
                     />
 
@@ -2461,27 +2646,32 @@ export function UserMenu({ children }: UserManuProps) {
                           Horários de atendimento definidos pelo admin.
                         </Text>
                       </div>
-                      <div className="flex gap-2">
-                        <TagTime>09:00</TagTime>
-                        <TagTime>10:00</TagTime>
-                        <TagTime>12:00</TagTime>
-                        <TagTime>13:00</TagTime>
-                        <TagTime>15:00</TagTime>
-                        <TagTime>16:00</TagTime>
+                      <div className="flex flex-wrap gap-2">
+                        {user.disponibilidades?.length > 0 ? (
+                          user.disponibilidades.map((disponibilidade) => (
+                            <TagTime key={disponibilidade.horario}>
+                              {disponibilidade.horario}
+                            </TagTime>
+                          ))
+                        ) : (
+                          <Text variant="text-xs-regular">
+                            Nenhum horário disponível.
+                          </Text>
+                        )}
                       </div>
                       <Divider className="my-4" />
                     </>
                   )}
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button type="submit" size={"lg"}>
+                      <Button type="submit" form="profile-form" size="lg">
                         Salvar
                       </Button>
                     </DialogClose>
                   </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </form>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <Button
@@ -2835,14 +3025,14 @@ export function ChamadosProvider({ children }: { children: React.ReactNode }) {
 
   async function updateChamado(id: string, dados: ChamadoPayload) {
     try {
-      const response = await api.patch(`/chamados/${id}`, dados, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setChamados((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...response.data } : c)),
-      );
+      const response = await api.patch(`/chamados/${id}`, dados);
+
+      await fetchChamados();
+
+      return response.data;
     } catch (error) {
       console.error("Erro ao atualizar chamado:", error);
+      throw error;
     }
   }
 
@@ -3118,20 +3308,21 @@ import backgroundImage from "../assets/images/Login_Background.png";
 import { authBackground, authContainer, authContent } from "./layoutVariants";
 
 export function AuthLayout() {
-    return (
-        <div className={authContainer()}>
-            {/* Imagem de fundo */}
-            <div
-                className={authBackground()}
-                style={{ backgroundImage: `url(${backgroundImage})` }}
-            />
-            {/* Conteúdo (formulários) */}
-            <div className={authContent()}>
-                <Outlet />
-            </div>
-        </div>
-    );
+  return (
+    <div className={authContainer()}>
+      {/* Imagem de fundo */}
+      <div
+        className={authBackground()}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      />
+      {/* Conteúdo (formulários) */}
+      <div className={authContent()}>
+        <Outlet />
+      </div>
+    </div>
+  );
 }
+
 ```
 
 ## src\layout\layoutVariants.ts
@@ -3358,20 +3549,22 @@ export function ChamadosAdmin() {
                   </div>
                 </td>
 
-                <td className="flex max-w-[64px] px-3 py-2 lg:max-w-[152px] md:max-w-[152px]">
-                  <Tags
-                    variant={getStatusConfig(chamado.status).variant}
-                    svg={getStatusConfig(chamado.status).icon}
-                    className="max-w-[28px] lg:max-w-[152px] md:max-w-[152px] "
-                  >
-                    {getStatusConfig(chamado.status).label}
-                  </Tags>
+                <td className="max-w-[64px] px-3 py-2 lg:max-w-[152px] md:max-w-[152px]">
+                  <div className="flex items-center">
+                    <Tags
+                      variant={getStatusConfig(chamado.status).variant}
+                      svg={getStatusConfig(chamado.status).icon}
+                      className="max-w-[28px] lg:max-w-[152px] md:max-w-[152px] "
+                    >
+                      {getStatusConfig(chamado.status).label}
+                    </Tags>
+                  </div>
                 </td>
 
                 <td className="max-w-[52px] px-3 py-2">
                   <div className="flex items-center justify-end">
                     <ActionLink
-                      to={`admin/editarChamados/${chamado.id}`}
+                      to={`editarChamados/${chamado.id}`}
                       variant="subtitle"
                       size="md"
                     >
@@ -4804,6 +4997,7 @@ import { Icon } from "../../components/Icon";
 
 import { getStatusConfig } from "../../utils/statusConfig";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import { Skeleton } from "../../components/Skeleton";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -4836,8 +5030,31 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="text-center py-4">
-                  Carregando...
+                <td className="px-4 py-2">
+                  <Skeleton className="w-30 md:w-35 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="md:w-25 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2">
+                  <Skeleton className="w-20 md:w-60 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="w-60 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="md:w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 gap-1 md:flex hidden">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2">
+                  <Skeleton className="w-8 md:w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 flex flex-row items-center justify-center gap-1">
+                  <Skeleton className="w-8 h-8 rounded" />
+                  <Skeleton className="w-8 h-8 rounded" />
                 </td>
               </tr>
             ) : (
@@ -5054,7 +5271,7 @@ export function DetailChamadoCliente() {
             </Text>
 
             <div className="flex gap-2">
-              <Avatar name="Jhon Doe" />
+              <Avatar name={chamado.tecnico?.name || "N/A"} />
               <div className="flex flex-col">
                 <Text variant="text-xs-regular" className="text-gray-300">
                   {chamado.tecnico?.name || "Técnico não atribuído"}
@@ -5082,7 +5299,7 @@ export function DetailChamadoCliente() {
             {/** nessa parte deve exibir os serviços adicionais */}
             {chamado.services.slice(1).map((service) => (
               <div key={service.id} className="flex justify-between">
-                <Text>{service.nome}</Text>
+                <Text className="w-[130px] truncate">{service.nome}</Text>
                 <Text>R$ {service.price.toFixed(2)}</Text>
               </div>
             ))}
@@ -5397,36 +5614,37 @@ import { ButtonIcon } from "../components/ButtonIcon";
 import { InputText } from "../components/InputText";
 import { InputSelect } from "../components/InputSelect";
 
-import { useState } from "react"
+import { useState } from "react";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 
 export function Components() {
-
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     // Simples validação: senha precisa ter pelo menos 8 caracteres
     if (!email || !password) {
-      setError(true)
-      return
+      setError(true);
+      return;
     }
     if (password.length < 8) {
-      setError(true)
-      return
+      setError(true);
+      return;
     } else {
-      setError(false)
-      alert("Formulário enviado com sucesso!")
+      setError(false);
+      alert("Formulário enviado com sucesso!");
     }
   }
   return (
     <Container>
       <div className="flex flex-col gap-2 p-4">
-        <Text variant={"text-xl-bold"} className="text-blue-dark">Hello, World!</Text>
+        <Text variant={"text-xl-bold"} className="text-blue-dark">
+          Hello, World!
+        </Text>
         <Text variant={"text-lg-bold"}>Hello, World!</Text>
         <Text variant={"heading-md-normal"}>Hello, World!</Text>
         <Text variant={"text-sm-regular"}>Hello, World!</Text>
@@ -5447,23 +5665,43 @@ export function Components() {
           <Icon svg={LogOutIcon} className="fill-feedback-danger w-5 h-5" />
         </div>
         <div className="flex gap-4">
-          <Tags variant="new" svg={NewIcon} >LABEL</Tags>
-          <Tags variant="info" svg={ClockIcon}>LABEL</Tags>
-          <Tags variant="success" svg={CircleCheckIcon}>LABEL</Tags>
-          <Tags variant="danger" svg={NewIcon}>LABEL</Tags>
+          <Tags variant="new" svg={NewIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="info" svg={ClockIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="success" svg={CircleCheckIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="danger" svg={NewIcon}>
+            LABEL
+          </Tags>
         </div>
         <div className="flex gap-4">
           <TagTime>09:00</TagTime>
-          <TagTime variant="selected" svg={XIcon}>15:00</TagTime>
-          <TagTime variant="disabled"> 08:30 </TagTime>
+          <TagTime svg={XIcon}>15:00</TagTime>
+          <TagTime> 08:30 </TagTime>
         </div>
         <div className="flex gap-4">
-          <Button icon={LinePencil} variant="primary">Primary</Button>
-          <Button icon={LinePencil} size="sm" variant="primary">Primary</Button>
-          <Button icon={LinePencil} disabled>Disabled</Button>
-          <Button icon={LinePencil} variant="secondary">Secondary</Button>
-          <Button icon={LinePencil} variant="link">Link</Button>
-          <Button icon={LinePencil} size="sm" variant="link">Link</Button>
+          <Button icon={LinePencil} variant="primary">
+            Primary
+          </Button>
+          <Button icon={LinePencil} size="sm" variant="primary">
+            Primary
+          </Button>
+          <Button icon={LinePencil} disabled>
+            Disabled
+          </Button>
+          <Button icon={LinePencil} variant="secondary">
+            Secondary
+          </Button>
+          <Button icon={LinePencil} variant="link">
+            Link
+          </Button>
+          <Button icon={LinePencil} size="sm" variant="link">
+            Link
+          </Button>
         </div>
         <div className="flex gap-4">
           <ButtonIcon icon={LinePencil} variant="primary" />
@@ -5513,41 +5751,36 @@ export function Components() {
             error={true}
           />
 
-
-          <Button type="submit" size="md" variant="primary">Enviar</Button>
+          <Button type="submit" size="md" variant="primary">
+            Enviar
+          </Button>
         </form>
-
 
         <div className="flex p-8 bg-gray-600">
           <Card size="md">Hello World.</Card>
         </div>
-
       </div>
     </Container>
-  )
+  );
 }
-
-
-
-
 
 ```
 
 ## src\pages\SignIn.tsx
 
 ```tsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { ZodError, z } from "zod";
+import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 import { InputText } from "../components/InputText";
-import { ActionLink } from "../components/ActionLink";
 import { Logo } from "../components/Logo";
 import { Text } from "../components/Text";
-import { api } from "../services/api";
-import { z, ZodError } from "zod";
-import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { api } from "../services/api";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "E-Mail inválido." }),
@@ -5622,7 +5855,7 @@ export function SignIn() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+      <main className="flex flex-col gap-3 w-full max-w-md">
         {/* Aviso do banco de dados */}
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
@@ -5889,19 +6122,120 @@ import {
   DialogTrigger,
 } from "../../components/Dialog";
 import { InputSelect } from "../../components/InputSelect";
+import { api } from "../../services/api";
+import { useEffect, useState } from "react";
+import { formatCurrencyBRL } from "../../utils/formatCurrency";
+import { Skeleton } from "../../components/Skeleton";
 
 export function ChamadoDetailsTecnico() {
+  const [services, setServices] = useState<
+    { id: string; name: string; price: number }[]
+  >([]);
+
   const { id } = useParams();
-  const { getChamadoById } = useChamados();
+  const { getChamadoById, fetchChamados, loading } = useChamados();
 
   const chamado = getChamadoById(id!);
+
+  const [selectedServiceId, setSelectedServiceId] = useState<{
+    id: string;
+    nome: string;
+    valor: number;
+  } | null>(null);
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
+  const [isAddingService, setIsAddingService] = useState(false);
+
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        const response = await api.get("/services");
+        setServices(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      }
+    }
+
+    fetchServices();
+  }, []);
 
   if (!chamado) {
     return <Text>Cramado não encontrado</Text>;
   }
 
+  const precoBase = chamado?.services[0]?.price ?? 0;
+
+  const totalAdicionais = chamado?.services
+    .slice(1)
+    .reduce((total, service) => total + service.price, 0);
+
+  async function handleUpdateStatus(status: "EM_ATENDIMENTO" | "ENCERRADO") {
+    try {
+      await api.patch(`/chamados/${chamado?.id}/status`, {
+        status,
+      });
+
+      await fetchChamados();
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+    }
+  }
+
+  async function handleAddService() {
+    if (!selectedServiceId) {
+      return;
+    }
+
+    try {
+      setIsAddingService(true);
+
+      // IDs dos serviços que o chamado já possui
+      const servicesAtuais = chamado?.services.map((service) => service.id);
+
+      // Evita adicionar o mesmo serviço duas vezes
+      if (servicesAtuais?.includes(selectedServiceId.id)) {
+        alert("Esse serviço já foi adicionado ao chamado.");
+        return;
+      }
+
+      // Mantém os serviços existentes e adiciona o novo
+      const servicesAtualizados = [...servicesAtuais, selectedServiceId.id];
+
+      await api.patch(`/chamados/${chamado?.id}`, {
+        services: servicesAtualizados,
+      });
+
+      // Atualiza os chamados no contexto
+      await fetchChamados();
+
+      // Limpa seleção
+      setSelectedServiceId(null);
+
+      // Fecha modal
+      setServiceDialogOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar serviço:", error);
+      alert("Não foi possível adicionar o serviço.");
+    } finally {
+      setIsAddingService(false);
+    }
+  }
+
+  async function handleRemoveService(serviceId: string) {
+    try {
+      await api.delete(`/chamados/${chamado?.id}/services/${serviceId}`);
+
+      await fetchChamados();
+
+      alert("Serviço excluído com sucesso!");
+    } catch (error) {
+      console.error("Erro ao remover serviço:", error);
+
+      alert("Não foi possível excluir o serviço.");
+    }
+  }
+
   return (
-    <div className="md:max-w-200 mt-14 mx-auto">
+    <div className="md:max-w-210 mt-14 mx-auto">
       <header className="flex flex-col md:items-end justify-between max-w-199 mb-6 md:flex-row">
         <div>
           <a
@@ -5928,179 +6262,242 @@ export function ChamadoDetailsTecnico() {
           >
             Encerrar
           </Button>
-          <Button size="md" icon={ClockIcon} className="w-full">
-            Iniciar Atendimento
-          </Button>
+
+          {chamado.status === "ABERTO" && (
+            <Button
+              variant="primary"
+              size="md"
+              icon={ClockIcon}
+              onClick={() => handleUpdateStatus("EM_ATENDIMENTO")}
+              className="w-full"
+            >
+              Iniciar atendimento
+            </Button>
+          )}
+
+          {chamado.status === "EM_ATENDIMENTO" && (
+            <Button
+              variant="primary"
+              size="md"
+              icon={CheckIcon}
+              onClick={() => handleUpdateStatus("ENCERRADO")}
+              className="w-full"
+            >
+              Encerrar
+            </Button>
+          )}
         </div>
       </header>
-      <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-199">
-        <Card className="flex flex-col gap-5 p-8 md:max-w-115 w-full">
-          <div className="flex items-start justify-between mb-6">
+      {loading ? (
+        <>
+          <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+            <Skeleton className="w-[460px] h-[400px] rounded-lg" />
+            <Skeleton className="w-[300px] h-[400px] rounded-lg" />
+            <Skeleton className="w-[460px] h-[200px] rounded-lg" />
+          </Container>
+        </>
+      ) : (
+        <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+          <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex flex-col gap-2">
+                <Text as="h2" variant="heading-md-normal">
+                  {chamado.id}
+                </Text>
+                <Text as="h2" variant="heading-md-bold">
+                  {chamado.title}
+                </Text>
+              </div>
+
+              <Tags
+                variant={getStatusConfig(chamado.status).variant}
+                svg={getStatusConfig(chamado.status).icon}
+                className="flex w-1/3"
+              >
+                {getStatusConfig(chamado.status).label}
+              </Tags>
+            </div>
             <div className="flex flex-col gap-2">
-              <Text as="h2" variant="heading-md-normal">
-                {chamado.id}
+              <Text variant="text-sm-bold" className="text-gray-400">
+                Descrição
               </Text>
-              <Text as="h2" variant="heading-md-bold">
-                {chamado.title}
+              <Text>{chamado.description}</Text>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text variant="text-sm-bold" className="text-gray-400">
+                Categoria
               </Text>
+              {chamado.services.map((service) => (
+                <Text key={service.id}>{service.nome}</Text>
+              ))}
             </div>
-
-            <Tags
-              variant={getStatusConfig(chamado.status).variant}
-              svg={getStatusConfig(chamado.status).icon}
-              className="flex w-1/3"
-            >
-              {getStatusConfig(chamado.status).label}
-            </Tags>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text variant="text-sm-bold" className="text-gray-400">
-              Descrição
-            </Text>
-            <Text>{chamado.description}</Text>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text variant="text-sm-bold" className="text-gray-400">
-              Categoria
-            </Text>
-            {chamado.services.map((service) => (
-              <Text key={service.id}>{service.nome}</Text>
-            ))}
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-20">
-              <div className="flex flex-col gap-2">
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  Criado em
-                </Text>
-                <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  Atualizado em
-                </Text>
-                <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
-              </div>
-            </div>
-          </div>
-          <div>
-            <Text>Cliente</Text>
-            <div className="flex items-center gap-2 mt-2">
-              <Avatar name={chamado.cliente.name} />
-              <Text>{chamado.cliente.name}</Text>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 w-full">
-          <div>
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
-              Técnico responsável
-            </Text>
-
-            <div className="flex gap-2">
-              <Avatar name="Jhon Doe" />
-              <div className="flex flex-col">
-                <Text variant="text-xs-regular" className="text-gray-300">
-                  {chamado.tecnico?.name || "Técnico não atribuído"}
-                </Text>
-                <Text variant="text-xs-regular" className="text-gray-300">
-                  {chamado.tecnico?.email || "Email não disponível"}
-                </Text>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2">
-              Valores
-            </Text>
-            <div className="flex justify-between">
-              <Text>Preço Base</Text>
-              <Text>R$ {chamado.totalPrice.toFixed(2)}</Text>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2">
-              Adicionais
-            </Text>
-            {/** nessa parte deve exibir os serviços adicionais */}
-            {chamado.services.slice(1).map((service) => (
-              <div key={service.id} className="flex justify-between">
-                <Text>{service.nome}</Text>
-                <Text>R$ {service.price.toFixed(2)}</Text>
-              </div>
-            ))}
-          </div>
-          <Divider />
-          <div className="flex justify-between">
-            <Text variant="heading-md-bold">Total</Text>
-            {/** aqui deve exibir o total do preço base + adicionais */}
-            <Text variant="heading-md-bold">
-              R$ {chamado.totalPrice.toFixed(2)}
-            </Text>
-          </div>
-        </Card>
-        <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
-          <header className="flex justify-between">
-            <Text variant="heading-md-bold" className="text-gray-300">
-              Serviços adicionais
-            </Text>
-            <Dialog>
-              <DialogTrigger asChild>
-                <ButtonIcon size="lg" icon={PlusIcon} />
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <Text>Serviços adicionais</Text>
-                </DialogHeader>
-                <Divider className="my-4" />
-                <div className="flex items-center gap-2 mb-5">
-                  <InputSelect label="Serviços cadastrados" />
+            <div className="flex items-center justify-between">
+              <div className="flex gap-20">
+                <div className="flex flex-col gap-2">
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    Criado em
+                  </Text>
+                  <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
                 </div>
-                <Divider className="my-4" />
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="secondary" size={"lg"}>
-                      Cancelar
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button type="submit" size={"lg"}>
-                      Salvar
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </header>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="py-1">
-                  <Text variant="heading-md-bold">Assinatura de backup</Text>
-                </td>
-                <td className="py-1">R$ 120,00</td>
-                <td className="w-10 py-2">
-                  <div className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer">
-                    <Icon
-                      svg={TrachIcon}
-                      className="w-6 h-6 fill-feedback-danger"
+                <div className="flex flex-col gap-2">
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    Atualizado em
+                  </Text>
+                  <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Text>Cliente</Text>
+              <div className="flex items-center gap-2 mt-2">
+                <Avatar name={chamado.cliente.name} />
+                <Text>{chamado.cliente.name}</Text>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 max-w-[full]">
+            <div>
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
+                Técnico responsável
+              </Text>
+
+              <div className="flex gap-2">
+                <Avatar name="Jhon Doe" />
+                <div className="flex flex-col">
+                  <Text variant="text-xs-regular" className="text-gray-300">
+                    {chamado.tecnico?.name || "Técnico não atribuído"}
+                  </Text>
+                  <Text variant="text-xs-regular" className="text-gray-300">
+                    {chamado.tecnico?.email || "Email não disponível"}
+                  </Text>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+                Valores
+              </Text>
+              <div className="flex justify-between">
+                <Text>Preço Base</Text>
+                <Text>{formatCurrencyBRL(precoBase)}</Text>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+                Adicionais
+              </Text>
+
+              {chamado.services.slice(1).map((service) => (
+                <div key={service.id} className="flex justify-between gap-4">
+                  <Text className="truncate w-[150px]">{service.nome}</Text>
+
+                  <Text>{formatCurrencyBRL(service.price)}</Text>
+                </div>
+              ))}
+            </div>
+            <Divider />
+            <div className="flex justify-between">
+              <Text variant="heading-md-bold">Total</Text>
+              {/** aqui deve exibir o total do preço base + adicionais */}
+              <Text variant="heading-md-bold">
+                {formatCurrencyBRL(precoBase + totalAdicionais)}
+              </Text>
+            </div>
+          </Card>
+          <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
+            <header className="flex justify-between">
+              <Text variant="heading-md-bold" className="text-gray-300">
+                Serviços adicionais
+              </Text>
+              <Dialog
+                open={serviceDialogOpen}
+                onOpenChange={(open) => {
+                  setServiceDialogOpen(open);
+
+                  if (!open) {
+                    setSelectedServiceId(null);
+                  }
+                }}
+              >
+                <DialogTrigger asChild>
+                  <ButtonIcon size="lg" icon={PlusIcon} />
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <Text>Serviços adicionais</Text>
+                  </DialogHeader>
+
+                  <Divider className="my-4" />
+
+                  <div className="flex items-center gap-2 mb-5">
+                    <InputSelect
+                      label="Serviços cadastrados"
+                      placeholder="Selecione um serviço"
+                      value={selectedServiceId ?? undefined}
+                      onChange={(option) => setSelectedServiceId(option)}
                     />
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Card>
-      </Container>
+
+                  <Divider className="my-4" />
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary" size="lg">
+                        Cancelar
+                      </Button>
+                    </DialogClose>
+
+                    <Button
+                      type="button"
+                      size="lg"
+                      onClick={handleAddService}
+                      disabled={!selectedServiceId || isAddingService}
+                    >
+                      {isAddingService ? "Salvando..." : "Salvar"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </header>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {chamado.services.slice(1).map((service) => (
+                  <tr key={service.id}>
+                    <td className="py-1">
+                      <Text variant="heading-md-bold">{service.nome}</Text>
+                    </td>
+
+                    <td className="py-1">{formatCurrencyBRL(service.price)}</td>
+
+                    <td className="w-10 py-2">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveService(service.id)}
+                        className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer"
+                      >
+                        <Icon
+                          svg={TrachIcon}
+                          className="w-6 h-6 fill-feedback-danger"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </Container>
+      )}
     </div>
   );
 }
@@ -6111,6 +6508,7 @@ export function ChamadoDetailsTecnico() {
 
 ```tsx
 import { ChamadoCard } from "../../components/ChamadoCard";
+import { Skeleton } from "../../components/Skeleton";
 import { Tags } from "../../components/Tags";
 import { Text } from "../../components/Text";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
@@ -6118,7 +6516,6 @@ import { getStatusConfig } from "../../utils/statusConfig";
 
 export function ChamadosTecnico() {
   const { chamados, loading } = useChamados();
-
   const chamadosPorStatus = {
     EM_ATENDIMENTO: chamados.filter((c) => c.status === "EM_ATENDIMENTO"),
     ABERTO: chamados.filter((c) => c.status === "ABERTO"),
@@ -6140,7 +6537,22 @@ export function ChamadosTecnico() {
         </Text>
       </header>
       {loading ? (
-        <>{/*TODO:Criar o Skeleton*/}</>
+        <>
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+        </>
       ) : (
         <>
           <section className="mb-8">
@@ -6359,6 +6771,7 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("@helpdesk:token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -6646,7 +7059,7 @@ export default defineConfig([
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-number-format": "^5.4.5",
-    "react-router": "^7.15.1",
+    "react-router": "^8.3.0",
     "react-router-dom": "^7.17.0",
     "tailwind-merge": "^3.6.0",
     "tailwind-variants": "^3.2.2",
@@ -7224,6 +7637,8 @@ export function Card({
 ```tsx
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import CheckIcon from "../../assets/icons/circle-check-big.svg?react";
+import ClockIcon from "../../assets/icons/clock-2.svg?react";
+
 import { getStatusConfig } from "../../utils/statusConfig";
 import { Avatar } from "../Avatar";
 import { Button } from "../Button";
@@ -7232,32 +7647,120 @@ import Divider from "../Divider";
 import { Tags } from "../Tags";
 import { Text } from "../Text";
 import { NavLink } from "../NavLink";
-import type { Chamado } from "../../contexts/Chamado/model/Chamado";
+
+import { useState } from "react";
+import { api } from "../../services/api";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import type { Chamado, Status } from "../../contexts/Chamado/model/Chamado";
 
 interface ChamadoCardProps {
   chamado: Chamado;
 }
 
+type Status = "ABERTO" | "EM_ATENDIMENTO" | "ENCERRADO";
+
 export function ChamadoCard({ chamado }: ChamadoCardProps) {
+  const { updateChamado } = useChamados();
+  const [loading, setLoading] = useState(false);
+
+  async function handleUpdateStatus(novoStatus: Status) {
+    try {
+      setLoading(true);
+
+      await api.patch(`/chamados/${chamado.id}`, {
+        status: novoStatus,
+      });
+
+      // Recarrega os chamados para que o card
+      // mude de seção conforme o novo status
+      window.location.reload();
+    } catch (error) {
+      console.error("Erro ao atualizar status do chamado:", error);
+      alert("Não foi possível atualizar o status do chamado.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleStatusChange(status: Status) {
+    try {
+      await updateChamado(chamado.id, { status });
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+    }
+  }
+
+  function renderStatusButton() {
+    if (chamado.status === "ABERTO") {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          type="button"
+          disabled={loading}
+          onClick={() => handleUpdateStatus("EM_ATENDIMENTO")}
+        >
+          {loading ? "..." : "Iniciar"}
+        </Button>
+      );
+    }
+
+    if (chamado.status === "EM_ATENDIMENTO") {
+      return (
+        <Button
+          variant="primary"
+          size="sm"
+          type="button"
+          icon={CheckIcon}
+          disabled={loading}
+          onClick={() => handleUpdateStatus("ENCERRADO")}
+        >
+          {loading ? "..." : "Encerrar"}
+        </Button>
+      );
+    }
+
+    return null;
+  }
+
   return (
     <Card className="h-fit p-5">
       <div className="w-full md:max-w-86.5 flex flex-col items-center ">
+        <header className="w-86.5 flex justify-between mb-1"></header>
         <header className="w-86.5 flex justify-between mb-1">
-          <Text variant="heading-md-normal" className="w-37.5 truncate">
-            {chamado.id}
-          </Text>
-          <div className="flex gap-2">
+          <Text>{chamado.id}</Text>
+
+          <div className="flex items-center gap-2">
             <NavLink
               variant="subtitle"
               to={`/tecnico/chamado-details/${chamado.id}`}
               icon={PenLineIcon}
             />
 
-            <Button variant="primary" size="sm" icon={CheckIcon}>
-              Encerrar
-            </Button>
+            {chamado.status === "ABERTO" && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={ClockIcon}
+                onClick={() => handleStatusChange("EM_ATENDIMENTO")}
+              >
+                Iniciar
+              </Button>
+            )}
+
+            {chamado.status === "EM_ATENDIMENTO" && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={CheckIcon}
+                onClick={() => handleStatusChange("ENCERRADO")}
+              >
+                Encerrar
+              </Button>
+            )}
           </div>
         </header>
+
         <div className="flex flex-col">
           <Text as="h3" variant="heading-md-bold">
             {chamado.title}
@@ -8828,17 +9331,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
-  DialogClose,
+  //DialogClose,
 } from "../Dialog";
 import { InputText } from "../InputText";
 import { Button } from "../Button";
 import { Text } from "../Text";
 import Divider from "../Divider";
 import { api } from "../../services/api";
+import axios from "axios";
 
 export function UpdatePasswordDialog({ userId }: { userId: string }) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [open, setOpen] = useState(false);
+  const [oldPasswordError, setOldPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
 
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -8849,14 +9356,64 @@ export function UpdatePasswordDialog({ userId }: { userId: string }) {
       });
       setOldPassword("");
       setNewPassword("");
+      setOldPasswordError("");
+      setNewPasswordError("");
       alert("Senha atualizada com sucesso!");
+      setOpen(false);
     } catch (err) {
       console.error("Erro ao atualizar senha:", err);
+
+      // Limpa erros anteriores
+      setOldPasswordError("");
+      setNewPasswordError("");
+
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+
+        // Erros de validação do Zod
+        if (data?.issues && Array.isArray(data.issues)) {
+          data.issues.forEach((issue: { path: string; message: string }) => {
+            if (issue.path === "oldPassword") {
+              setOldPasswordError(issue.message);
+            }
+
+            if (issue.path === "newPassword") {
+              setNewPasswordError(issue.message);
+            }
+          });
+
+          return;
+        }
+
+        // Erros do AppError
+        if (data?.message) {
+          if (data.message === "Senha atual incorreta.") {
+            setOldPasswordError(data.message);
+          } else {
+            setNewPasswordError(data.message);
+          }
+
+          return;
+        }
+
+        setNewPasswordError("Não foi possível atualizar a senha.");
+      } else {
+        setNewPasswordError("Ocorreu um erro ao atualizar a senha.");
+      }
     }
   }
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        if (value) {
+          setOldPasswordError("");
+          setNewPasswordError("");
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="secondary" className="mb-6">
           Alterar
@@ -8867,32 +9424,40 @@ export function UpdatePasswordDialog({ userId }: { userId: string }) {
           <Text>Alterar senha</Text>
         </DialogHeader>
         <Divider className="my-4 mb-10 mt-10" />
-        <form onSubmit={handlePasswordSubmit}>
+        <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-2">
           <InputText
             type="password"
             label="Senha atual"
             placeholder="Digite sua senha atual"
             value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            className="mb-10"
+            onChange={(e) => {
+              setOldPassword(e.target.value);
+              setOldPasswordError("");
+            }}
+            error={!!oldPasswordError}
+            helperText={oldPasswordError ? oldPasswordError : "."}
           />
           <InputText
             type="password"
             label="Nova senha"
             placeholder="Digite sua nova senha"
-            helperText="mínimo 6 dígitos"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(e) => {
+              setNewPassword(e.target.value);
+              setNewPasswordError("");
+            }}
+            error={!!newPasswordError}
+            helperText={
+              newPasswordError ? newPasswordError : "mínimo 6 dígitos"
+            }
           />
 
           <Divider className="my-4 mt-10 mb-10" />
 
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="submit" size="lg" className="">
-                Salvar
-              </Button>
-            </DialogClose>
+            <Button type="submit" size="lg" className="">
+              Salvar
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -8928,31 +9493,65 @@ import { UpdatePasswordDialog } from "../UpdatePasswordDialog";
 import UserIcon from "../../assets/icons/users.svg?react";
 import LogoutIcon from "../../assets/icons/log-out.svg?react";
 
-interface UserManuProps {
+interface UserMenuProps {
   children: ReactNode;
 }
 
-export function UserMenu({ children }: UserManuProps) {
-  const { user, signIn, updateUser } = useAuth();
-  const [name, setName] = useState(user?.name);
-  const [email, setEmail] = useState(user?.email);
-  const [password, setPassword] = useState(user?.password);
+export function UserMenu({ children }: UserMenuProps) {
+  const { user, updateUser } = useAuth();
+
+  const [name, setName] = useState(user?.name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  async function handleProfileOpen(open: boolean) {
+    setProfileOpen(open);
+
+    if (!open || !user?.id) {
+      return;
+    }
+
+    try {
+      const response = await api.get(`/users/${user.id}`);
+
+      console.log("=== USUÁRIO COMPLETO ===");
+      console.log(response.data);
+
+      updateUser(response.data);
+
+      setName(response.data.name ?? "");
+      setEmail(response.data.email ?? "");
+    } catch (error) {
+      console.error("Erro ao buscar dados do usuário:", error);
+
+      // Mantém os dados que já estavam no contexto
+      setName(user.name ?? "");
+      setEmail(user.email ?? "");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    console.log("=== SALVAR PERFIL ===");
+    console.log("Usuário:", user);
+    console.log("Nome:", name);
+    console.log("Email:", email);
+    console.log("ID:", user?.id);
 
     try {
       const response = await api.patch(`/users/${user?.id}`, {
         name,
         email,
-        ...(password ? { password } : {}), // só envia se tiver senha
       });
 
+      console.log("Resposta da API:", response.data);
+
       // Atualiza contexto com dados novos
-      signIn({
-        token: localStorage.getItem("@helpdesk:token")!,
-        user: response.data,
-      });
+      updateUser(response.data);
+      setName(response.data.name);
+      setEmail(response.data.email);
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
     }
@@ -8989,15 +9588,15 @@ export function UserMenu({ children }: UserManuProps) {
         </Text>
         <div className="flex flex-col gap-3 px-4 mt-4">
           <div className="flex items-center gap-3">
-            <form onSubmit={handleSubmit}>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="-ml-7.5 bg-transparent">
-                    <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
-                    <Text className="text-gray-500">Perfil</Text>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
+            <Dialog open={profileOpen} onOpenChange={handleProfileOpen}>
+              <DialogTrigger asChild>
+                <Button type="button" className="-ml-7.5 bg-transparent">
+                  <Icon svg={UserIcon} className="fill-gray-500 mr-2" />
+                  <Text className="text-gray-500">Perfil</Text>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <form id="profile-form" onSubmit={handleSubmit}>
                   <DialogHeader>
                     <Text>Perfil</Text>
                   </DialogHeader>
@@ -9031,7 +9630,6 @@ export function UserMenu({ children }: UserManuProps) {
                       type="password"
                       label="SENHA"
                       value="123456"
-                      onChange={(e) => setPassword(e.target.value)}
                       helperText="Para atualizar a senha clique no botão Alterar"
                     />
 
@@ -9046,27 +9644,32 @@ export function UserMenu({ children }: UserManuProps) {
                           Horários de atendimento definidos pelo admin.
                         </Text>
                       </div>
-                      <div className="flex gap-2">
-                        <TagTime>09:00</TagTime>
-                        <TagTime>10:00</TagTime>
-                        <TagTime>12:00</TagTime>
-                        <TagTime>13:00</TagTime>
-                        <TagTime>15:00</TagTime>
-                        <TagTime>16:00</TagTime>
+                      <div className="flex flex-wrap gap-2">
+                        {user.disponibilidades?.length > 0 ? (
+                          user.disponibilidades.map((disponibilidade) => (
+                            <TagTime key={disponibilidade.horario}>
+                              {disponibilidade.horario}
+                            </TagTime>
+                          ))
+                        ) : (
+                          <Text variant="text-xs-regular">
+                            Nenhum horário disponível.
+                          </Text>
+                        )}
                       </div>
                       <Divider className="my-4" />
                     </>
                   )}
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button type="submit" size={"lg"}>
+                      <Button type="submit" form="profile-form" size="lg">
                         Salvar
                       </Button>
                     </DialogClose>
                   </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </form>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <Button
@@ -9420,14 +10023,14 @@ export function ChamadosProvider({ children }: { children: React.ReactNode }) {
 
   async function updateChamado(id: string, dados: ChamadoPayload) {
     try {
-      const response = await api.patch(`/chamados/${id}`, dados, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setChamados((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...response.data } : c)),
-      );
+      const response = await api.patch(`/chamados/${id}`, dados);
+
+      await fetchChamados();
+
+      return response.data;
     } catch (error) {
       console.error("Erro ao atualizar chamado:", error);
+      throw error;
     }
   }
 
@@ -9703,20 +10306,21 @@ import backgroundImage from "../assets/images/Login_Background.png";
 import { authBackground, authContainer, authContent } from "./layoutVariants";
 
 export function AuthLayout() {
-    return (
-        <div className={authContainer()}>
-            {/* Imagem de fundo */}
-            <div
-                className={authBackground()}
-                style={{ backgroundImage: `url(${backgroundImage})` }}
-            />
-            {/* Conteúdo (formulários) */}
-            <div className={authContent()}>
-                <Outlet />
-            </div>
-        </div>
-    );
+  return (
+    <div className={authContainer()}>
+      {/* Imagem de fundo */}
+      <div
+        className={authBackground()}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      />
+      {/* Conteúdo (formulários) */}
+      <div className={authContent()}>
+        <Outlet />
+      </div>
+    </div>
+  );
 }
+
 ```
 
 ## src\layout\layoutVariants.ts
@@ -9943,20 +10547,22 @@ export function ChamadosAdmin() {
                   </div>
                 </td>
 
-                <td className="flex max-w-[64px] px-3 py-2 lg:max-w-[152px] md:max-w-[152px]">
-                  <Tags
-                    variant={getStatusConfig(chamado.status).variant}
-                    svg={getStatusConfig(chamado.status).icon}
-                    className="max-w-[28px] lg:max-w-[152px] md:max-w-[152px] "
-                  >
-                    {getStatusConfig(chamado.status).label}
-                  </Tags>
+                <td className="max-w-[64px] px-3 py-2 lg:max-w-[152px] md:max-w-[152px]">
+                  <div className="flex items-center">
+                    <Tags
+                      variant={getStatusConfig(chamado.status).variant}
+                      svg={getStatusConfig(chamado.status).icon}
+                      className="max-w-[28px] lg:max-w-[152px] md:max-w-[152px] "
+                    >
+                      {getStatusConfig(chamado.status).label}
+                    </Tags>
+                  </div>
                 </td>
 
                 <td className="max-w-[52px] px-3 py-2">
                   <div className="flex items-center justify-end">
                     <ActionLink
-                      to={`admin/editarChamados/${chamado.id}`}
+                      to={`editarChamados/${chamado.id}`}
                       variant="subtitle"
                       size="md"
                     >
@@ -11389,6 +11995,7 @@ import { Icon } from "../../components/Icon";
 
 import { getStatusConfig } from "../../utils/statusConfig";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import { Skeleton } from "../../components/Skeleton";
 
 // Interface tipando os props
 interface ClienteProps extends VariantProps<typeof clienteVariants> {
@@ -11421,8 +12028,31 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="text-center py-4">
-                  Carregando...
+                <td className="px-4 py-2">
+                  <Skeleton className="w-30 md:w-35 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="md:w-25 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2">
+                  <Skeleton className="w-20 md:w-60 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="w-60 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 hidden md:table-cell">
+                  <Skeleton className="md:w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 gap-1 md:flex hidden">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2">
+                  <Skeleton className="w-8 md:w-30 h-8 rounded-full" />
+                </td>
+                <td className="px-4 py-2 flex flex-row items-center justify-center gap-1">
+                  <Skeleton className="w-8 h-8 rounded" />
+                  <Skeleton className="w-8 h-8 rounded" />
                 </td>
               </tr>
             ) : (
@@ -11639,7 +12269,7 @@ export function DetailChamadoCliente() {
             </Text>
 
             <div className="flex gap-2">
-              <Avatar name="Jhon Doe" />
+              <Avatar name={chamado.tecnico?.name || "N/A"} />
               <div className="flex flex-col">
                 <Text variant="text-xs-regular" className="text-gray-300">
                   {chamado.tecnico?.name || "Técnico não atribuído"}
@@ -11667,7 +12297,7 @@ export function DetailChamadoCliente() {
             {/** nessa parte deve exibir os serviços adicionais */}
             {chamado.services.slice(1).map((service) => (
               <div key={service.id} className="flex justify-between">
-                <Text>{service.nome}</Text>
+                <Text className="w-[130px] truncate">{service.nome}</Text>
                 <Text>R$ {service.price.toFixed(2)}</Text>
               </div>
             ))}
@@ -11982,36 +12612,37 @@ import { ButtonIcon } from "../components/ButtonIcon";
 import { InputText } from "../components/InputText";
 import { InputSelect } from "../components/InputSelect";
 
-import { useState } from "react"
+import { useState } from "react";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 
 export function Components() {
-
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     // Simples validação: senha precisa ter pelo menos 8 caracteres
     if (!email || !password) {
-      setError(true)
-      return
+      setError(true);
+      return;
     }
     if (password.length < 8) {
-      setError(true)
-      return
+      setError(true);
+      return;
     } else {
-      setError(false)
-      alert("Formulário enviado com sucesso!")
+      setError(false);
+      alert("Formulário enviado com sucesso!");
     }
   }
   return (
     <Container>
       <div className="flex flex-col gap-2 p-4">
-        <Text variant={"text-xl-bold"} className="text-blue-dark">Hello, World!</Text>
+        <Text variant={"text-xl-bold"} className="text-blue-dark">
+          Hello, World!
+        </Text>
         <Text variant={"text-lg-bold"}>Hello, World!</Text>
         <Text variant={"heading-md-normal"}>Hello, World!</Text>
         <Text variant={"text-sm-regular"}>Hello, World!</Text>
@@ -12032,23 +12663,43 @@ export function Components() {
           <Icon svg={LogOutIcon} className="fill-feedback-danger w-5 h-5" />
         </div>
         <div className="flex gap-4">
-          <Tags variant="new" svg={NewIcon} >LABEL</Tags>
-          <Tags variant="info" svg={ClockIcon}>LABEL</Tags>
-          <Tags variant="success" svg={CircleCheckIcon}>LABEL</Tags>
-          <Tags variant="danger" svg={NewIcon}>LABEL</Tags>
+          <Tags variant="new" svg={NewIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="info" svg={ClockIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="success" svg={CircleCheckIcon}>
+            LABEL
+          </Tags>
+          <Tags variant="danger" svg={NewIcon}>
+            LABEL
+          </Tags>
         </div>
         <div className="flex gap-4">
           <TagTime>09:00</TagTime>
-          <TagTime variant="selected" svg={XIcon}>15:00</TagTime>
-          <TagTime variant="disabled"> 08:30 </TagTime>
+          <TagTime svg={XIcon}>15:00</TagTime>
+          <TagTime> 08:30 </TagTime>
         </div>
         <div className="flex gap-4">
-          <Button icon={LinePencil} variant="primary">Primary</Button>
-          <Button icon={LinePencil} size="sm" variant="primary">Primary</Button>
-          <Button icon={LinePencil} disabled>Disabled</Button>
-          <Button icon={LinePencil} variant="secondary">Secondary</Button>
-          <Button icon={LinePencil} variant="link">Link</Button>
-          <Button icon={LinePencil} size="sm" variant="link">Link</Button>
+          <Button icon={LinePencil} variant="primary">
+            Primary
+          </Button>
+          <Button icon={LinePencil} size="sm" variant="primary">
+            Primary
+          </Button>
+          <Button icon={LinePencil} disabled>
+            Disabled
+          </Button>
+          <Button icon={LinePencil} variant="secondary">
+            Secondary
+          </Button>
+          <Button icon={LinePencil} variant="link">
+            Link
+          </Button>
+          <Button icon={LinePencil} size="sm" variant="link">
+            Link
+          </Button>
         </div>
         <div className="flex gap-4">
           <ButtonIcon icon={LinePencil} variant="primary" />
@@ -12098,41 +12749,36 @@ export function Components() {
             error={true}
           />
 
-
-          <Button type="submit" size="md" variant="primary">Enviar</Button>
+          <Button type="submit" size="md" variant="primary">
+            Enviar
+          </Button>
         </form>
-
 
         <div className="flex p-8 bg-gray-600">
           <Card size="md">Hello World.</Card>
         </div>
-
       </div>
     </Container>
-  )
+  );
 }
-
-
-
-
 
 ```
 
 ## src\pages\SignIn.tsx
 
 ```tsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { ZodError, z } from "zod";
+import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 import { InputText } from "../components/InputText";
-import { ActionLink } from "../components/ActionLink";
 import { Logo } from "../components/Logo";
 import { Text } from "../components/Text";
-import { api } from "../services/api";
-import { z, ZodError } from "zod";
-import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { api } from "../services/api";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "E-Mail inválido." }),
@@ -12207,7 +12853,7 @@ export function SignIn() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+      <main className="flex flex-col gap-3 w-full max-w-md">
         {/* Aviso do banco de dados */}
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
@@ -12474,19 +13120,120 @@ import {
   DialogTrigger,
 } from "../../components/Dialog";
 import { InputSelect } from "../../components/InputSelect";
+import { api } from "../../services/api";
+import { useEffect, useState } from "react";
+import { formatCurrencyBRL } from "../../utils/formatCurrency";
+import { Skeleton } from "../../components/Skeleton";
 
 export function ChamadoDetailsTecnico() {
+  const [services, setServices] = useState<
+    { id: string; name: string; price: number }[]
+  >([]);
+
   const { id } = useParams();
-  const { getChamadoById } = useChamados();
+  const { getChamadoById, fetchChamados, loading } = useChamados();
 
   const chamado = getChamadoById(id!);
+
+  const [selectedServiceId, setSelectedServiceId] = useState<{
+    id: string;
+    nome: string;
+    valor: number;
+  } | null>(null);
+  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
+  const [isAddingService, setIsAddingService] = useState(false);
+
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        const response = await api.get("/services");
+        setServices(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      }
+    }
+
+    fetchServices();
+  }, []);
 
   if (!chamado) {
     return <Text>Cramado não encontrado</Text>;
   }
 
+  const precoBase = chamado?.services[0]?.price ?? 0;
+
+  const totalAdicionais = chamado?.services
+    .slice(1)
+    .reduce((total, service) => total + service.price, 0);
+
+  async function handleUpdateStatus(status: "EM_ATENDIMENTO" | "ENCERRADO") {
+    try {
+      await api.patch(`/chamados/${chamado?.id}/status`, {
+        status,
+      });
+
+      await fetchChamados();
+    } catch (error) {
+      console.error("Erro ao atualizar status:", error);
+    }
+  }
+
+  async function handleAddService() {
+    if (!selectedServiceId) {
+      return;
+    }
+
+    try {
+      setIsAddingService(true);
+
+      // IDs dos serviços que o chamado já possui
+      const servicesAtuais = chamado?.services.map((service) => service.id);
+
+      // Evita adicionar o mesmo serviço duas vezes
+      if (servicesAtuais?.includes(selectedServiceId.id)) {
+        alert("Esse serviço já foi adicionado ao chamado.");
+        return;
+      }
+
+      // Mantém os serviços existentes e adiciona o novo
+      const servicesAtualizados = [...servicesAtuais, selectedServiceId.id];
+
+      await api.patch(`/chamados/${chamado?.id}`, {
+        services: servicesAtualizados,
+      });
+
+      // Atualiza os chamados no contexto
+      await fetchChamados();
+
+      // Limpa seleção
+      setSelectedServiceId(null);
+
+      // Fecha modal
+      setServiceDialogOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar serviço:", error);
+      alert("Não foi possível adicionar o serviço.");
+    } finally {
+      setIsAddingService(false);
+    }
+  }
+
+  async function handleRemoveService(serviceId: string) {
+    try {
+      await api.delete(`/chamados/${chamado?.id}/services/${serviceId}`);
+
+      await fetchChamados();
+
+      alert("Serviço excluído com sucesso!");
+    } catch (error) {
+      console.error("Erro ao remover serviço:", error);
+
+      alert("Não foi possível excluir o serviço.");
+    }
+  }
+
   return (
-    <div className="md:max-w-200 mt-14 mx-auto">
+    <div className="md:max-w-210 mt-14 mx-auto">
       <header className="flex flex-col md:items-end justify-between max-w-199 mb-6 md:flex-row">
         <div>
           <a
@@ -12513,179 +13260,242 @@ export function ChamadoDetailsTecnico() {
           >
             Encerrar
           </Button>
-          <Button size="md" icon={ClockIcon} className="w-full">
-            Iniciar Atendimento
-          </Button>
+
+          {chamado.status === "ABERTO" && (
+            <Button
+              variant="primary"
+              size="md"
+              icon={ClockIcon}
+              onClick={() => handleUpdateStatus("EM_ATENDIMENTO")}
+              className="w-full"
+            >
+              Iniciar atendimento
+            </Button>
+          )}
+
+          {chamado.status === "EM_ATENDIMENTO" && (
+            <Button
+              variant="primary"
+              size="md"
+              icon={CheckIcon}
+              onClick={() => handleUpdateStatus("ENCERRADO")}
+              className="w-full"
+            >
+              Encerrar
+            </Button>
+          )}
         </div>
       </header>
-      <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-199">
-        <Card className="flex flex-col gap-5 p-8 md:max-w-115 w-full">
-          <div className="flex items-start justify-between mb-6">
+      {loading ? (
+        <>
+          <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+            <Skeleton className="w-[460px] h-[400px] rounded-lg" />
+            <Skeleton className="w-[300px] h-[400px] rounded-lg" />
+            <Skeleton className="w-[460px] h-[200px] rounded-lg" />
+          </Container>
+        </>
+      ) : (
+        <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+          <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex flex-col gap-2">
+                <Text as="h2" variant="heading-md-normal">
+                  {chamado.id}
+                </Text>
+                <Text as="h2" variant="heading-md-bold">
+                  {chamado.title}
+                </Text>
+              </div>
+
+              <Tags
+                variant={getStatusConfig(chamado.status).variant}
+                svg={getStatusConfig(chamado.status).icon}
+                className="flex w-1/3"
+              >
+                {getStatusConfig(chamado.status).label}
+              </Tags>
+            </div>
             <div className="flex flex-col gap-2">
-              <Text as="h2" variant="heading-md-normal">
-                {chamado.id}
+              <Text variant="text-sm-bold" className="text-gray-400">
+                Descrição
               </Text>
-              <Text as="h2" variant="heading-md-bold">
-                {chamado.title}
+              <Text>{chamado.description}</Text>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Text variant="text-sm-bold" className="text-gray-400">
+                Categoria
               </Text>
+              {chamado.services.map((service) => (
+                <Text key={service.id}>{service.nome}</Text>
+              ))}
             </div>
-
-            <Tags
-              variant={getStatusConfig(chamado.status).variant}
-              svg={getStatusConfig(chamado.status).icon}
-              className="flex w-1/3"
-            >
-              {getStatusConfig(chamado.status).label}
-            </Tags>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text variant="text-sm-bold" className="text-gray-400">
-              Descrição
-            </Text>
-            <Text>{chamado.description}</Text>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Text variant="text-sm-bold" className="text-gray-400">
-              Categoria
-            </Text>
-            {chamado.services.map((service) => (
-              <Text key={service.id}>{service.nome}</Text>
-            ))}
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-20">
-              <div className="flex flex-col gap-2">
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  Criado em
-                </Text>
-                <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  Atualizado em
-                </Text>
-                <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
-              </div>
-            </div>
-          </div>
-          <div>
-            <Text>Cliente</Text>
-            <div className="flex items-center gap-2 mt-2">
-              <Avatar name={chamado.cliente.name} />
-              <Text>{chamado.cliente.name}</Text>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 w-full">
-          <div>
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
-              Técnico responsável
-            </Text>
-
-            <div className="flex gap-2">
-              <Avatar name="Jhon Doe" />
-              <div className="flex flex-col">
-                <Text variant="text-xs-regular" className="text-gray-300">
-                  {chamado.tecnico?.name || "Técnico não atribuído"}
-                </Text>
-                <Text variant="text-xs-regular" className="text-gray-300">
-                  {chamado.tecnico?.email || "Email não disponível"}
-                </Text>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2">
-              Valores
-            </Text>
-            <div className="flex justify-between">
-              <Text>Preço Base</Text>
-              <Text>R$ {chamado.totalPrice.toFixed(2)}</Text>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Text variant="text-sm-bold" className="text-gray-400 mb-2">
-              Adicionais
-            </Text>
-            {/** nessa parte deve exibir os serviços adicionais */}
-            {chamado.services.slice(1).map((service) => (
-              <div key={service.id} className="flex justify-between">
-                <Text>{service.nome}</Text>
-                <Text>R$ {service.price.toFixed(2)}</Text>
-              </div>
-            ))}
-          </div>
-          <Divider />
-          <div className="flex justify-between">
-            <Text variant="heading-md-bold">Total</Text>
-            {/** aqui deve exibir o total do preço base + adicionais */}
-            <Text variant="heading-md-bold">
-              R$ {chamado.totalPrice.toFixed(2)}
-            </Text>
-          </div>
-        </Card>
-        <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
-          <header className="flex justify-between">
-            <Text variant="heading-md-bold" className="text-gray-300">
-              Serviços adicionais
-            </Text>
-            <Dialog>
-              <DialogTrigger asChild>
-                <ButtonIcon size="lg" icon={PlusIcon} />
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <Text>Serviços adicionais</Text>
-                </DialogHeader>
-                <Divider className="my-4" />
-                <div className="flex items-center gap-2 mb-5">
-                  <InputSelect label="Serviços cadastrados" />
+            <div className="flex items-center justify-between">
+              <div className="flex gap-20">
+                <div className="flex flex-col gap-2">
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    Criado em
+                  </Text>
+                  <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
                 </div>
-                <Divider className="my-4" />
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="secondary" size={"lg"}>
-                      Cancelar
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button type="submit" size={"lg"}>
-                      Salvar
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </header>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="py-1">
-                  <Text variant="heading-md-bold">Assinatura de backup</Text>
-                </td>
-                <td className="py-1">R$ 120,00</td>
-                <td className="w-10 py-2">
-                  <div className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer">
-                    <Icon
-                      svg={TrachIcon}
-                      className="w-6 h-6 fill-feedback-danger"
+                <div className="flex flex-col gap-2">
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    Atualizado em
+                  </Text>
+                  <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Text>Cliente</Text>
+              <div className="flex items-center gap-2 mt-2">
+                <Avatar name={chamado.cliente.name} />
+                <Text>{chamado.cliente.name}</Text>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 md:max-w-74 h-fit flex flex-col gap-6 max-w-[full]">
+            <div>
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
+                Técnico responsável
+              </Text>
+
+              <div className="flex gap-2">
+                <Avatar name="Jhon Doe" />
+                <div className="flex flex-col">
+                  <Text variant="text-xs-regular" className="text-gray-300">
+                    {chamado.tecnico?.name || "Técnico não atribuído"}
+                  </Text>
+                  <Text variant="text-xs-regular" className="text-gray-300">
+                    {chamado.tecnico?.email || "Email não disponível"}
+                  </Text>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+                Valores
+              </Text>
+              <div className="flex justify-between">
+                <Text>Preço Base</Text>
+                <Text>{formatCurrencyBRL(precoBase)}</Text>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+                Adicionais
+              </Text>
+
+              {chamado.services.slice(1).map((service) => (
+                <div key={service.id} className="flex justify-between gap-4">
+                  <Text className="truncate w-[150px]">{service.nome}</Text>
+
+                  <Text>{formatCurrencyBRL(service.price)}</Text>
+                </div>
+              ))}
+            </div>
+            <Divider />
+            <div className="flex justify-between">
+              <Text variant="heading-md-bold">Total</Text>
+              {/** aqui deve exibir o total do preço base + adicionais */}
+              <Text variant="heading-md-bold">
+                {formatCurrencyBRL(precoBase + totalAdicionais)}
+              </Text>
+            </div>
+          </Card>
+          <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
+            <header className="flex justify-between">
+              <Text variant="heading-md-bold" className="text-gray-300">
+                Serviços adicionais
+              </Text>
+              <Dialog
+                open={serviceDialogOpen}
+                onOpenChange={(open) => {
+                  setServiceDialogOpen(open);
+
+                  if (!open) {
+                    setSelectedServiceId(null);
+                  }
+                }}
+              >
+                <DialogTrigger asChild>
+                  <ButtonIcon size="lg" icon={PlusIcon} />
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogHeader>
+                    <Text>Serviços adicionais</Text>
+                  </DialogHeader>
+
+                  <Divider className="my-4" />
+
+                  <div className="flex items-center gap-2 mb-5">
+                    <InputSelect
+                      label="Serviços cadastrados"
+                      placeholder="Selecione um serviço"
+                      value={selectedServiceId ?? undefined}
+                      onChange={(option) => setSelectedServiceId(option)}
                     />
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Card>
-      </Container>
+
+                  <Divider className="my-4" />
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary" size="lg">
+                        Cancelar
+                      </Button>
+                    </DialogClose>
+
+                    <Button
+                      type="button"
+                      size="lg"
+                      onClick={handleAddService}
+                      disabled={!selectedServiceId || isAddingService}
+                    >
+                      {isAddingService ? "Salvando..." : "Salvar"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </header>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {chamado.services.slice(1).map((service) => (
+                  <tr key={service.id}>
+                    <td className="py-1">
+                      <Text variant="heading-md-bold">{service.nome}</Text>
+                    </td>
+
+                    <td className="py-1">{formatCurrencyBRL(service.price)}</td>
+
+                    <td className="w-10 py-2">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveService(service.id)}
+                        className="p-2 flex items-center justify-center bg-gray-500 hover:bg-gray-400 rounded-sm cursor-pointer"
+                      >
+                        <Icon
+                          svg={TrachIcon}
+                          className="w-6 h-6 fill-feedback-danger"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </Container>
+      )}
     </div>
   );
 }
@@ -12696,6 +13506,7 @@ export function ChamadoDetailsTecnico() {
 
 ```tsx
 import { ChamadoCard } from "../../components/ChamadoCard";
+import { Skeleton } from "../../components/Skeleton";
 import { Tags } from "../../components/Tags";
 import { Text } from "../../components/Text";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
@@ -12703,7 +13514,6 @@ import { getStatusConfig } from "../../utils/statusConfig";
 
 export function ChamadosTecnico() {
   const { chamados, loading } = useChamados();
-
   const chamadosPorStatus = {
     EM_ATENDIMENTO: chamados.filter((c) => c.status === "EM_ATENDIMENTO"),
     ABERTO: chamados.filter((c) => c.status === "ABERTO"),
@@ -12725,7 +13535,22 @@ export function ChamadosTecnico() {
         </Text>
       </header>
       {loading ? (
-        <>{/*TODO:Criar o Skeleton*/}</>
+        <>
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+
+          <Skeleton className="h-8 w-30 rounded-full mb-5" />
+          <section className="mb-8">
+            <Skeleton className="w-100 h-50 rounded-lg" />
+          </section>
+        </>
       ) : (
         <>
           <section className="mb-8">
@@ -12944,6 +13769,7 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("@helpdesk:token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
