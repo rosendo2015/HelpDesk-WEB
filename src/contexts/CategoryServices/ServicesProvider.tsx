@@ -1,9 +1,8 @@
-// src/contexts/Servico/ServicesProvider.tsx
 import type { ReactNode } from "react";
-import { useState, useEffect, startTransition, useContext } from "react";
-import { api } from "../../services/api";
-import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
+import { startTransition, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
+import { api } from "../../services/api";
 import type { CategoryServices } from "../CategoryServices/model/categoryServices";
 
 export function ServicesProvider({ children }: { children: ReactNode }) {
@@ -11,22 +10,18 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     [],
   );
   const [loading, setLoading] = useState(true);
-  const { token, user } = useContext(AuthContext); // 🔹 Pega o token do contexto de autenticação
+  const { token, user } = useContext(AuthContext);
 
-  // 🔹 Buscar serviços ativos
+  // ✅ Função mantida fora do effect para poder ser exposta no context
+  // O React Compiler gerencia a memoização automaticamente
   async function fetchCategoryServices() {
     setLoading(true);
     try {
-      // 🔹 Se for admin, busca todos (ativos + inativos)
       const url =
         user?.role === "ADMIN" ? "/services?includeInactive=true" : "/services";
-
       const response = await api.get<CategoryServices[]>(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       startTransition(() => {
         setCategoryServices(response.data);
       });
@@ -36,15 +31,42 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }
+
+  // ✅ useEffect com lógica inline — evita referência a função externa
+  // O React Compiler não reclama porque o setState está dentro do callback async
   useEffect(() => {
     if (!token) return;
-    async function carregarServicos() {
-      await fetchCategoryServices();
-    }
-    carregarServicos();
-  }, [token, user?.role]); // ✅ recarrega se o role mudar
 
-  // 🔹 Criar novo serviço (corrigido para aceitar apenas os campos necessários)
+    let cancelled = false;
+
+    const carregar = async () => {
+      setLoading(true);
+      try {
+        const url =
+          user?.role === "ADMIN"
+            ? "/services?includeInactive=true"
+            : "/services";
+        const response = await api.get<CategoryServices[]>(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!cancelled) {
+          startTransition(() => setCategoryServices(response.data));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    carregar();
+
+    // cleanup: evita setState em componente desmontado
+    return () => {
+      cancelled = true;
+    };
+  }, [token, user?.role]); // ✅ deps diretas — sem referência a função externa
+
   async function createServico(
     dados: Pick<CategoryServices, "name" | "price" | "active">,
   ) {
@@ -58,7 +80,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 🔹 Atualizar serviço existente
   async function updateServico(id: string, dados: Partial<CategoryServices>) {
     try {
       const response = await api.patch(`/services/${id}`, dados);
@@ -72,7 +93,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 🔹 Excluir serviço
   async function deleteServico(id: string) {
     try {
       await api.delete(`/services/${id}`);
@@ -83,17 +103,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao excluir serviço:", error);
     }
   }
-
-  // 🔹 Carregar serviços ao montar (somente se o token existir)
-  useEffect(() => {
-    if (!token) return; // ✅ Garante que só busca se o token estiver disponível
-
-    async function carregarServicos() {
-      await fetchCategoryServices();
-    }
-
-    carregarServicos();
-  }, [token]); // ✅ Recarrega se o token mudar
 
   return (
     <ServicesContext.Provider
