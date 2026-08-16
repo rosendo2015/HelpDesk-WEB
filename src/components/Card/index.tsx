@@ -1,5 +1,6 @@
-import React from "react";
 import type { VariantProps } from "class-variance-authority";
+import React from "react";
+import { cn } from "tailwind-variants";
 import { cardVariants } from "./cardVariants";
 
 interface CardProps
@@ -18,7 +19,7 @@ export function Card({
   return React.createElement(
     as,
     {
-      className: cardVariants({ variant, size, className }),
+      className: cn(cardVariants({ variant, size, className }), className),
       ...props,
     },
     children,
