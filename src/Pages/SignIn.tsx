@@ -84,7 +84,7 @@ export function SignIn() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-full max-w-md">
+      <main className="flex flex-col gap-3 w-full max-w-lg">
         {/* Aviso do banco de dados */}
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">

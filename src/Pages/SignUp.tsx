@@ -1,4 +1,3 @@
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ZodError, z } from "zod";
@@ -6,27 +5,10 @@ import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
-import { InputSelect } from "../components/InputSelect";
 import { InputText } from "../components/InputText";
 import { Logo } from "../components/Logo";
 import { Text } from "../components/Text";
 import { api } from "../services/api";
-
-interface TokenPayload {
-  role: "ADMIN" | "TECNICO" | "CLIENTE";
-  sub: string;
-  exp: number;
-}
-
-const roleOptions = [
-  { id: 1, nome: "CLIENTE", valor: 1 },
-  { id: 2, nome: "TECNICO", valor: 2 },
-  { id: 3, nome: "ADMIN", valor: 3 },
-];
-
-const token = localStorage.getItem("token");
-const currentUser = token ? jwtDecode<TokenPayload>(token) : null;
-const isAdmin = currentUser?.role === "ADMIN";
 
 const signUpSchema = z.object({
   name: z.string().trim().min(1, { message: "Informe o nome completo." }),
@@ -40,7 +22,6 @@ export function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CLIENTE");
   const [dbStatus, setDbStatus] = useState<"ok" | "error" | "">("");
 
   const navigate = useNavigate();
@@ -71,7 +52,7 @@ export function SignUp() {
         password,
       });
 
-      await api.post("/users", { ...data, role });
+      await api.post("/users", { ...data, role: "CLIENTE" });
 
       if (confirm("Cadastrado com sucesso.")) {
         navigate("/");
@@ -90,7 +71,7 @@ export function SignUp() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+      <main className="flex flex-col gap-3 w-full max-w-lg">
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
             <Text as="span" variant="text-xs-bold" className="text-white">
@@ -126,15 +107,6 @@ export function SignUp() {
               placeholder="Digite sua senha"
               onChange={(e) => setPassword(e.target.value)}
             />
-            {isAdmin && (
-              <InputSelect
-                label="Tipo de Usuário"
-                options={roleOptions}
-                placeholder="Escolha o perfil do usuário"
-                error={false}
-                onChange={(option) => setRole(option.nome)}
-              />
-            )}
 
             <Button size="lg" className="mt-4" disabled={dbStatus === "error"}>
               Cadastrar

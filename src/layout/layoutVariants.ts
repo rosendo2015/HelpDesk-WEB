@@ -36,8 +36,8 @@ export const authBackground = cva(
 export const authContent = cva(
   [
     "relative z-10",
-    "w-full sm:w-[27rem]", // mobile 100%, desktop 432px
-    "min-h-screen", // sempre ocupa a tela toda verticalmente
+    "w-full sm:w-[40rem] mt-[1.5rem]", // mobile 100%, desktop 432px
+    "min-h-[100%]", // sempre ocupa a tela toda verticalmente
     "bg-gray-600", // fundo branco (#f9fafa)
     "sm:rounded-tl-[1.25rem]", // borda arredondada só no desktop
     "px-8 py-12", // espaçamento interno
