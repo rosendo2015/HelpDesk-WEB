@@ -1,27 +1,26 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthLayout } from "../layout/AuthLayout";
-import { SignIn } from "../pages/SignIn";
-import { SignUp } from "../pages/SignUp";
-import { DashboardCliente } from "../pages/cliente/DashboardCliente";
-import { DashboardAdmin } from "../pages/admin/DashboardAdmin";
-import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
+import { ChamadosAdmin } from "../Pages/admin/ChamadosAdmin";
+import { DashboardAdmin } from "../Pages/admin/DashboardAdmin";
+import { EditarChamadoAdmin } from "../Pages/admin/EditarChamadoAdmin";
+import { EditarTecnico } from "../Pages/admin/EditarTecnico";
+import { ClientesAdmin } from "../Pages/admin/ListClientes";
+import { TecnicosAdmin } from "../Pages/admin/ListTecnicos";
+import { NovoTecnico } from "../Pages/admin/NovoTecnico";
+import { ServicosAdmin } from "../Pages/admin/ServicosAdmin";
+import { ChamadosCliente } from "../Pages/cliente/ChamadosCliente";
+import { DashboardCliente } from "../Pages/cliente/DashboardCliente";
+import { DetailChamadoCliente } from "../Pages/cliente/DetailChamadoCliente";
+import { EditarChamadoCliente } from "../Pages/cliente/EditarChamadoCliente";
+import { NovoChamado } from "../Pages/cliente/NovoChamado";
+
+import { Components } from "../Pages/PageComponents";
+import { SignIn } from "../Pages/SignIn";
+import { SignUp } from "../Pages/SignUp";
+import { ChamadoDetailsTecnico } from "../Pages/tecnico/ChamadoDetailsTecnico";
+import { ChamadosTecnico } from "../Pages/tecnico/ChamadosTecnico";
+import { DashboardTecnico } from "../Pages/tecnico/DashboardTecnico";
 import { PrivateRoute } from "./PrivateRoute";
-import { ChamadosCliente } from "../pages/cliente/ChamadosCliente";
-import { NovoChamado } from "../pages/cliente/NovoChamado";
-import { DashboardTecnico } from "../pages/tecnico/DashboardTecnico";
-import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
-import { TecnicosAdmin } from "../pages/admin/ListTecnicos";
-import { ClientesAdmin } from "../pages/admin/ListClientes";
-import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
-
-import { Components } from "../pages/PageComponents";
-import { NovoTecnico } from "../pages/admin/NovoTecnico";
-import { EditarTecnico } from "../pages/admin/EditarTecnico";
-import { EditarChamadoCliente } from "../pages/cliente/EditarChamadoCliente";
-import { DetailChamadoCliente } from "../pages/cliente/DetailChamadoCliente";
-
-import { EditarChamadoAdmin } from "../pages/admin/EditarChamadoAdmin";
-import { ChamadoDetailsTecnico } from "../pages/tecnico/ChamadoDetailsTecnico";
 
 export function AppRoutes() {
   return (

@@ -63,7 +63,7 @@ export function AuthProvider({ children }: Props) {
         console.error("Erro ao carregar token:", error);
         signOut();
       } finally {
-        setTimeout(() => setIsLoading(false), 100);
+        setIsLoading(false);
       }
     };
 
