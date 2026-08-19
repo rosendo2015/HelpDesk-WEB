@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
 import { cx } from "class-variance-authority";
-import { inputSelectVariants } from "./inputSelectVariants";
-import { api } from "../../services/api";
+import { useEffect, useState } from "react";
+import Check from "../../assets/icons/check.svg?react";
 import ChevronDown from "../../assets/icons/chevron-down.svg?react";
 import ChevronUp from "../../assets/icons/chevron-up.svg?react";
-import Check from "../../assets/icons/check.svg?react";
 import AlertCircle from "../../assets/icons/circle-alert.svg?react";
+import type { CategoryServices } from "../../contexts/CategoryServices/model/categoryServices";
+import { api } from "../../services/api";
 import { Icon } from "../Icon";
 import { Text } from "../Text";
-import type { CategoryServices } from "../../contexts/CategoryServices/model/categoryServices";
+import { inputSelectVariants } from "./inputSelectVariants";
 
 interface Option {
   id: string;
@@ -54,7 +54,7 @@ export function InputSelect({
     if (value && value.id !== selected?.id) {
       Promise.resolve().then(() => setSelected(value));
     }
-  }, [value]);
+  }, [value, selected?.id]);
 
   const toggleOpen = () => setOpen(!open);
 
@@ -68,7 +68,7 @@ export function InputSelect({
 
   return (
     <div className="group w-full flex flex-col gap-1 relative">
-      <label
+      <div
         className={cx(
           "text-sm transition-all mt-4",
           state === "error"
@@ -79,12 +79,17 @@ export function InputSelect({
         )}
       >
         <Text variant="text-sm-bold">{label}</Text>
-      </label>
+      </div>
 
-      <div onClick={toggleOpen} className={cx(inputSelectVariants({ state }))}>
+      <button
+        type="button"
+        onClick={toggleOpen}
+        className={cx(inputSelectVariants({ state }), "text-left")}
+      >
         <span className={selected ? "text-gray-800" : "text-gray-400"}>
           {selected?.nome || placeholder || "Selecione uma opção"}
         </span>
+
         {open ? (
           <Icon
             svg={ChevronUp}
@@ -98,24 +103,26 @@ export function InputSelect({
             size="lg"
           />
         )}
-      </div>
+      </button>
 
       {open && (
         <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-md p-2 z-10">
           {options.map((option) => (
-            <div
+            <button
               key={option.id}
+              type="button"
               onClick={() => handleSelect(option)}
               className={cx(
-                "py-2 px-2 rounded cursor-pointer flex justify-between items-center hover:bg-gray-500",
+                "w-full py-2 px-2 rounded cursor-pointer flex justify-between items-center hover:bg-gray-500 text-left",
                 selected?.id === option.id && "font-bold text-blue-500",
               )}
             >
               {option.nome}
+
               {selected?.id === option.id && (
                 <Icon svg={Check} color="blue" size="lg" />
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}

@@ -1,17 +1,16 @@
-import { Text } from "../../components/Text";
-import { Container } from "../../components/Container";
-import { Card } from "../../components/Card";
-import { Tags } from "../../components/Tags";
-import { Avatar } from "../../components/Avatar";
-import Divider from "../../components/Divider";
 import { useParams } from "react-router-dom";
-import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
 import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
-import ClockIcon from "../../assets/icons/clock-2.svg?react";
 import CheckIcon from "../../assets/icons/circle-check-big.svg?react";
-
-import { getStatusConfig } from "../../utils/statusConfig";
+import ClockIcon from "../../assets/icons/clock-2.svg?react";
+import { Avatar } from "../../components/Avatar";
 import { Button } from "../../components/Button";
+import { Card } from "../../components/Card";
+import { Container } from "../../components/Container";
+import Divider from "../../components/Divider";
+import { Tags } from "../../components/Tags";
+import { Text } from "../../components/Text";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import { getStatusConfig } from "../../utils/statusConfig";
 
 export function EditarChamadoAdmin() {
   const { id } = useParams();
@@ -20,28 +19,26 @@ export function EditarChamadoAdmin() {
   const chamado = getChamadoById(id!);
 
   if (!chamado) {
-    return <Text>Cramado não encontrado</Text>;
+    return <Text>Chamado não encontrado</Text>;
   }
 
+  const chamadoId = chamado.id;
   function handleUpdateStatus(newStatus: "EM_ATENDIMENTO" | "ENCERRADO") {
-    updateChamado(chamado.id, { status: newStatus });
+    updateChamado(chamadoId, { status: newStatus });
   }
 
   return (
     <div className="mx-auto md:w-full max-w-[800px]">
       <header className="px-3 mx-auto mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 md:w-full md:max-w-[800px] ">
         <div className="flex flex-col items-start">
-          <a
-            href="#"
+          <button
+            type="button"
             className="flex items-center gap-2"
-            onClick={(e) => {
-              e.preventDefault();
-              window.history.back();
-            }}
+            onClick={() => window.history.back()}
           >
             <ArrowLeftIcon className="w-3.5 h-3.5" />
             <Text variant="text-xs-bold">Voltar</Text>
-          </a>
+          </button>
 
           <Text as="h1" variant="text-xl-bold" className="text-blue-dark">
             Chamado detalhado
@@ -165,7 +162,7 @@ export function EditarChamadoAdmin() {
               {chamado.services.slice(1).map((service) => (
                 <div key={service.id} className="flex justify-between">
                   <Text>{service.nome}</Text>
-                  <Text>R$ {service.valor.toFixed(2)}</Text>
+                  <Text>R$ {service.price.toFixed(2)}</Text>
                 </div>
               ))}
             </div>

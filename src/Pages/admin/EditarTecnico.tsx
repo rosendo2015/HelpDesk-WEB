@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import z from "zod";
+import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
+import XIcon from "../../assets/icons/x.svg?react";
+import { Avatar } from "../../components/Avatar";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { Container } from "../../components/Container";
-import { Text } from "../../components/Text";
 import { InputText } from "../../components/InputText";
 import { TagTime } from "../../components/TagTime";
-import { Avatar } from "../../components/Avatar";
-import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
-import XIcon from "../../assets/icons/x.svg?react";
-import z from "zod";
+import { Text } from "../../components/Text";
 import { api } from "../../services/api";
 
 const tecnicoSchema = z.object({
@@ -23,7 +24,9 @@ const periodos = {
   TARDE: ["13:00", "14:00", "15:00", "16:00", "17:00", "18:00"],
   NOITE: ["19:00", "20:00", "21:00", "22:00", "23:00"],
 };
-
+interface Disponibilidade {
+  horario: string;
+}
 export function EditarTecnico() {
   const { id } = useParams();
   const [name, setName] = useState("");
@@ -40,7 +43,9 @@ export function EditarTecnico() {
         setName(response.data.name);
         setEmail(response.data.email);
         setHorarios(
-          response.data.disponibilidades?.map((d: any) => d.horario) || [],
+          response.data.disponibilidades?.map(
+            (d: Disponibilidade) => d.horario,
+          ) || [],
         );
       } catch {
         setError("Erro ao carregar dados do técnico");
@@ -64,15 +69,19 @@ export function EditarTecnico() {
 
     const result = tecnicoSchema.safeParse({ name, email, horarios });
     if (!result.success) {
-      setError(result.error.errors[0].message);
+      setError(result.error.issues[0].message);
       return;
     }
     navigate("/admin/tecnicos");
     try {
       await api.patch(`/users/${id}`, result.data);
       alert("Perfil atualizado com sucesso!");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao atualizar técnico");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Erro ao atualizar técnico");
+      } else {
+        setError("Erro ao atualizar técnico");
+      }
     }
   }
 
@@ -80,17 +89,14 @@ export function EditarTecnico() {
     <div className="mx-auto md:w-full max-w-[800px] ">
       <header className="mx-auto mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 md:w-full md:max-w-[790px] ">
         <div className="flex flex-col items-start">
-          <a
-            href="#"
+          <button
+            type="button"
             className="flex items-center gap-2"
-            onClick={(e) => {
-              e.preventDefault();
-              window.history.back();
-            }}
+            onClick={() => window.history.back()}
           >
             <ArrowLeftIcon className="w-3.5 h-3.5" />
             <Text variant="text-xs-bold">Voltar</Text>
-          </a>
+          </button>
           <Text as="h1" variant="text-xl-bold" className="text-blue-dark">
             Perfil de técnico
           </Text>

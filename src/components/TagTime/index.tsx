@@ -1,17 +1,17 @@
-import { Text } from "../Text";
-import { Icon } from "../Icon";
 import clsx from "clsx";
+import { Icon } from "../Icon";
+import { Text } from "../Text";
 import {
+  tagTimeIconVariants,
   tagTimeTextVariants,
   tagTimeVariants,
-  tagTimeIconVariants,
 } from "./tagTimeVariants";
 
-interface TagTimeProps extends React.ComponentProps<"input"> {
+interface TagTimeProps extends Omit<React.ComponentProps<"input">, "onChange"> {
   children: React.ReactNode;
   svg?: React.FC<React.ComponentProps<"svg">>;
-  checked?: boolean; // ✅ permite controle externo
-  onChange?: (checked: boolean) => void; // ✅ callback externo
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
 }
 
 export function TagTime({
@@ -28,7 +28,7 @@ export function TagTime({
         type="checkbox"
         className="hidden"
         checked={checked}
-        onChange={(e) => onChange?.(e.target.checked)} // ✅ dispara callback externo
+        onChange={(e) => onChange?.(e.target.checked)}
         {...props}
       />
 

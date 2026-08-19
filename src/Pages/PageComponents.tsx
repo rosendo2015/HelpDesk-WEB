@@ -1,26 +1,24 @@
-import { Avatar } from "../components/Avatar";
-import { Text } from "../components/Text";
-import { Icon } from "../components/Icon";
-import { Tags } from "../components/Tags";
-import { TagTime } from "../components/TagTime";
-import { Button } from "../components/Button";
-
+import { useState } from "react";
 import AlertCircle from "../assets/icons/circle-alert.svg?react";
-import TrashIcon from "../assets/icons/trash.svg?react";
-import SpinIcon from "../assets/icons/spinner.svg?react";
-import LogOutIcon from "../assets/icons/log-out.svg?react";
+import CircleCheckIcon from "../assets/icons/circle-check-big.svg?react";
 import NewIcon from "../assets/icons/circle-help.svg?react";
 import ClockIcon from "../assets/icons/clock-2.svg?react";
-import CircleCheckIcon from "../assets/icons/circle-check-big.svg?react";
-import XIcon from "../assets/icons/x.svg?react";
+import LogOutIcon from "../assets/icons/log-out.svg?react";
 import LinePencil from "../assets/icons/pen-line.svg?react";
+import SpinIcon from "../assets/icons/spinner.svg?react";
+import TrashIcon from "../assets/icons/trash.svg?react";
+import XIcon from "../assets/icons/x.svg?react";
+import { Avatar } from "../components/Avatar";
+import { Button } from "../components/Button";
 import { ButtonIcon } from "../components/ButtonIcon";
-import { InputText } from "../components/InputText";
-import { InputSelect } from "../components/InputSelect";
-
-import { useState } from "react";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
+import { Icon } from "../components/Icon";
+import { InputSelect } from "../components/InputSelect";
+import { InputText } from "../components/InputText";
+import { Tags } from "../components/Tags";
+import { TagTime } from "../components/TagTime";
+import { Text } from "../components/Text";
 
 export function Components() {
   const [email, setEmail] = useState("");
@@ -143,14 +141,12 @@ export function Components() {
 
           <InputSelect
             label="Categoria"
-            options={["Item 1", "Item 2", "Item 3"]}
             helperText="Escolha uma opção"
             error={false}
           />
 
           <InputSelect
             label="Categoria"
-            options={["Item 1", "Item 2", "Item 3"]}
             helperText="Campo obrigatório"
             error={true}
           />

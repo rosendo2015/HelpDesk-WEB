@@ -1,21 +1,15 @@
-import { Text } from "../../components/Text";
-import { Container } from "../../components/Container";
-import { Card } from "../../components/Card";
-import { Tags } from "../../components/Tags";
-import { Avatar } from "../../components/Avatar";
-import Divider from "../../components/Divider";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
 import ArrowLeftIcon from "../../assets/icons/arrow-left.svg?react";
 import CheckIcon from "../../assets/icons/circle-check-big.svg?react";
 import ClockIcon from "../../assets/icons/clock-2.svg?react";
-import TrachIcon from "../../assets/icons/trash.svg?react";
 import PlusIcon from "../../assets/icons/plus.svg?react";
-
-import { getStatusConfig } from "../../utils/statusConfig";
+import TrachIcon from "../../assets/icons/trash.svg?react";
+import { Avatar } from "../../components/Avatar";
 import { Button } from "../../components/Button";
-import { Icon } from "../../components/Icon";
 import { ButtonIcon } from "../../components/ButtonIcon";
+import { Card } from "../../components/Card";
+import { Container } from "../../components/Container";
 import {
   Dialog,
   DialogClose,
@@ -24,17 +18,18 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "../../components/Dialog";
+import Divider from "../../components/Divider";
+import { Icon } from "../../components/Icon";
 import { InputSelect } from "../../components/InputSelect";
-import { api } from "../../services/api";
-import { useEffect, useState } from "react";
-import { formatCurrencyBRL } from "../../utils/formatCurrency";
 import { Skeleton } from "../../components/Skeleton";
+import { Tags } from "../../components/Tags";
+import { Text } from "../../components/Text";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import { api } from "../../services/api";
+import { formatCurrencyBRL } from "../../utils/formatCurrency";
+import { getStatusConfig } from "../../utils/statusConfig";
 
 export function ChamadoDetailsTecnico() {
-  const [services, setServices] = useState<
-    { id: string; name: string; price: number }[]
-  >([]);
-
   const { id } = useParams();
   const { getChamadoById, fetchChamados, loading } = useChamados();
 
@@ -45,29 +40,17 @@ export function ChamadoDetailsTecnico() {
     nome: string;
     valor: number;
   } | null>(null);
+
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
   const [isAddingService, setIsAddingService] = useState(false);
 
-  useEffect(() => {
-    async function fetchServices() {
-      try {
-        const response = await api.get("/services");
-        setServices(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar serviços:", error);
-      }
-    }
-
-    fetchServices();
-  }, []);
-
   if (!chamado) {
-    return <Text>Cramado não encontrado</Text>;
+    return <Text>Chamado não encontrado</Text>;
   }
 
-  const precoBase = chamado?.services[0]?.price ?? 0;
+  const precoBase = chamado.services[0]?.price ?? 0;
 
-  const totalAdicionais = chamado?.services
+  const totalAdicionais = chamado.services
     .slice(1)
     .reduce((total, service) => total + service.price, 0);
 
@@ -91,29 +74,31 @@ export function ChamadoDetailsTecnico() {
     try {
       setIsAddingService(true);
 
-      // IDs dos serviços que o chamado já possui
-      const servicesAtuais = chamado?.services.map((service) => service.id);
+      // IDs dos serviços que o chamado já possui.
+      // O ?? [] garante que sempre teremos um array.
+      const servicesAtuais =
+        chamado?.services?.map((service) => service.id) ?? [];
 
-      // Evita adicionar o mesmo serviço duas vezes
-      if (servicesAtuais?.includes(selectedServiceId.id)) {
+      // Evita adicionar o mesmo serviço duas vezes.
+      if (servicesAtuais.includes(selectedServiceId.id)) {
         alert("Esse serviço já foi adicionado ao chamado.");
         return;
       }
 
-      // Mantém os serviços existentes e adiciona o novo
+      // Mantém os serviços existentes e adiciona o novo.
       const servicesAtualizados = [...servicesAtuais, selectedServiceId.id];
 
       await api.patch(`/chamados/${chamado?.id}`, {
         services: servicesAtualizados,
       });
 
-      // Atualiza os chamados no contexto
+      // Atualiza os chamados no contexto.
       await fetchChamados();
 
-      // Limpa seleção
+      // Limpa seleção.
       setSelectedServiceId(null);
 
-      // Fecha modal
+      // Fecha modal.
       setServiceDialogOpen(false);
     } catch (error) {
       console.error("Erro ao adicionar serviço:", error);
@@ -141,8 +126,8 @@ export function ChamadoDetailsTecnico() {
     <div className="md:max-w-210 mt-14 mx-auto">
       <header className="flex flex-col md:items-end justify-between max-w-199 mb-6 md:flex-row">
         <div>
-          <a
-            href="#"
+          <button
+            type="button"
             className="flex items-center gap-2"
             onClick={(e) => {
               e.preventDefault();
@@ -151,11 +136,13 @@ export function ChamadoDetailsTecnico() {
           >
             <ArrowLeftIcon className="w-3.5 h-3.5" />
             <Text variant="text-xs-bold">Voltar</Text>
-          </a>
+          </button>
+
           <Text as="h1" variant="text-xl-bold" className="text-blue-dark">
             Chamado detalhado
           </Text>
         </div>
+
         <div className="w-full md:max-w-80 flex gap-2 mt-2">
           <Button
             variant="secondary"
@@ -191,14 +178,13 @@ export function ChamadoDetailsTecnico() {
           )}
         </div>
       </header>
+
       {loading ? (
-        <>
-          <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
-            <Skeleton className="w-[460px] h-[400px] rounded-lg" />
-            <Skeleton className="w-[300px] h-[400px] rounded-lg" />
-            <Skeleton className="w-[460px] h-[200px] rounded-lg" />
-          </Container>
-        </>
+        <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
+          <Skeleton className="w-[460px] h-[400px] rounded-lg" />
+          <Skeleton className="w-[300px] h-[400px] rounded-lg" />
+          <Skeleton className="w-[460px] h-[200px] rounded-lg" />
+        </Container>
       ) : (
         <Container className="w-full flex flex-wrap flex-col gap-6 md:flex-row md:max-w-210">
           <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full">
@@ -207,6 +193,7 @@ export function ChamadoDetailsTecnico() {
                 <Text as="h2" variant="heading-md-normal">
                   {chamado.id}
                 </Text>
+
                 <Text as="h2" variant="heading-md-bold">
                   {chamado.title}
                 </Text>
@@ -220,38 +207,48 @@ export function ChamadoDetailsTecnico() {
                 {getStatusConfig(chamado.status).label}
               </Tags>
             </div>
+
             <div className="flex flex-col gap-2">
               <Text variant="text-sm-bold" className="text-gray-400">
                 Descrição
               </Text>
+
               <Text>{chamado.description}</Text>
             </div>
+
             <div className="flex flex-col gap-2">
               <Text variant="text-sm-bold" className="text-gray-400">
                 Categoria
               </Text>
+
               {chamado.services.map((service) => (
                 <Text key={service.id}>{service.nome}</Text>
               ))}
             </div>
+
             <div className="flex items-center justify-between">
               <div className="flex gap-20">
                 <div className="flex flex-col gap-2">
                   <Text variant="text-sm-bold" className="text-gray-400">
                     Criado em
                   </Text>
+
                   <Text>{new Date(chamado.createdAt).toLocaleString()}</Text>
                 </div>
+
                 <div className="flex flex-col gap-2">
                   <Text variant="text-sm-bold" className="text-gray-400">
                     Atualizado em
                   </Text>
+
                   <Text>{new Date(chamado.updatedAt).toLocaleString()}</Text>
                 </div>
               </div>
             </div>
+
             <div>
               <Text>Cliente</Text>
+
               <div className="flex items-center gap-2 mt-2">
                 <Avatar name={chamado.cliente.name} />
                 <Text>{chamado.cliente.name}</Text>
@@ -267,10 +264,12 @@ export function ChamadoDetailsTecnico() {
 
               <div className="flex gap-2">
                 <Avatar name="Jhon Doe" />
+
                 <div className="flex flex-col">
                   <Text variant="text-xs-regular" className="text-gray-300">
                     {chamado.tecnico?.name || "Técnico não atribuído"}
                   </Text>
+
                   <Text variant="text-xs-regular" className="text-gray-300">
                     {chamado.tecnico?.email || "Email não disponível"}
                   </Text>
@@ -282,11 +281,13 @@ export function ChamadoDetailsTecnico() {
               <Text variant="text-sm-bold" className="text-gray-400 mb-2">
                 Valores
               </Text>
+
               <div className="flex justify-between">
                 <Text>Preço Base</Text>
                 <Text>{formatCurrencyBRL(precoBase)}</Text>
               </div>
             </div>
+
             <div className="flex flex-col gap-1">
               <Text variant="text-sm-bold" className="text-gray-400 mb-2">
                 Adicionais
@@ -300,20 +301,24 @@ export function ChamadoDetailsTecnico() {
                 </div>
               ))}
             </div>
+
             <Divider />
+
             <div className="flex justify-between">
               <Text variant="heading-md-bold">Total</Text>
-              {/** aqui deve exibir o total do preço base + adicionais */}
+
               <Text variant="heading-md-bold">
                 {formatCurrencyBRL(precoBase + totalAdicionais)}
               </Text>
             </div>
           </Card>
+
           <Card className="flex flex-col gap-5 p-8 md:max-w-120 w-full md:min-w-120">
             <header className="flex justify-between">
               <Text variant="heading-md-bold" className="text-gray-300">
                 Serviços adicionais
               </Text>
+
               <Dialog
                 open={serviceDialogOpen}
                 onOpenChange={(open) => {
@@ -365,6 +370,7 @@ export function ChamadoDetailsTecnico() {
                 </DialogContent>
               </Dialog>
             </header>
+
             <table className="w-full">
               <thead>
                 <tr>
@@ -373,6 +379,7 @@ export function ChamadoDetailsTecnico() {
                   <th></th>
                 </tr>
               </thead>
+
               <tbody>
                 {chamado.services.slice(1).map((service) => (
                   <tr key={service.id}>

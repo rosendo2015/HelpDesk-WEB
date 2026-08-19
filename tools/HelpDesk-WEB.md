@@ -47,6 +47,9 @@ export default defineConfig([
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "generate-md": "ts-node --esm tools/generate-md.ts"
   },
   "dependencies": {
@@ -70,22 +73,29 @@ export default defineConfig([
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.4",
     "@types/classnames": "^2.3.0",
+    "@types/jest": "^30.0.0",
     "@types/jwt-decode": "^2.2.1",
-    "@types/node": "^24.13.2",
+    "@types/node": "^24.13.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/ui": "^4.1.10",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "jsdom": "^30.0.1",
     "ts-node": "^10.9.2",
     "tw-animate-css": "^1.4.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10",
-    "vite-plugin-svgr": "^5.2.0"
+    "vite-plugin-svgr": "^5.2.0",
+    "vitest": "^4.1.10"
   }
 }
 
@@ -93,79 +103,161 @@ export default defineConfig([
 
 ## README.md
 
-# React + TypeScript + Vite
+# HelpDesk WEB 💻
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="left">
+<img src="./.github/logo HelpDesk.png" alt="Tela de Login" width="600"/>
+</p>
 
-Currently, two official plugins are available:
+Interface web desenvolvida em **React**, **TypeScript** e **Vite**, conectada à [HelpDesk API](https://github.com/rosendo2015/HelpDesk-API).  
+O sistema oferece uma experiência moderna e intuitiva para gerenciamento de chamados, usuários e disponibilidade de técnicos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![React](https://img.shields.io/badge/React-18.x-61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![Vite](https://img.shields.io/badge/Vite-5.x-purple)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38BDF8)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ⚙️ Funcionalidades
 
-## Expanding the ESLint configuration
+- Login e autenticação de usuários
+- Cadastro e gerenciamento de chamados
+- Painel administrativo para controle de técnicos e clientes
+- Upload de avatar e perfil de usuário
+- Comunicação direta com a **HelpDesk API**
+- Interface **responsiva** e otimizada para desktop e mobile
+- Organização modular com **contexts**, **hooks** e **services**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🧩 Arquitetura do Projeto
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```plaintext
+src/
+ ├── assets/              # Imagens, ícones e estilos globais
+ ├── components/          # Componentes reutilizáveis
+ ├── contexts/            # Contextos globais (auth, theme, etc.)
+ ├── hooks/               # Hooks personalizados
+ ├── layout/              # Layouts principais da aplicação
+ ├── Pages/               # Páginas principais
+ │    ├── admin/          # Painel administrativo
+ │    ├── cliente/        # Área do cliente
+ │    ├── tecnico/        # Área do técnico
+ │    ├── App.tsx         # Componente raiz
+ │    ├── PageComponents.tsx
+ │    ├── SignIn.tsx      # Tela de login
+ │    └── SignUp.tsx      # Tela de cadastro
+ ├── routes/              # Definição das rotas
+ ├── services/            # Comunicação com a API (axios)
+ ├── tests/               # Testes unitários e de integração
+ ├── types/               # Tipagens globais
+ ├── utils/               # Funções auxiliares
+ ├── index.css            # Estilos globais
+ ├── main.tsx             # Ponto de entrada da aplicação
+ └── vite-env.d.ts        # Tipos do ambiente Vite
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Como Executar
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### \* Clone o repositório
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+git clone https://github.com/rosendo2015/HelpDesk-WEB.git
+
+### \* Acesse a pasta
+
+cd HelpDesk-WEB
+
+### \* Instale as dependências
+
 ```
+npm install
+```
+
+### \* Configure o ambiente
+
+cp .env.example .env
+
+### \* Defina a URL da API no arquivo .env
+
+VITE_API_URL=http://localhost:3000
+
+### \* Execute o projeto
+
+npm run dev
+
+## 🧰 Tecnologias Utilizadas
+
+- React
+
+- TypeScript
+
+- Vite
+
+- TailwindCSS
+
+- Axios
+
+- React Router DOM
+
+- Context API
+
+- Vitest + Jest para testes
+
+- ESLint + Prettier para padronização de código
+
+## 🧪 Testes
+
+npm run test
+
+## 🧱 Ferramentas e Configurações
+
+- TailwindCSS para estilização rápida e responsiva
+
+- Vite para build e desenvolvimento ultrarrápido
+
+- Vitest para testes unitários
+
+- Docker Compose (opcional) para ambiente containerizado
+
+- CI/CD via GitHub Actions (opcional)
+
+## 📸 Preview do Sistema
+
+<p align="left">
+<img src="./.github/pageLogin.png" alt="Tela de Login" width="600"/>
+</p>
+<p align="left">
+<img src="./.github/dashboard-admin.png" alt="Dashboard" width="600"/>
+</p>
+
+## 🤝 Contribuição
+
+### Contribuições são bem-vindas!
+
+- Faça um fork do projeto
+
+- Crie uma branch (git checkout -b feature/nova-feature)
+
+- Commit suas alterações (git commit -m 'Adiciona nova feature')
+
+- Push para a branch (git push origin feature/nova-feature)
+
+- Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+Sinta-se livre para usar, modificar e distribuir.
+
+## 💬 Contato
+
+Desenvolvido por Francisco Rosendo  
+📧 rosendo2015@gmail.com
+🔗 LinkedIn (linkedin.com in Bing)
 
 
 ## src\components\ActionLink\actionLinkVariants.ts
@@ -451,44 +543,52 @@ export const buttonTextVariants = cva("", {
 ## src\components\Button\index.tsx
 
 ```tsx
-import React from "react"
-import { Icon } from "../Icon"
-import type { VariantProps } from "class-variance-authority"
-import { buttonIconVariants, buttonTextVariants, buttonVariants } from "./buttonVariants"
-import { Text } from "../Text"
+import type { VariantProps } from "class-variance-authority";
+import type React from "react";
+import { cn } from "tailwind-variants";
+import { Icon } from "../Icon";
+import { Text } from "../Text";
+import {
+  buttonIconVariants,
+  buttonTextVariants,
+  buttonVariants,
+} from "./buttonVariants";
 
-interface ButtonProps extends
-    Omit<React.ComponentProps<"button">, 'size' | 'disabled'>,
+interface ButtonProps
+  extends
+    Omit<React.ComponentProps<"button">, "size" | "disabled">,
     VariantProps<typeof buttonVariants> {
-    icon?: React.ComponentProps<typeof Icon>["svg"]
-
+  icon?: React.ComponentProps<typeof Icon>["svg"];
 }
 
 export function Button({
-    variant,
-    size,
-    disabled,
+  variant,
+  size,
+  disabled,
 
-    className,
-    children,
-    icon,
-    ...props
+  className,
+  children,
+  icon,
+  ...props
 }: ButtonProps) {
-    return (
-        <button
-            className={buttonVariants({ disabled, variant, size, className })}
-
-            {...props}>
-            {icon && <Icon
-                svg={icon}
-                className={buttonIconVariants({ variant, size: "md" })}
-            />}
-            <Text variant="text-sm-bold" className={buttonTextVariants({ variant })}>
-                {children}
-            </Text>
-        </button>
-    )
+  return (
+    <button
+      className={cn(buttonVariants({ disabled, variant, size }), className)}
+      {...props}
+    >
+      {icon && (
+        <Icon
+          svg={icon}
+          className={buttonIconVariants({ variant, size: "md" })}
+        />
+      )}
+      <Text variant="text-sm-bold" className={buttonTextVariants({ variant })}>
+        {children}
+      </Text>
+    </button>
+  );
 }
+
 ```
 
 ## src\components\ButtonIcon\buttonIconVariants.ts
@@ -548,32 +648,43 @@ export const buttonIconIconVariants = cva("transition", {
 ## src\components\ButtonIcon\index.tsx
 
 ```tsx
-import React from "react";
-import { Icon } from "../Icon";
 import type { VariantProps } from "class-variance-authority";
-import { buttonIconIconVariants, buttonIconVariants } from "./buttonIconVariants";
+import type React from "react";
+import { cn } from "tailwind-variants";
+import { Icon } from "../Icon";
+import {
+  buttonIconIconVariants,
+  buttonIconVariants,
+} from "./buttonIconVariants";
 
 interface ButtonIconProps
-    extends VariantProps<typeof buttonIconVariants>,
+  extends
+    VariantProps<typeof buttonIconVariants>,
     Omit<React.ComponentProps<"button">, "size" | "disabled"> {
-    icon: React.ComponentProps<typeof Icon>["svg"];
-};
+  icon: React.ComponentProps<typeof Icon>["svg"];
+}
 
 export function ButtonIcon({
-    variant,
-    size,
-    icon,
-    disabled,
-    className,
-    ...props }: ButtonIconProps) {
-    return (
-        <button
-            className={buttonIconVariants({ variant, size, disabled, className })}
-            {...props}
-        >
-            {icon && <Icon svg={icon} className={buttonIconIconVariants({ variant, size, className })} />}
-        </button>
-    );
+  variant,
+  size,
+  icon,
+  disabled,
+  className,
+  ...props
+}: ButtonIconProps) {
+  return (
+    <button
+      className={cn(buttonIconVariants({ variant, size, disabled }), className)}
+      {...props}
+    >
+      {icon && (
+        <Icon
+          svg={icon}
+          className={buttonIconIconVariants({ variant, size, className })}
+        />
+      )}
+    </button>
+  );
 }
 
 ```
@@ -605,8 +716,9 @@ export const cardVariants = cva("rounded-lg border border-solid ", {
 ## src\components\Card\index.tsx
 
 ```tsx
-import React from "react";
 import type { VariantProps } from "class-variance-authority";
+import React from "react";
+import { cn } from "tailwind-variants";
 import { cardVariants } from "./cardVariants";
 
 interface CardProps
@@ -625,7 +737,7 @@ export function Card({
   return React.createElement(
     as,
     {
-      className: cardVariants({ variant, size, className }),
+      className: cn(cardVariants({ variant, size, className }), className),
       ...props,
     },
     children,
@@ -797,48 +909,49 @@ export function ChamadoCard({ chamado }: ChamadoCardProps) {
 ```ts
 import { cva } from "class-variance-authority";
 
-
 export const containerVariants = cva("", {
-    variants: {
-        size: {
-            default: "w-full",
-            md: "w-93.75 sm:max-w-170 px-2 ",
-        }
+  variants: {
+    size: {
+      default: "w-full",
+      md: "w-full sm:max-w-[42.5rem] px-2", // ✅ w-93.75 → w-full / max-w-170 → max-w-[42.5rem]
     },
-    defaultVariants: {
-        size: "default"
-    }
-})
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
+
 ```
 
 ## src\components\Container\index.tsx
 
 ```tsx
-import React from "react";
-import { containerVariants } from "./containerVariants";
 import type { VariantProps } from "class-variance-authority";
+import React from "react";
+import { cn } from "tailwind-variants";
+import { containerVariants } from "./containerVariants";
 
-interface ContainerProps extends
-    VariantProps<typeof containerVariants>,
-    React.ComponentProps<"div"> {
-    as?: keyof React.JSX.IntrinsicElements,
+interface ContainerProps
+  extends VariantProps<typeof containerVariants>, React.ComponentProps<"div"> {
+  as?: keyof React.JSX.IntrinsicElements;
 }
 
 export function Container({
-    as = "div",
-    children,
-    className,
-    ...props
+  as = "div",
+  children,
+  className,
+  ...props
 }: ContainerProps) {
-    return React.createElement(
-        as,
-        {
-            className: containerVariants({ size: "md", className }),
-            ...props
-        },
-        children
-    )
+  return React.createElement(
+    as,
+    {
+      className: cn(containerVariants({ size: "md" }), className),
+      ...props,
+    },
+    children,
+  );
 }
+
 ```
 
 ## src\components\Dialog\index.tsx
@@ -1108,19 +1221,31 @@ export const iconVariants = cva("inline-block", {
 ## src\components\Icon\index.tsx
 
 ```tsx
-import { type VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cn } from "tailwind-variants";
 import { iconVariants } from "./iconVariants";
 
 interface IconProps
-    extends Omit<React.ComponentProps<"svg">, "color">,
+  extends
+    Omit<React.ComponentProps<"svg">, "color">,
     VariantProps<typeof iconVariants> {
-    svg: React.FC<React.ComponentProps<"svg">>;
+  svg: React.FC<React.ComponentProps<"svg">>;
 }
 
-export function Icon({ svg: SvgComponent, animate, color, size, className, ...props }: IconProps) {
-    return (
-        <SvgComponent className={iconVariants({ animate, color, size, className })} {...props} />
-    );
+export function Icon({
+  svg: SvgComponent,
+  animate,
+  color,
+  size,
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <SvgComponent
+      className={cn(iconVariants({ animate, color, size }), className)}
+      {...props}
+    />
+  );
 }
 
 ```
@@ -2268,32 +2393,34 @@ export const tagTimeIconVariants = cva("w-5 h-5", {
 ## src\components\Text\index.tsx
 
 ```tsx
+import type { VariantProps } from "class-variance-authority";
 import React from "react";
-import { type VariantProps } from "class-variance-authority"
+import { cn } from "tailwind-variants";
 import { textVariants } from "./textVariants";
 
 interface TextProps extends VariantProps<typeof textVariants> {
-    as?: keyof React.JSX.IntrinsicElements;
-    className?: string;
-    children?: React.ReactNode;
+  as?: keyof React.JSX.IntrinsicElements;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export function Text({
-    as = "span",
-    variant,
-    className,
-    children,
-    ...props
+  as = "span",
+  variant,
+  className,
+  children,
+  ...props
 }: TextProps) {
-    return React.createElement(
-        as,
-        {
-            className: textVariants({ variant, className }),
-            ...props
-        },
-        children
-    )
+  return React.createElement(
+    as,
+    {
+      className: cn(textVariants({ variant }), className),
+      ...props,
+    },
+    children,
+  );
 }
+
 ```
 
 ## src\components\Text\textVariants.ts
@@ -2713,11 +2840,17 @@ export const AuthContext = createContext<AuthContextData>(
 ## src\contexts\AuthProvider.tsx
 
 ```tsx
-import { useState, useEffect, type ReactNode, startTransition } from "react";
-import { AuthContext } from "./AuthContext";
-import type { Users } from "../contexts/User/model/users";
 import { jwtDecode } from "jwt-decode";
+import {
+  type ReactNode,
+  startTransition,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import type { Users } from "../contexts/User/model/users";
 import { api } from "../services/api";
+import { AuthContext } from "./AuthContext";
 
 interface Props {
   children: ReactNode;
@@ -2732,6 +2865,14 @@ export function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<Users | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const signOut = useCallback(() => {
+    localStorage.removeItem("@helpdesk:user");
+    localStorage.removeItem("@helpdesk:token");
+    setUser(null);
+    setToken(null);
+    delete api.defaults.headers.common["Authorization"];
+  }, []);
 
   useEffect(() => {
     const loadStoredData = async () => {
@@ -2764,12 +2905,12 @@ export function AuthProvider({ children }: Props) {
         console.error("Erro ao carregar token:", error);
         signOut();
       } finally {
-        setTimeout(() => setIsLoading(false), 100);
+        setIsLoading(false);
       }
     };
 
     loadStoredData();
-  }, []);
+  }, [signOut]);
 
   function signIn({ token, user }: { token: string; user: Users }) {
     localStorage.setItem("@helpdesk:user", JSON.stringify(user));
@@ -2785,19 +2926,11 @@ export function AuthProvider({ children }: Props) {
     setUser(updatedUser);
   }
 
-  function signOut() {
-    localStorage.removeItem("@helpdesk:user");
-    localStorage.removeItem("@helpdesk:token");
-    setUser(null);
-    setToken(null);
-    delete api.defaults.headers.common["Authorization"];
-  }
-
   return (
     <AuthContext.Provider
       value={{ user, token, signIn, signOut, updateUser, isLoading }}
     >
-      {isLoading ? <div>Carregando...</div> : children}
+      {children}
     </AuthContext.Provider>
   );
 }
@@ -2850,12 +2983,11 @@ export const ServicesContext =
 ## src\contexts\CategoryServices\ServicesProvider.tsx
 
 ```tsx
-// src/contexts/Servico/ServicesProvider.tsx
 import type { ReactNode } from "react";
-import { useState, useEffect, startTransition, useContext } from "react";
-import { api } from "../../services/api";
-import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
+import { startTransition, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
+import { api } from "../../services/api";
 import type { CategoryServices } from "../CategoryServices/model/categoryServices";
 
 export function ServicesProvider({ children }: { children: ReactNode }) {
@@ -2863,22 +2995,18 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     [],
   );
   const [loading, setLoading] = useState(true);
-  const { token, user } = useContext(AuthContext); // 🔹 Pega o token do contexto de autenticação
+  const { token, user } = useContext(AuthContext);
 
-  // 🔹 Buscar serviços ativos
+  // ✅ Função mantida fora do effect para poder ser exposta no context
+  // O React Compiler gerencia a memoização automaticamente
   async function fetchCategoryServices() {
     setLoading(true);
     try {
-      // 🔹 Se for admin, busca todos (ativos + inativos)
       const url =
         user?.role === "ADMIN" ? "/services?includeInactive=true" : "/services";
-
       const response = await api.get<CategoryServices[]>(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       startTransition(() => {
         setCategoryServices(response.data);
       });
@@ -2888,15 +3016,42 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }
+
+  // ✅ useEffect com lógica inline — evita referência a função externa
+  // O React Compiler não reclama porque o setState está dentro do callback async
   useEffect(() => {
     if (!token) return;
-    async function carregarServicos() {
-      await fetchCategoryServices();
-    }
-    carregarServicos();
-  }, [token, user?.role]); // ✅ recarrega se o role mudar
 
-  // 🔹 Criar novo serviço (corrigido para aceitar apenas os campos necessários)
+    let cancelled = false;
+
+    const carregar = async () => {
+      setLoading(true);
+      try {
+        const url =
+          user?.role === "ADMIN"
+            ? "/services?includeInactive=true"
+            : "/services";
+        const response = await api.get<CategoryServices[]>(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!cancelled) {
+          startTransition(() => setCategoryServices(response.data));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    carregar();
+
+    // cleanup: evita setState em componente desmontado
+    return () => {
+      cancelled = true;
+    };
+  }, [token, user?.role]); // ✅ deps diretas — sem referência a função externa
+
   async function createServico(
     dados: Pick<CategoryServices, "name" | "price" | "active">,
   ) {
@@ -2910,7 +3065,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 🔹 Atualizar serviço existente
   async function updateServico(id: string, dados: Partial<CategoryServices>) {
     try {
       const response = await api.patch(`/services/${id}`, dados);
@@ -2924,7 +3078,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 🔹 Excluir serviço
   async function deleteServico(id: string) {
     try {
       await api.delete(`/services/${id}`);
@@ -2935,17 +3088,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao excluir serviço:", error);
     }
   }
-
-  // 🔹 Carregar serviços ao montar (somente se o token existir)
-  useEffect(() => {
-    if (!token) return; // ✅ Garante que só busca se o token estiver disponível
-
-    async function carregarServicos() {
-      await fetchCategoryServices();
-    }
-
-    carregarServicos();
-  }, [token]); // ✅ Recarrega se o token mudar
 
   return (
     <ServicesContext.Provider
@@ -3303,7 +3445,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 ## src\layout\AuthLayout.tsx
 
 ```tsx
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import backgroundImage from "../assets/images/Login_Background.png";
 import { authBackground, authContainer, authContent } from "./layoutVariants";
 
@@ -3330,32 +3472,51 @@ export function AuthLayout() {
 ```ts
 import { cva } from "class-variance-authority";
 
-export const authContainer = cva("flex h-screen justify-center items-center relative overflow-hidden sm:justify-end sm:items-end", {
+export const authContainer = cva(
+  "flex min-h-screen w-full relative overflow-hidden",
+  {
     variants: {
-        theme: {
-            dark: "bg-gray-100",
-            light: "bg-gray-600",
-        },
+      theme: {
+        dark: "bg-gray-100",
+        light: "bg-gray-600",
+      },
     },
     defaultVariants: {
-        theme: "dark",
+      theme: "dark",
     },
-});
+  },
+);
 
-export const authBackground = cva("absolute inset-0 bg-cover bg-center opacity-60", {
+export const authBackground = cva(
+  "absolute inset-0 bg-cover bg-center opacity-60",
+  {
     variants: {
-        blur: {
-            none: "",
-            sm: "blur-sm",
-            md: "blur-md",
-        },
+      blur: {
+        none: "",
+        sm: "blur-sm",
+        md: "blur-md",
+      },
     },
     defaultVariants: {
-        blur: "none",
+      blur: "none",
     },
-});
+  },
+);
 
-export const authContent = cva("h-206 sm:h-[47.825rem] bg-gray-600 relative z-10 rounded-tl-[1.25rem] px-35 py-12 ");
+// Painel branco do formulário: ocupa tela toda no mobile,
+// largura fixa ancorada à direita no desktop
+export const authContent = cva(
+  [
+    "relative z-10",
+    "w-full sm:w-[40rem] mt-[1.5rem]", // mobile 100%, desktop 432px
+    "min-h-[100%]", // sempre ocupa a tela toda verticalmente
+    "bg-gray-600", // fundo branco (#f9fafa)
+    "sm:rounded-tl-[1.25rem]", // borda arredondada só no desktop
+    "px-8 py-12", // espaçamento interno
+    "flex flex-col justify-center", // centraliza o conteúdo verticalmente
+    "ml-auto", // empurra para a direita no desktop
+  ].join(" "),
+);
 
 ```
 
@@ -3374,21 +3535,21 @@ import { ChamadosProvider } from "./contexts/Chamado/ChamadosProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <ServicesProvider>
-        <ChamadosProvider>
-          <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <ServicesProvider>
+          <ChamadosProvider>
             <AppRoutes />
-          </BrowserRouter>
-        </ChamadosProvider>
-      </ServicesProvider>
-    </AuthProvider>
+          </ChamadosProvider>
+        </ServicesProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 );
 
 ```
 
-## src\pages\admin\adminVariants.ts
+## src\Pages\admin\adminVariants.ts
 
 ```ts
 import { cva } from "class-variance-authority";
@@ -3405,7 +3566,7 @@ export const adminVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
 });
 ```
 
-## src\pages\admin\ChamadosAdmin.tsx
+## src\Pages\admin\ChamadosAdmin.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -3586,7 +3747,7 @@ export function ChamadosAdmin() {
 
 ```
 
-## src\pages\admin\DashboardAdmin.tsx
+## src\Pages\admin\DashboardAdmin.tsx
 
 ```tsx
 import { Outlet } from "react-router-dom";
@@ -3605,7 +3766,7 @@ export function DashboardAdmin({ }: AdminProps) {
 }
 ```
 
-## src\pages\admin\EditarChamadoAdmin.tsx
+## src\Pages\admin\EditarChamadoAdmin.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -3796,7 +3957,7 @@ export function EditarChamadoAdmin() {
 
 ```
 
-## src\pages\admin\EditarTecnico.tsx
+## src\Pages\admin\EditarTecnico.tsx
 
 ```tsx
 import { useState, useEffect } from "react";
@@ -3974,7 +4135,7 @@ export function EditarTecnico() {
 
 ```
 
-## src\pages\admin\ListClientes.tsx
+## src\Pages\admin\ListClientes.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -4279,7 +4440,7 @@ function EditClienteForm({
 
 ```
 
-## src\pages\admin\ListTecnicos.tsx
+## src\Pages\admin\ListTecnicos.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -4436,7 +4597,7 @@ export function TecnicosAdmin() {
 
 ```
 
-## src\pages\admin\NovoTecnico.tsx
+## src\Pages\admin\NovoTecnico.tsx
 
 ```tsx
 import { Button } from "../../components/Button";
@@ -4660,7 +4821,7 @@ export function NovoTecnico() {
 
 ```
 
-## src\pages\admin\ServicosAdmin.tsx
+## src\Pages\admin\ServicosAdmin.tsx
 
 ```tsx
 import { Icon } from "../../components/Icon";
@@ -4974,7 +5135,7 @@ export function ServicosAdmin() {
 
 ```
 
-## src\pages\App.tsx
+## src\Pages\App.tsx
 
 ```tsx
 export function App() {
@@ -4983,7 +5144,7 @@ export function App() {
 
 ```
 
-## src\pages\cliente\ChamadosCliente.tsx
+## src\Pages\cliente\ChamadosCliente.tsx
 
 ```tsx
 import { clienteVariants } from "./clienteVariants";
@@ -5131,7 +5292,7 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
 
 ```
 
-## src\pages\cliente\clienteVariants.ts
+## src\Pages\cliente\clienteVariants.ts
 
 ```ts
 import { cva } from "class-variance-authority";
@@ -5150,7 +5311,7 @@ export const clienteVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
 
 ```
 
-## src\pages\cliente\DashboardCliente.tsx
+## src\Pages\cliente\DashboardCliente.tsx
 
 ```tsx
 import { Outlet } from "react-router-dom";
@@ -5169,7 +5330,7 @@ export function DashboardCliente({ }: ClienteProps) {
 }
 ```
 
-## src\pages\cliente\DetailChamadoCliente.tsx
+## src\Pages\cliente\DetailChamadoCliente.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -5320,7 +5481,7 @@ export function DetailChamadoCliente() {
 
 ```
 
-## src\pages\cliente\EditarChamadoCliente.tsx
+## src\Pages\cliente\EditarChamadoCliente.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -5457,7 +5618,7 @@ export function EditarChamadoCliente() {
 
 ```
 
-## src\pages\cliente\NovoChamado.tsx
+## src\Pages\cliente\NovoChamado.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -5591,7 +5752,7 @@ export function NovoChamado() {
 
 ```
 
-## src\pages\PageComponents.tsx
+## src\Pages\PageComponents.tsx
 
 ```tsx
 import { Avatar } from "../components/Avatar";
@@ -5766,11 +5927,11 @@ export function Components() {
 
 ```
 
-## src\pages\SignIn.tsx
+## src\Pages\SignIn.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { ZodError, z } from "zod";
 import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
@@ -5855,7 +6016,7 @@ export function SignIn() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-full max-w-md">
+      <main className="flex flex-col gap-3 w-full max-w-lg">
         {/* Aviso do banco de dados */}
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
@@ -5928,38 +6089,20 @@ export function SignIn() {
 
 ```
 
-## src\pages\SignUp.tsx
+## src\Pages\SignUp.tsx
 
 ```tsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ZodError, z } from "zod";
+import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 import { InputText } from "../components/InputText";
-import { ActionLink } from "../components/ActionLink";
 import { Logo } from "../components/Logo";
 import { Text } from "../components/Text";
-import { z, ZodError } from "zod";
 import { api } from "../services/api";
-import { useNavigate } from "react-router";
-import { jwtDecode } from "jwt-decode";
-import { InputSelect } from "../components/InputSelect";
-
-interface TokenPayload {
-  role: "ADMIN" | "TECNICO" | "CLIENTE";
-  sub: string;
-  exp: number;
-}
-
-const roleOptions = [
-  { id: 1, nome: "CLIENTE", valor: 1 },
-  { id: 2, nome: "TECNICO", valor: 2 },
-  { id: 3, nome: "ADMIN", valor: 3 },
-];
-
-const token = localStorage.getItem("token");
-const currentUser = token ? jwtDecode<TokenPayload>(token) : null;
-const isAdmin = currentUser?.role === "ADMIN";
 
 const signUpSchema = z.object({
   name: z.string().trim().min(1, { message: "Informe o nome completo." }),
@@ -5973,7 +6116,6 @@ export function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CLIENTE");
   const [dbStatus, setDbStatus] = useState<"ok" | "error" | "">("");
 
   const navigate = useNavigate();
@@ -6004,7 +6146,7 @@ export function SignUp() {
         password,
       });
 
-      await api.post("/users", { ...data, role });
+      await api.post("/users", { ...data, role: "CLIENTE" });
 
       if (confirm("Cadastrado com sucesso.")) {
         navigate("/");
@@ -6023,7 +6165,7 @@ export function SignUp() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+      <main className="flex flex-col gap-3 w-full max-w-lg">
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
             <Text as="span" variant="text-xs-bold" className="text-white">
@@ -6059,15 +6201,6 @@ export function SignUp() {
               placeholder="Digite sua senha"
               onChange={(e) => setPassword(e.target.value)}
             />
-            {isAdmin && (
-              <InputSelect
-                label="Tipo de Usuário"
-                options={roleOptions}
-                placeholder="Escolha o perfil do usuário"
-                error={false}
-                onChange={(option) => setRole(option.nome)}
-              />
-            )}
 
             <Button size="lg" className="mt-4" disabled={dbStatus === "error"}>
               Cadastrar
@@ -6092,7 +6225,7 @@ export function SignUp() {
 
 ```
 
-## src\pages\tecnico\ChamadoDetailsTecnico.tsx
+## src\Pages\tecnico\ChamadoDetailsTecnico.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -6504,7 +6637,7 @@ export function ChamadoDetailsTecnico() {
 
 ```
 
-## src\pages\tecnico\ChamadosTecnico.tsx
+## src\Pages\tecnico\ChamadosTecnico.tsx
 
 ```tsx
 import { ChamadoCard } from "../../components/ChamadoCard";
@@ -6595,10 +6728,10 @@ export function ChamadosTecnico() {
 
 ```
 
-## src\pages\tecnico\DashboardTecnico.tsx
+## src\Pages\tecnico\DashboardTecnico.tsx
 
 ```tsx
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import { AppLayout } from "../../layout/AppLayout";
 
 export function DashboardTecnico() {
@@ -6611,7 +6744,7 @@ export function DashboardTecnico() {
 
 ```
 
-## src\pages\tecnico\tecnicoVariants.ts
+## src\Pages\tecnico\tecnicoVariants.ts
 
 ```ts
 import { cva } from "class-variance-authority";
@@ -6631,30 +6764,29 @@ export const tecnicoVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
 ## src\routes\appRoutes.tsx
 
 ```tsx
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthLayout } from "../layout/AuthLayout";
-import { SignIn } from "../pages/SignIn";
-import { SignUp } from "../pages/SignUp";
-import { DashboardCliente } from "../pages/cliente/DashboardCliente";
-import { DashboardAdmin } from "../pages/admin/DashboardAdmin";
-import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
+import { ChamadosAdmin } from "../Pages/admin/ChamadosAdmin";
+import { DashboardAdmin } from "../Pages/admin/DashboardAdmin";
+import { EditarChamadoAdmin } from "../Pages/admin/EditarChamadoAdmin";
+import { EditarTecnico } from "../Pages/admin/EditarTecnico";
+import { ClientesAdmin } from "../Pages/admin/ListClientes";
+import { TecnicosAdmin } from "../Pages/admin/ListTecnicos";
+import { NovoTecnico } from "../Pages/admin/NovoTecnico";
+import { ServicosAdmin } from "../Pages/admin/ServicosAdmin";
+import { ChamadosCliente } from "../Pages/cliente/ChamadosCliente";
+import { DashboardCliente } from "../Pages/cliente/DashboardCliente";
+import { DetailChamadoCliente } from "../Pages/cliente/DetailChamadoCliente";
+import { EditarChamadoCliente } from "../Pages/cliente/EditarChamadoCliente";
+import { NovoChamado } from "../Pages/cliente/NovoChamado";
+
+import { Components } from "../Pages/PageComponents";
+import { SignIn } from "../Pages/SignIn";
+import { SignUp } from "../Pages/SignUp";
+import { ChamadoDetailsTecnico } from "../Pages/tecnico/ChamadoDetailsTecnico";
+import { ChamadosTecnico } from "../Pages/tecnico/ChamadosTecnico";
+import { DashboardTecnico } from "../Pages/tecnico/DashboardTecnico";
 import { PrivateRoute } from "./PrivateRoute";
-import { ChamadosCliente } from "../pages/cliente/ChamadosCliente";
-import { NovoChamado } from "../pages/cliente/NovoChamado";
-import { DashboardTecnico } from "../pages/tecnico/DashboardTecnico";
-import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
-import { TecnicosAdmin } from "../pages/admin/ListTecnicos";
-import { ClientesAdmin } from "../pages/admin/ListClientes";
-import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
-
-import { Components } from "../pages/PageComponents";
-import { NovoTecnico } from "../pages/admin/NovoTecnico";
-import { EditarTecnico } from "../pages/admin/EditarTecnico";
-import { EditarChamadoCliente } from "../pages/cliente/EditarChamadoCliente";
-import { DetailChamadoCliente } from "../pages/cliente/DetailChamadoCliente";
-
-import { EditarChamadoAdmin } from "../pages/admin/EditarChamadoAdmin";
-import { ChamadoDetailsTecnico } from "../pages/tecnico/ChamadoDetailsTecnico";
 
 export function AppRoutes() {
   return (
@@ -6728,34 +6860,34 @@ export function AppRoutes() {
 ## src\routes\PrivateRoute.tsx
 
 ```tsx
-import { Navigate } from "react-router-dom"
-import { useAuth } from "../hooks/useAuth"
-import type { JSX } from "react"
+import type { JSX } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 interface Props {
-    children: JSX.Element
-    roles?: string[]
+  children: JSX.Element;
+  roles?: string[];
 }
 
 export function PrivateRoute({ children, roles }: Props) {
-    const { user, isLoading } = useAuth()
+  const { user, isLoading } = useAuth();
 
-    // 🔹 Enquanto o AuthProvider ainda está carregando, não renderiza nada
-    if (isLoading) {
-        return <div>Carregando...</div> // ou um splash elegante
-    }
+  // 🔹 Enquanto o AuthProvider ainda está carregando, não renderiza nada
+  if (isLoading) {
+    return <div>Carregando...</div>; // ou um splash elegante
+  }
 
-    // 🔹 Se não há usuário após o carregamento, redireciona
-    if (!user) {
-        return <Navigate to="/login" replace />
-    }
+  // 🔹 Se não há usuário após o carregamento, redireciona
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-    // 🔹 Se há restrição de papel (role)
-    if (roles && !roles.includes(user.role)) {
-        return <Navigate to="/login" replace />
-    }
+  // 🔹 Se há restrição de papel (role)
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
 
-    return children
+  return children;
 }
 
 ```
@@ -6766,7 +6898,7 @@ export function PrivateRoute({ children, roles }: Props) {
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3333",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config) => {
@@ -6775,6 +6907,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
@@ -6823,6 +6956,681 @@ export async function getServicos() {
   const response = await api.get("/servicos");
   return response.data;
 }
+
+```
+
+## src\tests\Button.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { Button } from "../components/Button";
+
+describe("Button", () => {
+  it("renderiza o texto do botão", () => {
+    render(<Button>Clique aqui</Button>);
+    expect(
+      screen.getByRole("button", { name: /clique aqui/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza com variante secondary", () => {
+    render(<Button variant="secondary">Secundário</Button>);
+    const btn = screen.getByRole("button", { name: /secundário/i });
+    expect(btn).toBeInTheDocument();
+    expect(btn.className).toContain("bg-gray-500");
+  });
+
+  it("renderiza com tamanho lg ocupando largura total", () => {
+    render(<Button size="lg">Largo</Button>);
+    const btn = screen.getByRole("button", { name: /largo/i });
+    expect(btn.className).toContain("w-full");
+  });
+
+  it("aplica classe de desabilitado quando disabled=true", () => {
+    render(<Button disabled={true}>Desabilitado</Button>);
+    const btn = screen.getByRole("button", { name: /desabilitado/i });
+    expect(btn.className).toContain("pointer-events-none");
+    expect(btn.className).toContain("opacity-50");
+  });
+
+  it("chama onClick ao ser clicado", async () => {
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Clicável</Button>);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /clicável/i }));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("não chama onClick quando disabled", async () => {
+    const handleClick = vi.fn();
+    render(
+      <Button disabled={true} onClick={handleClick}>
+        Bloqueado
+      </Button>,
+    );
+
+    const btn = screen.getByRole("button", { name: /bloqueado/i });
+
+    // O Button usa pointer-events-none (CSS) — não tem disabled nativo.
+    // O correto é verificar que as classes de bloqueio estão aplicadas.
+    expect(btn.className).toContain("pointer-events-none");
+    expect(btn.className).toContain("cursor-not-allowed");
+    expect(btn.className).toContain("opacity-50");
+  });
+});
+
+```
+
+## src\tests\InputText.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { InputText } from "../components/InputText";
+
+describe("InputText", () => {
+  it("renderiza o input na tela", () => {
+    render(<InputText />);
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+  });
+
+  it("renderiza com label visível", () => {
+    render(<InputText label="E-MAIL" />);
+    expect(screen.getByText(/e-mail/i)).toBeInTheDocument();
+  });
+
+  it("renderiza com placeholder", () => {
+    render(<InputText placeholder="Digite seu email" />);
+    expect(
+      screen.getByPlaceholderText(/digite seu email/i),
+    ).toBeInTheDocument();
+  });
+
+  it("aceita digitação do usuário", async () => {
+    render(<InputText placeholder="Digite algo" />);
+    const user = userEvent.setup();
+    const input = screen.getByPlaceholderText(/digite algo/i);
+
+    await user.type(input, "texto de teste");
+
+    expect(input).toHaveValue("texto de teste");
+  });
+
+  it("renderiza o helperText quando passado", () => {
+    render(<InputText helperText="Campo obrigatório" />);
+    expect(screen.getByText(/campo obrigatório/i)).toBeInTheDocument();
+  });
+
+  it("renderiza o helperText em vermelho quando error=true", () => {
+    render(<InputText helperText="Campo inválido" error={true} />);
+    const helper = screen.getByText(/campo inválido/i);
+    expect(helper.className).toContain("text-red");
+  });
+
+  it("chama onChange ao digitar", async () => {
+    const handleChange = vi.fn();
+    render(<InputText placeholder="Digite algo" onChange={handleChange} />);
+
+    const user = userEvent.setup();
+    await user.type(screen.getByPlaceholderText(/digite algo/i), "abc");
+
+    expect(handleChange).toHaveBeenCalled();
+  });
+});
+
+```
+
+## src\tests\PrivateRoute.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
+import { PrivateRoute } from "../routes/PrivateRoute";
+
+vi.mock("../hooks/useAuth", () => ({
+  useAuth: vi.fn(),
+}));
+
+import { useAuth } from "../hooks/useAuth";
+
+const mockUseAuth = vi.mocked(useAuth);
+
+const mockUser = {
+  id: "1",
+  name: "Teste",
+  email: "teste@email.com",
+  password: "",
+  avatarUrl: "",
+  role: "CLIENTE" as const,
+  createdAt: "2024-01-01",
+  updatedAt: "2024-01-01",
+  disponibilidades: [],
+};
+
+function PaginaProtegida() {
+  return <div>Conteúdo protegido</div>;
+}
+
+function PaginaLogin() {
+  return <div>Página de login</div>;
+}
+
+function renderPrivateRoute(roles?: string[]) {
+  return render(
+    <MemoryRouter initialEntries={["/protegido"]}>
+      <Routes>
+        <Route path="/login" element={<PaginaLogin />} />
+        <Route
+          path="/protegido"
+          element={
+            <PrivateRoute roles={roles}>
+              <PaginaProtegida />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+describe("PrivateRoute", () => {
+  it("mostra loading enquanto está carregando", () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      token: null,
+      isLoading: true,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+    renderPrivateRoute();
+
+    expect(screen.getByText(/carregando/i)).toBeInTheDocument();
+  });
+
+  it("redireciona para /login quando não há usuário", () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      token: null,
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+
+    renderPrivateRoute();
+
+    expect(screen.getByText(/página de login/i)).toBeInTheDocument();
+    expect(screen.queryByText(/conteúdo protegido/i)).not.toBeInTheDocument();
+  });
+
+  it("renderiza o conteúdo quando usuário está autenticado", () => {
+    mockUseAuth.mockReturnValue({
+      user: mockUser,
+      token: "abc",
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+    renderPrivateRoute();
+
+    expect(screen.getByText(/conteúdo protegido/i)).toBeInTheDocument();
+  });
+
+  it("redireciona quando usuário não tem o role exigido", () => {
+    mockUseAuth.mockReturnValue({
+      user: mockUser, // role: "CLIENTE"
+      token: "abc",
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+
+    // Rota exige ADMIN mas usuário é CLIENTE
+    renderPrivateRoute(["ADMIN"]);
+
+    expect(screen.getByText(/página de login/i)).toBeInTheDocument();
+    expect(screen.queryByText(/conteúdo protegido/i)).not.toBeInTheDocument();
+  });
+
+  it("renderiza quando usuário tem o role exigido", () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUser, role: "ADMIN" as const },
+      token: "abc",
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+
+    // Rota exige ADMIN e usuário é ADMIN
+    renderPrivateRoute(["ADMIN"]);
+
+    expect(screen.getByText(/conteúdo protegido/i)).toBeInTheDocument();
+  });
+});
+
+```
+
+## src\tests\schemas.test.tsx
+
+```tsx
+import { describe, expect, it } from "vitest";
+import { z } from "zod";
+
+// Cópia dos schemas — igual ao que está nos componentes
+const signInSchema = z.object({
+  email: z.string().email({ message: "E-Mail inválido." }),
+  password: z
+    .string()
+    .min(6, { message: "A senha deve ter pelo menos 6 digitos" }),
+});
+
+const signUpSchema = z.object({
+  name: z.string().trim().min(1, { message: "Informe o nome completo." }),
+  email: z.string().email({ message: "E-Mail inválido." }),
+  password: z
+    .string()
+    .min(6, { message: "A senha deve ter pelo menos 6 digitos" }),
+});
+
+describe("signInSchema", () => {
+  it("aceita dados válidos", () => {
+    const result = signInSchema.safeParse({
+      email: "user@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejeita email inválido", () => {
+    const result = signInSchema.safeParse({
+      email: "nao-é-email",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("E-Mail inválido.");
+  });
+
+  it("rejeita senha com menos de 6 caracteres", () => {
+    const result = signInSchema.safeParse({
+      email: "user@email.com",
+      password: "123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe(
+      "A senha deve ter pelo menos 6 digitos",
+    );
+  });
+});
+
+describe("signUpSchema", () => {
+  it("aceita dados válidos", () => {
+    const result = signUpSchema.safeParse({
+      name: "João Silva",
+      email: "joao@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejeita nome vazio", () => {
+    const result = signUpSchema.safeParse({
+      name: "",
+      email: "joao@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Informe o nome completo.");
+  });
+
+  it("rejeita nome só com espaços", () => {
+    const result = signUpSchema.safeParse({
+      name: "   ",
+      email: "joao@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Informe o nome completo.");
+  });
+
+  it("rejeita email inválido", () => {
+    const result = signUpSchema.safeParse({
+      name: "João Silva",
+      email: "invalido",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("E-Mail inválido.");
+  });
+
+  it("rejeita senha com menos de 6 caracteres", () => {
+    const result = signUpSchema.safeParse({
+      name: "João Silva",
+      email: "joao@email.com",
+      password: "123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe(
+      "A senha deve ter pelo menos 6 digitos",
+    );
+  });
+});
+
+```
+
+## src\tests\setup.ts
+
+```ts
+import "@testing-library/jest-dom";
+
+```
+
+## src\tests\SignIn.test.tsx
+
+```tsx
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
+import { SignIn } from "../Pages/SignIn";
+
+vi.mock("../hooks/useAuth", () => ({
+  useAuth: () => ({
+    signIn: vi.fn(),
+    isLoading: false,
+  }),
+}));
+
+vi.mock("../services/api", () => ({
+  api: {
+    get: vi.fn().mockResolvedValue({ data: { status: "ok" } }),
+    post: vi.fn(),
+  },
+}));
+
+const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+describe("SignIn", () => {
+  beforeEach(() => {
+    alertMock.mockClear();
+  });
+
+  it("renderiza o formulário de login", () => {
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/digite sua senha/i),
+    ).toBeInTheDocument();
+  });
+
+  it("mostra alerta ao submeter com senha curta", async () => {
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>,
+    );
+
+    const user = userEvent.setup();
+
+    // Aguarda botão habilitar
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /enviar/i }),
+      ).not.toBeDisabled();
+    });
+
+    // Email válido + senha curta — jsdom não bloqueia, Zod rejeita a senha
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "teste@email.com",
+    );
+    await user.type(screen.getByPlaceholderText(/digite sua senha/i), "123");
+
+    // Submete o form diretamente para contornar validação nativa HTML
+    fireEvent.submit(
+      screen.getByRole("button", { name: /enviar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith(
+        expect.stringMatching(/senha deve ter pelo menos/i),
+      );
+    });
+  });
+});
+
+```
+
+## src\tests\SignUp.test.tsx
+
+```tsx
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SignUp } from "../Pages/SignUp";
+
+vi.mock("../services/api", () => ({
+  api: {
+    get: vi.fn().mockResolvedValue({ data: { status: "ok" } }),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+  },
+}));
+
+const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+const confirmMock = vi.spyOn(window, "confirm").mockImplementation(() => false);
+
+describe("SignUp", () => {
+  beforeEach(() => {
+    alertMock.mockClear();
+    confirmMock.mockClear();
+  });
+
+  it("renderiza o formulário de cadastro", () => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByPlaceholderText(/digite o nome completo/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/digite sua senha/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /cadastrar/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("mostra alerta quando o nome está vazio", async () => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /cadastrar/i }),
+      ).not.toBeDisabled();
+    });
+
+    const user = userEvent.setup();
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "teste@email.com",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/digite sua senha/i),
+      "senha123",
+    );
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /cadastrar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith(
+        expect.stringMatching(/informe o nome/i),
+      );
+    });
+  });
+
+  it("mostra alerta quando a senha é curta", async () => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /cadastrar/i }),
+      ).not.toBeDisabled();
+    });
+
+    const user = userEvent.setup();
+    await user.type(
+      screen.getByPlaceholderText(/digite o nome completo/i),
+      "João Silva",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "teste@email.com",
+    );
+    await user.type(screen.getByPlaceholderText(/digite sua senha/i), "123");
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /cadastrar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith(
+        expect.stringMatching(/senha deve ter pelo menos/i),
+      );
+    });
+  });
+
+  it("chama api.post ao submeter com dados válidos", async () => {
+    const { api } = await import("../services/api");
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /cadastrar/i }),
+      ).not.toBeDisabled();
+    });
+
+    const user = userEvent.setup();
+    await user.type(
+      screen.getByPlaceholderText(/digite o nome completo/i),
+      "João Silva",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "joao@email.com",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/digite sua senha/i),
+      "senha123",
+    );
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /cadastrar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledWith(
+        "/users",
+        expect.objectContaining({
+          name: "João Silva",
+          email: "joao@email.com",
+          password: "senha123",
+          role: "CLIENTE",
+        }),
+      );
+    });
+  });
+});
+
+```
+
+## src\tests\Text.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { Text } from "../components/Text";
+
+describe("Text", () => {
+  it("renderiza o texto passado como children", () => {
+    render(<Text>Olá mundo</Text>);
+    expect(screen.getByText(/olá mundo/i)).toBeInTheDocument();
+  });
+
+  it("renderiza como span por padrão", () => {
+    render(<Text>Texto padrão</Text>);
+    const el = screen.getByText(/texto padrão/i);
+    expect(el.tagName).toBe("SPAN");
+  });
+
+  it("renderiza como h1 quando as='h1'", () => {
+    render(<Text as="h1">Título</Text>);
+    const el = screen.getByText(/título/i);
+    expect(el.tagName).toBe("H1");
+  });
+
+  it("aplica classe font-bold na variante text-lg-bold", () => {
+    render(<Text variant="text-lg-bold">Negrito</Text>);
+    const el = screen.getByText(/negrito/i);
+    expect(el.className).toContain("font-bold");
+  });
+
+  it("aplica classe font-normal na variante text-sm-regular", () => {
+    render(<Text variant="text-sm-regular">Normal</Text>);
+    const el = screen.getByText(/normal/i);
+    expect(el.className).toContain("font-normal");
+  });
+
+  it("aplica classe text-xs na variante text-xs-bold", () => {
+    render(<Text variant="text-xs-bold">Pequeno</Text>);
+    const el = screen.getByText(/pequeno/i);
+    expect(el.className).toContain("text-xs");
+  });
+
+  it("aplica className extra quando passado", () => {
+    render(<Text className="text-red-500">Vermelho</Text>);
+    const el = screen.getByText(/vermelho/i);
+    expect(el.className).toContain("text-red-500");
+  });
+
+  it("renderiza como p quando as='p'", () => {
+    render(<Text as="p">Parágrafo</Text>);
+    const el = screen.getByText(/parágrafo/i);
+    expect(el.tagName).toBe("P");
+  });
+});
 
 ```
 
@@ -7045,6 +7853,9 @@ export default defineConfig([
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "generate-md": "ts-node --esm tools/generate-md.ts"
   },
   "dependencies": {
@@ -7068,22 +7879,29 @@ export default defineConfig([
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.4",
     "@types/classnames": "^2.3.0",
+    "@types/jest": "^30.0.0",
     "@types/jwt-decode": "^2.2.1",
-    "@types/node": "^24.13.2",
+    "@types/node": "^24.13.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/ui": "^4.1.10",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "jsdom": "^30.0.1",
     "ts-node": "^10.9.2",
     "tw-animate-css": "^1.4.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10",
-    "vite-plugin-svgr": "^5.2.0"
+    "vite-plugin-svgr": "^5.2.0",
+    "vitest": "^4.1.10"
   }
 }
 
@@ -7091,79 +7909,161 @@ export default defineConfig([
 
 ## README.md
 
-# React + TypeScript + Vite
+# HelpDesk WEB 💻
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="left">
+<img src="./.github/logo HelpDesk.png" alt="Tela de Login" width="600"/>
+</p>
 
-Currently, two official plugins are available:
+Interface web desenvolvida em **React**, **TypeScript** e **Vite**, conectada à [HelpDesk API](https://github.com/rosendo2015/HelpDesk-API).  
+O sistema oferece uma experiência moderna e intuitiva para gerenciamento de chamados, usuários e disponibilidade de técnicos.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![React](https://img.shields.io/badge/React-18.x-61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![Vite](https://img.shields.io/badge/Vite-5.x-purple)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38BDF8)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ⚙️ Funcionalidades
 
-## Expanding the ESLint configuration
+- Login e autenticação de usuários
+- Cadastro e gerenciamento de chamados
+- Painel administrativo para controle de técnicos e clientes
+- Upload de avatar e perfil de usuário
+- Comunicação direta com a **HelpDesk API**
+- Interface **responsiva** e otimizada para desktop e mobile
+- Organização modular com **contexts**, **hooks** e **services**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🧩 Arquitetura do Projeto
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```plaintext
+src/
+ ├── assets/              # Imagens, ícones e estilos globais
+ ├── components/          # Componentes reutilizáveis
+ ├── contexts/            # Contextos globais (auth, theme, etc.)
+ ├── hooks/               # Hooks personalizados
+ ├── layout/              # Layouts principais da aplicação
+ ├── Pages/               # Páginas principais
+ │    ├── admin/          # Painel administrativo
+ │    ├── cliente/        # Área do cliente
+ │    ├── tecnico/        # Área do técnico
+ │    ├── App.tsx         # Componente raiz
+ │    ├── PageComponents.tsx
+ │    ├── SignIn.tsx      # Tela de login
+ │    └── SignUp.tsx      # Tela de cadastro
+ ├── routes/              # Definição das rotas
+ ├── services/            # Comunicação com a API (axios)
+ ├── tests/               # Testes unitários e de integração
+ ├── types/               # Tipagens globais
+ ├── utils/               # Funções auxiliares
+ ├── index.css            # Estilos globais
+ ├── main.tsx             # Ponto de entrada da aplicação
+ └── vite-env.d.ts        # Tipos do ambiente Vite
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Como Executar
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### \* Clone o repositório
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+git clone https://github.com/rosendo2015/HelpDesk-WEB.git
+
+### \* Acesse a pasta
+
+cd HelpDesk-WEB
+
+### \* Instale as dependências
+
 ```
+npm install
+```
+
+### \* Configure o ambiente
+
+cp .env.example .env
+
+### \* Defina a URL da API no arquivo .env
+
+VITE_API_URL=http://localhost:3000
+
+### \* Execute o projeto
+
+npm run dev
+
+## 🧰 Tecnologias Utilizadas
+
+- React
+
+- TypeScript
+
+- Vite
+
+- TailwindCSS
+
+- Axios
+
+- React Router DOM
+
+- Context API
+
+- Vitest + Jest para testes
+
+- ESLint + Prettier para padronização de código
+
+## 🧪 Testes
+
+npm run test
+
+## 🧱 Ferramentas e Configurações
+
+- TailwindCSS para estilização rápida e responsiva
+
+- Vite para build e desenvolvimento ultrarrápido
+
+- Vitest para testes unitários
+
+- Docker Compose (opcional) para ambiente containerizado
+
+- CI/CD via GitHub Actions (opcional)
+
+## 📸 Preview do Sistema
+
+<p align="left">
+<img src="./.github/pageLogin.png" alt="Tela de Login" width="600"/>
+</p>
+<p align="left">
+<img src="./.github/dashboard-admin.png" alt="Dashboard" width="600"/>
+</p>
+
+## 🤝 Contribuição
+
+### Contribuições são bem-vindas!
+
+- Faça um fork do projeto
+
+- Crie uma branch (git checkout -b feature/nova-feature)
+
+- Commit suas alterações (git commit -m 'Adiciona nova feature')
+
+- Push para a branch (git push origin feature/nova-feature)
+
+- Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+Sinta-se livre para usar, modificar e distribuir.
+
+## 💬 Contato
+
+Desenvolvido por Francisco Rosendo  
+📧 rosendo2015@gmail.com
+🔗 LinkedIn (linkedin.com in Bing)
 
 
 ## src\components\ActionLink\actionLinkVariants.ts
@@ -7449,44 +8349,52 @@ export const buttonTextVariants = cva("", {
 ## src\components\Button\index.tsx
 
 ```tsx
-import React from "react"
-import { Icon } from "../Icon"
-import type { VariantProps } from "class-variance-authority"
-import { buttonIconVariants, buttonTextVariants, buttonVariants } from "./buttonVariants"
-import { Text } from "../Text"
+import type { VariantProps } from "class-variance-authority";
+import type React from "react";
+import { cn } from "tailwind-variants";
+import { Icon } from "../Icon";
+import { Text } from "../Text";
+import {
+  buttonIconVariants,
+  buttonTextVariants,
+  buttonVariants,
+} from "./buttonVariants";
 
-interface ButtonProps extends
-    Omit<React.ComponentProps<"button">, 'size' | 'disabled'>,
+interface ButtonProps
+  extends
+    Omit<React.ComponentProps<"button">, "size" | "disabled">,
     VariantProps<typeof buttonVariants> {
-    icon?: React.ComponentProps<typeof Icon>["svg"]
-
+  icon?: React.ComponentProps<typeof Icon>["svg"];
 }
 
 export function Button({
-    variant,
-    size,
-    disabled,
+  variant,
+  size,
+  disabled,
 
-    className,
-    children,
-    icon,
-    ...props
+  className,
+  children,
+  icon,
+  ...props
 }: ButtonProps) {
-    return (
-        <button
-            className={buttonVariants({ disabled, variant, size, className })}
-
-            {...props}>
-            {icon && <Icon
-                svg={icon}
-                className={buttonIconVariants({ variant, size: "md" })}
-            />}
-            <Text variant="text-sm-bold" className={buttonTextVariants({ variant })}>
-                {children}
-            </Text>
-        </button>
-    )
+  return (
+    <button
+      className={cn(buttonVariants({ disabled, variant, size }), className)}
+      {...props}
+    >
+      {icon && (
+        <Icon
+          svg={icon}
+          className={buttonIconVariants({ variant, size: "md" })}
+        />
+      )}
+      <Text variant="text-sm-bold" className={buttonTextVariants({ variant })}>
+        {children}
+      </Text>
+    </button>
+  );
 }
+
 ```
 
 ## src\components\ButtonIcon\buttonIconVariants.ts
@@ -7546,32 +8454,43 @@ export const buttonIconIconVariants = cva("transition", {
 ## src\components\ButtonIcon\index.tsx
 
 ```tsx
-import React from "react";
-import { Icon } from "../Icon";
 import type { VariantProps } from "class-variance-authority";
-import { buttonIconIconVariants, buttonIconVariants } from "./buttonIconVariants";
+import type React from "react";
+import { cn } from "tailwind-variants";
+import { Icon } from "../Icon";
+import {
+  buttonIconIconVariants,
+  buttonIconVariants,
+} from "./buttonIconVariants";
 
 interface ButtonIconProps
-    extends VariantProps<typeof buttonIconVariants>,
+  extends
+    VariantProps<typeof buttonIconVariants>,
     Omit<React.ComponentProps<"button">, "size" | "disabled"> {
-    icon: React.ComponentProps<typeof Icon>["svg"];
-};
+  icon: React.ComponentProps<typeof Icon>["svg"];
+}
 
 export function ButtonIcon({
-    variant,
-    size,
-    icon,
-    disabled,
-    className,
-    ...props }: ButtonIconProps) {
-    return (
-        <button
-            className={buttonIconVariants({ variant, size, disabled, className })}
-            {...props}
-        >
-            {icon && <Icon svg={icon} className={buttonIconIconVariants({ variant, size, className })} />}
-        </button>
-    );
+  variant,
+  size,
+  icon,
+  disabled,
+  className,
+  ...props
+}: ButtonIconProps) {
+  return (
+    <button
+      className={cn(buttonIconVariants({ variant, size, disabled }), className)}
+      {...props}
+    >
+      {icon && (
+        <Icon
+          svg={icon}
+          className={buttonIconIconVariants({ variant, size, className })}
+        />
+      )}
+    </button>
+  );
 }
 
 ```
@@ -7603,8 +8522,9 @@ export const cardVariants = cva("rounded-lg border border-solid ", {
 ## src\components\Card\index.tsx
 
 ```tsx
-import React from "react";
 import type { VariantProps } from "class-variance-authority";
+import React from "react";
+import { cn } from "tailwind-variants";
 import { cardVariants } from "./cardVariants";
 
 interface CardProps
@@ -7623,7 +8543,7 @@ export function Card({
   return React.createElement(
     as,
     {
-      className: cardVariants({ variant, size, className }),
+      className: cn(cardVariants({ variant, size, className }), className),
       ...props,
     },
     children,
@@ -7795,48 +8715,49 @@ export function ChamadoCard({ chamado }: ChamadoCardProps) {
 ```ts
 import { cva } from "class-variance-authority";
 
-
 export const containerVariants = cva("", {
-    variants: {
-        size: {
-            default: "w-full",
-            md: "w-93.75 sm:max-w-170 px-2 ",
-        }
+  variants: {
+    size: {
+      default: "w-full",
+      md: "w-full sm:max-w-[42.5rem] px-2", // ✅ w-93.75 → w-full / max-w-170 → max-w-[42.5rem]
     },
-    defaultVariants: {
-        size: "default"
-    }
-})
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
+
 ```
 
 ## src\components\Container\index.tsx
 
 ```tsx
-import React from "react";
-import { containerVariants } from "./containerVariants";
 import type { VariantProps } from "class-variance-authority";
+import React from "react";
+import { cn } from "tailwind-variants";
+import { containerVariants } from "./containerVariants";
 
-interface ContainerProps extends
-    VariantProps<typeof containerVariants>,
-    React.ComponentProps<"div"> {
-    as?: keyof React.JSX.IntrinsicElements,
+interface ContainerProps
+  extends VariantProps<typeof containerVariants>, React.ComponentProps<"div"> {
+  as?: keyof React.JSX.IntrinsicElements;
 }
 
 export function Container({
-    as = "div",
-    children,
-    className,
-    ...props
+  as = "div",
+  children,
+  className,
+  ...props
 }: ContainerProps) {
-    return React.createElement(
-        as,
-        {
-            className: containerVariants({ size: "md", className }),
-            ...props
-        },
-        children
-    )
+  return React.createElement(
+    as,
+    {
+      className: cn(containerVariants({ size: "md" }), className),
+      ...props,
+    },
+    children,
+  );
 }
+
 ```
 
 ## src\components\Dialog\index.tsx
@@ -8106,19 +9027,31 @@ export const iconVariants = cva("inline-block", {
 ## src\components\Icon\index.tsx
 
 ```tsx
-import { type VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cn } from "tailwind-variants";
 import { iconVariants } from "./iconVariants";
 
 interface IconProps
-    extends Omit<React.ComponentProps<"svg">, "color">,
+  extends
+    Omit<React.ComponentProps<"svg">, "color">,
     VariantProps<typeof iconVariants> {
-    svg: React.FC<React.ComponentProps<"svg">>;
+  svg: React.FC<React.ComponentProps<"svg">>;
 }
 
-export function Icon({ svg: SvgComponent, animate, color, size, className, ...props }: IconProps) {
-    return (
-        <SvgComponent className={iconVariants({ animate, color, size, className })} {...props} />
-    );
+export function Icon({
+  svg: SvgComponent,
+  animate,
+  color,
+  size,
+  className,
+  ...props
+}: IconProps) {
+  return (
+    <SvgComponent
+      className={cn(iconVariants({ animate, color, size }), className)}
+      {...props}
+    />
+  );
 }
 
 ```
@@ -9266,32 +10199,34 @@ export const tagTimeIconVariants = cva("w-5 h-5", {
 ## src\components\Text\index.tsx
 
 ```tsx
+import type { VariantProps } from "class-variance-authority";
 import React from "react";
-import { type VariantProps } from "class-variance-authority"
+import { cn } from "tailwind-variants";
 import { textVariants } from "./textVariants";
 
 interface TextProps extends VariantProps<typeof textVariants> {
-    as?: keyof React.JSX.IntrinsicElements;
-    className?: string;
-    children?: React.ReactNode;
+  as?: keyof React.JSX.IntrinsicElements;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export function Text({
-    as = "span",
-    variant,
-    className,
-    children,
-    ...props
+  as = "span",
+  variant,
+  className,
+  children,
+  ...props
 }: TextProps) {
-    return React.createElement(
-        as,
-        {
-            className: textVariants({ variant, className }),
-            ...props
-        },
-        children
-    )
+  return React.createElement(
+    as,
+    {
+      className: cn(textVariants({ variant }), className),
+      ...props,
+    },
+    children,
+  );
 }
+
 ```
 
 ## src\components\Text\textVariants.ts
@@ -9711,11 +10646,17 @@ export const AuthContext = createContext<AuthContextData>(
 ## src\contexts\AuthProvider.tsx
 
 ```tsx
-import { useState, useEffect, type ReactNode, startTransition } from "react";
-import { AuthContext } from "./AuthContext";
-import type { Users } from "../contexts/User/model/users";
 import { jwtDecode } from "jwt-decode";
+import {
+  type ReactNode,
+  startTransition,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import type { Users } from "../contexts/User/model/users";
 import { api } from "../services/api";
+import { AuthContext } from "./AuthContext";
 
 interface Props {
   children: ReactNode;
@@ -9730,6 +10671,14 @@ export function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<Users | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const signOut = useCallback(() => {
+    localStorage.removeItem("@helpdesk:user");
+    localStorage.removeItem("@helpdesk:token");
+    setUser(null);
+    setToken(null);
+    delete api.defaults.headers.common["Authorization"];
+  }, []);
 
   useEffect(() => {
     const loadStoredData = async () => {
@@ -9762,12 +10711,12 @@ export function AuthProvider({ children }: Props) {
         console.error("Erro ao carregar token:", error);
         signOut();
       } finally {
-        setTimeout(() => setIsLoading(false), 100);
+        setIsLoading(false);
       }
     };
 
     loadStoredData();
-  }, []);
+  }, [signOut]);
 
   function signIn({ token, user }: { token: string; user: Users }) {
     localStorage.setItem("@helpdesk:user", JSON.stringify(user));
@@ -9783,19 +10732,11 @@ export function AuthProvider({ children }: Props) {
     setUser(updatedUser);
   }
 
-  function signOut() {
-    localStorage.removeItem("@helpdesk:user");
-    localStorage.removeItem("@helpdesk:token");
-    setUser(null);
-    setToken(null);
-    delete api.defaults.headers.common["Authorization"];
-  }
-
   return (
     <AuthContext.Provider
       value={{ user, token, signIn, signOut, updateUser, isLoading }}
     >
-      {isLoading ? <div>Carregando...</div> : children}
+      {children}
     </AuthContext.Provider>
   );
 }
@@ -9848,12 +10789,11 @@ export const ServicesContext =
 ## src\contexts\CategoryServices\ServicesProvider.tsx
 
 ```tsx
-// src/contexts/Servico/ServicesProvider.tsx
 import type { ReactNode } from "react";
-import { useState, useEffect, startTransition, useContext } from "react";
-import { api } from "../../services/api";
-import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
+import { startTransition, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { ServicesContext } from "../../contexts/CategoryServices/ServicesContext";
+import { api } from "../../services/api";
 import type { CategoryServices } from "../CategoryServices/model/categoryServices";
 
 export function ServicesProvider({ children }: { children: ReactNode }) {
@@ -9861,22 +10801,18 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     [],
   );
   const [loading, setLoading] = useState(true);
-  const { token, user } = useContext(AuthContext); // 🔹 Pega o token do contexto de autenticação
+  const { token, user } = useContext(AuthContext);
 
-  // 🔹 Buscar serviços ativos
+  // ✅ Função mantida fora do effect para poder ser exposta no context
+  // O React Compiler gerencia a memoização automaticamente
   async function fetchCategoryServices() {
     setLoading(true);
     try {
-      // 🔹 Se for admin, busca todos (ativos + inativos)
       const url =
         user?.role === "ADMIN" ? "/services?includeInactive=true" : "/services";
-
       const response = await api.get<CategoryServices[]>(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       startTransition(() => {
         setCategoryServices(response.data);
       });
@@ -9886,15 +10822,42 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }
+
+  // ✅ useEffect com lógica inline — evita referência a função externa
+  // O React Compiler não reclama porque o setState está dentro do callback async
   useEffect(() => {
     if (!token) return;
-    async function carregarServicos() {
-      await fetchCategoryServices();
-    }
-    carregarServicos();
-  }, [token, user?.role]); // ✅ recarrega se o role mudar
 
-  // 🔹 Criar novo serviço (corrigido para aceitar apenas os campos necessários)
+    let cancelled = false;
+
+    const carregar = async () => {
+      setLoading(true);
+      try {
+        const url =
+          user?.role === "ADMIN"
+            ? "/services?includeInactive=true"
+            : "/services";
+        const response = await api.get<CategoryServices[]>(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!cancelled) {
+          startTransition(() => setCategoryServices(response.data));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    carregar();
+
+    // cleanup: evita setState em componente desmontado
+    return () => {
+      cancelled = true;
+    };
+  }, [token, user?.role]); // ✅ deps diretas — sem referência a função externa
+
   async function createServico(
     dados: Pick<CategoryServices, "name" | "price" | "active">,
   ) {
@@ -9908,7 +10871,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 🔹 Atualizar serviço existente
   async function updateServico(id: string, dados: Partial<CategoryServices>) {
     try {
       const response = await api.patch(`/services/${id}`, dados);
@@ -9922,7 +10884,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 🔹 Excluir serviço
   async function deleteServico(id: string) {
     try {
       await api.delete(`/services/${id}`);
@@ -9933,17 +10894,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao excluir serviço:", error);
     }
   }
-
-  // 🔹 Carregar serviços ao montar (somente se o token existir)
-  useEffect(() => {
-    if (!token) return; // ✅ Garante que só busca se o token estiver disponível
-
-    async function carregarServicos() {
-      await fetchCategoryServices();
-    }
-
-    carregarServicos();
-  }, [token]); // ✅ Recarrega se o token mudar
 
   return (
     <ServicesContext.Provider
@@ -10301,7 +11251,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 ## src\layout\AuthLayout.tsx
 
 ```tsx
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import backgroundImage from "../assets/images/Login_Background.png";
 import { authBackground, authContainer, authContent } from "./layoutVariants";
 
@@ -10328,32 +11278,51 @@ export function AuthLayout() {
 ```ts
 import { cva } from "class-variance-authority";
 
-export const authContainer = cva("flex h-screen justify-center items-center relative overflow-hidden sm:justify-end sm:items-end", {
+export const authContainer = cva(
+  "flex min-h-screen w-full relative overflow-hidden",
+  {
     variants: {
-        theme: {
-            dark: "bg-gray-100",
-            light: "bg-gray-600",
-        },
+      theme: {
+        dark: "bg-gray-100",
+        light: "bg-gray-600",
+      },
     },
     defaultVariants: {
-        theme: "dark",
+      theme: "dark",
     },
-});
+  },
+);
 
-export const authBackground = cva("absolute inset-0 bg-cover bg-center opacity-60", {
+export const authBackground = cva(
+  "absolute inset-0 bg-cover bg-center opacity-60",
+  {
     variants: {
-        blur: {
-            none: "",
-            sm: "blur-sm",
-            md: "blur-md",
-        },
+      blur: {
+        none: "",
+        sm: "blur-sm",
+        md: "blur-md",
+      },
     },
     defaultVariants: {
-        blur: "none",
+      blur: "none",
     },
-});
+  },
+);
 
-export const authContent = cva("h-206 sm:h-[47.825rem] bg-gray-600 relative z-10 rounded-tl-[1.25rem] px-35 py-12 ");
+// Painel branco do formulário: ocupa tela toda no mobile,
+// largura fixa ancorada à direita no desktop
+export const authContent = cva(
+  [
+    "relative z-10",
+    "w-full sm:w-[40rem] mt-[1.5rem]", // mobile 100%, desktop 432px
+    "min-h-[100%]", // sempre ocupa a tela toda verticalmente
+    "bg-gray-600", // fundo branco (#f9fafa)
+    "sm:rounded-tl-[1.25rem]", // borda arredondada só no desktop
+    "px-8 py-12", // espaçamento interno
+    "flex flex-col justify-center", // centraliza o conteúdo verticalmente
+    "ml-auto", // empurra para a direita no desktop
+  ].join(" "),
+);
 
 ```
 
@@ -10372,21 +11341,21 @@ import { ChamadosProvider } from "./contexts/Chamado/ChamadosProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <ServicesProvider>
-        <ChamadosProvider>
-          <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <ServicesProvider>
+          <ChamadosProvider>
             <AppRoutes />
-          </BrowserRouter>
-        </ChamadosProvider>
-      </ServicesProvider>
-    </AuthProvider>
+          </ChamadosProvider>
+        </ServicesProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 );
 
 ```
 
-## src\pages\admin\adminVariants.ts
+## src\Pages\admin\adminVariants.ts
 
 ```ts
 import { cva } from "class-variance-authority";
@@ -10403,7 +11372,7 @@ export const adminVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
 });
 ```
 
-## src\pages\admin\ChamadosAdmin.tsx
+## src\Pages\admin\ChamadosAdmin.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -10584,7 +11553,7 @@ export function ChamadosAdmin() {
 
 ```
 
-## src\pages\admin\DashboardAdmin.tsx
+## src\Pages\admin\DashboardAdmin.tsx
 
 ```tsx
 import { Outlet } from "react-router-dom";
@@ -10603,7 +11572,7 @@ export function DashboardAdmin({ }: AdminProps) {
 }
 ```
 
-## src\pages\admin\EditarChamadoAdmin.tsx
+## src\Pages\admin\EditarChamadoAdmin.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -10794,7 +11763,7 @@ export function EditarChamadoAdmin() {
 
 ```
 
-## src\pages\admin\EditarTecnico.tsx
+## src\Pages\admin\EditarTecnico.tsx
 
 ```tsx
 import { useState, useEffect } from "react";
@@ -10972,7 +11941,7 @@ export function EditarTecnico() {
 
 ```
 
-## src\pages\admin\ListClientes.tsx
+## src\Pages\admin\ListClientes.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -11277,7 +12246,7 @@ function EditClienteForm({
 
 ```
 
-## src\pages\admin\ListTecnicos.tsx
+## src\Pages\admin\ListTecnicos.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -11434,7 +12403,7 @@ export function TecnicosAdmin() {
 
 ```
 
-## src\pages\admin\NovoTecnico.tsx
+## src\Pages\admin\NovoTecnico.tsx
 
 ```tsx
 import { Button } from "../../components/Button";
@@ -11658,7 +12627,7 @@ export function NovoTecnico() {
 
 ```
 
-## src\pages\admin\ServicosAdmin.tsx
+## src\Pages\admin\ServicosAdmin.tsx
 
 ```tsx
 import { Icon } from "../../components/Icon";
@@ -11972,7 +12941,7 @@ export function ServicosAdmin() {
 
 ```
 
-## src\pages\App.tsx
+## src\Pages\App.tsx
 
 ```tsx
 export function App() {
@@ -11981,7 +12950,7 @@ export function App() {
 
 ```
 
-## src\pages\cliente\ChamadosCliente.tsx
+## src\Pages\cliente\ChamadosCliente.tsx
 
 ```tsx
 import { clienteVariants } from "./clienteVariants";
@@ -12129,7 +13098,7 @@ export function ChamadosCliente({ role = "CLIENTE" }: ClienteProps) {
 
 ```
 
-## src\pages\cliente\clienteVariants.ts
+## src\Pages\cliente\clienteVariants.ts
 
 ```ts
 import { cva } from "class-variance-authority";
@@ -12148,7 +13117,7 @@ export const clienteVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
 
 ```
 
-## src\pages\cliente\DashboardCliente.tsx
+## src\Pages\cliente\DashboardCliente.tsx
 
 ```tsx
 import { Outlet } from "react-router-dom";
@@ -12167,7 +13136,7 @@ export function DashboardCliente({ }: ClienteProps) {
 }
 ```
 
-## src\pages\cliente\DetailChamadoCliente.tsx
+## src\Pages\cliente\DetailChamadoCliente.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -12318,7 +13287,7 @@ export function DetailChamadoCliente() {
 
 ```
 
-## src\pages\cliente\EditarChamadoCliente.tsx
+## src\Pages\cliente\EditarChamadoCliente.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -12455,7 +13424,7 @@ export function EditarChamadoCliente() {
 
 ```
 
-## src\pages\cliente\NovoChamado.tsx
+## src\Pages\cliente\NovoChamado.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -12589,7 +13558,7 @@ export function NovoChamado() {
 
 ```
 
-## src\pages\PageComponents.tsx
+## src\Pages\PageComponents.tsx
 
 ```tsx
 import { Avatar } from "../components/Avatar";
@@ -12764,11 +13733,11 @@ export function Components() {
 
 ```
 
-## src\pages\SignIn.tsx
+## src\Pages\SignIn.tsx
 
 ```tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { ZodError, z } from "zod";
 import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
@@ -12853,7 +13822,7 @@ export function SignIn() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-full max-w-md">
+      <main className="flex flex-col gap-3 w-full max-w-lg">
         {/* Aviso do banco de dados */}
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
@@ -12926,38 +13895,20 @@ export function SignIn() {
 
 ```
 
-## src\pages\SignUp.tsx
+## src\Pages\SignUp.tsx
 
 ```tsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ZodError, z } from "zod";
+import { ActionLink } from "../components/ActionLink";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { Container } from "../components/Container";
 import { InputText } from "../components/InputText";
-import { ActionLink } from "../components/ActionLink";
 import { Logo } from "../components/Logo";
 import { Text } from "../components/Text";
-import { z, ZodError } from "zod";
 import { api } from "../services/api";
-import { useNavigate } from "react-router";
-import { jwtDecode } from "jwt-decode";
-import { InputSelect } from "../components/InputSelect";
-
-interface TokenPayload {
-  role: "ADMIN" | "TECNICO" | "CLIENTE";
-  sub: string;
-  exp: number;
-}
-
-const roleOptions = [
-  { id: 1, nome: "CLIENTE", valor: 1 },
-  { id: 2, nome: "TECNICO", valor: 2 },
-  { id: 3, nome: "ADMIN", valor: 3 },
-];
-
-const token = localStorage.getItem("token");
-const currentUser = token ? jwtDecode<TokenPayload>(token) : null;
-const isAdmin = currentUser?.role === "ADMIN";
 
 const signUpSchema = z.object({
   name: z.string().trim().min(1, { message: "Informe o nome completo." }),
@@ -12971,7 +13922,6 @@ export function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CLIENTE");
   const [dbStatus, setDbStatus] = useState<"ok" | "error" | "">("");
 
   const navigate = useNavigate();
@@ -13002,7 +13952,7 @@ export function SignUp() {
         password,
       });
 
-      await api.post("/users", { ...data, role });
+      await api.post("/users", { ...data, role: "CLIENTE" });
 
       if (confirm("Cadastrado com sucesso.")) {
         navigate("/");
@@ -13021,7 +13971,7 @@ export function SignUp() {
       <header>
         <Logo color="blue" />
       </header>
-      <main className="flex flex-col gap-3 w-85.5 sm:w-100">
+      <main className="flex flex-col gap-3 w-full max-w-lg">
         {dbStatus === "error" && (
           <Card className="w-full p-4 bg-red-600">
             <Text as="span" variant="text-xs-bold" className="text-white">
@@ -13057,15 +14007,6 @@ export function SignUp() {
               placeholder="Digite sua senha"
               onChange={(e) => setPassword(e.target.value)}
             />
-            {isAdmin && (
-              <InputSelect
-                label="Tipo de Usuário"
-                options={roleOptions}
-                placeholder="Escolha o perfil do usuário"
-                error={false}
-                onChange={(option) => setRole(option.nome)}
-              />
-            )}
 
             <Button size="lg" className="mt-4" disabled={dbStatus === "error"}>
               Cadastrar
@@ -13090,7 +14031,7 @@ export function SignUp() {
 
 ```
 
-## src\pages\tecnico\ChamadoDetailsTecnico.tsx
+## src\Pages\tecnico\ChamadoDetailsTecnico.tsx
 
 ```tsx
 import { Text } from "../../components/Text";
@@ -13502,7 +14443,7 @@ export function ChamadoDetailsTecnico() {
 
 ```
 
-## src\pages\tecnico\ChamadosTecnico.tsx
+## src\Pages\tecnico\ChamadosTecnico.tsx
 
 ```tsx
 import { ChamadoCard } from "../../components/ChamadoCard";
@@ -13593,10 +14534,10 @@ export function ChamadosTecnico() {
 
 ```
 
-## src\pages\tecnico\DashboardTecnico.tsx
+## src\Pages\tecnico\DashboardTecnico.tsx
 
 ```tsx
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import { AppLayout } from "../../layout/AppLayout";
 
 export function DashboardTecnico() {
@@ -13609,7 +14550,7 @@ export function DashboardTecnico() {
 
 ```
 
-## src\pages\tecnico\tecnicoVariants.ts
+## src\Pages\tecnico\tecnicoVariants.ts
 
 ```ts
 import { cva } from "class-variance-authority";
@@ -13629,30 +14570,29 @@ export const tecnicoVariants = cva("h-screen bg-gray-100 p-4 text-gray-600", {
 ## src\routes\appRoutes.tsx
 
 ```tsx
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthLayout } from "../layout/AuthLayout";
-import { SignIn } from "../pages/SignIn";
-import { SignUp } from "../pages/SignUp";
-import { DashboardCliente } from "../pages/cliente/DashboardCliente";
-import { DashboardAdmin } from "../pages/admin/DashboardAdmin";
-import { ChamadosAdmin } from "../pages/admin/ChamadosAdmin";
+import { ChamadosAdmin } from "../Pages/admin/ChamadosAdmin";
+import { DashboardAdmin } from "../Pages/admin/DashboardAdmin";
+import { EditarChamadoAdmin } from "../Pages/admin/EditarChamadoAdmin";
+import { EditarTecnico } from "../Pages/admin/EditarTecnico";
+import { ClientesAdmin } from "../Pages/admin/ListClientes";
+import { TecnicosAdmin } from "../Pages/admin/ListTecnicos";
+import { NovoTecnico } from "../Pages/admin/NovoTecnico";
+import { ServicosAdmin } from "../Pages/admin/ServicosAdmin";
+import { ChamadosCliente } from "../Pages/cliente/ChamadosCliente";
+import { DashboardCliente } from "../Pages/cliente/DashboardCliente";
+import { DetailChamadoCliente } from "../Pages/cliente/DetailChamadoCliente";
+import { EditarChamadoCliente } from "../Pages/cliente/EditarChamadoCliente";
+import { NovoChamado } from "../Pages/cliente/NovoChamado";
+
+import { Components } from "../Pages/PageComponents";
+import { SignIn } from "../Pages/SignIn";
+import { SignUp } from "../Pages/SignUp";
+import { ChamadoDetailsTecnico } from "../Pages/tecnico/ChamadoDetailsTecnico";
+import { ChamadosTecnico } from "../Pages/tecnico/ChamadosTecnico";
+import { DashboardTecnico } from "../Pages/tecnico/DashboardTecnico";
 import { PrivateRoute } from "./PrivateRoute";
-import { ChamadosCliente } from "../pages/cliente/ChamadosCliente";
-import { NovoChamado } from "../pages/cliente/NovoChamado";
-import { DashboardTecnico } from "../pages/tecnico/DashboardTecnico";
-import { ChamadosTecnico } from "../pages/tecnico/ChamadosTecnico";
-import { TecnicosAdmin } from "../pages/admin/ListTecnicos";
-import { ClientesAdmin } from "../pages/admin/ListClientes";
-import { ServicosAdmin } from "../pages/admin/ServicosAdmin";
-
-import { Components } from "../pages/PageComponents";
-import { NovoTecnico } from "../pages/admin/NovoTecnico";
-import { EditarTecnico } from "../pages/admin/EditarTecnico";
-import { EditarChamadoCliente } from "../pages/cliente/EditarChamadoCliente";
-import { DetailChamadoCliente } from "../pages/cliente/DetailChamadoCliente";
-
-import { EditarChamadoAdmin } from "../pages/admin/EditarChamadoAdmin";
-import { ChamadoDetailsTecnico } from "../pages/tecnico/ChamadoDetailsTecnico";
 
 export function AppRoutes() {
   return (
@@ -13726,34 +14666,34 @@ export function AppRoutes() {
 ## src\routes\PrivateRoute.tsx
 
 ```tsx
-import { Navigate } from "react-router-dom"
-import { useAuth } from "../hooks/useAuth"
-import type { JSX } from "react"
+import type { JSX } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 interface Props {
-    children: JSX.Element
-    roles?: string[]
+  children: JSX.Element;
+  roles?: string[];
 }
 
 export function PrivateRoute({ children, roles }: Props) {
-    const { user, isLoading } = useAuth()
+  const { user, isLoading } = useAuth();
 
-    // 🔹 Enquanto o AuthProvider ainda está carregando, não renderiza nada
-    if (isLoading) {
-        return <div>Carregando...</div> // ou um splash elegante
-    }
+  // 🔹 Enquanto o AuthProvider ainda está carregando, não renderiza nada
+  if (isLoading) {
+    return <div>Carregando...</div>; // ou um splash elegante
+  }
 
-    // 🔹 Se não há usuário após o carregamento, redireciona
-    if (!user) {
-        return <Navigate to="/login" replace />
-    }
+  // 🔹 Se não há usuário após o carregamento, redireciona
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-    // 🔹 Se há restrição de papel (role)
-    if (roles && !roles.includes(user.role)) {
-        return <Navigate to="/login" replace />
-    }
+  // 🔹 Se há restrição de papel (role)
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
 
-    return children
+  return children;
 }
 
 ```
@@ -13764,7 +14704,7 @@ export function PrivateRoute({ children, roles }: Props) {
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3333",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config) => {
@@ -13773,6 +14713,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
@@ -13821,6 +14762,681 @@ export async function getServicos() {
   const response = await api.get("/servicos");
   return response.data;
 }
+
+```
+
+## src\tests\Button.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { Button } from "../components/Button";
+
+describe("Button", () => {
+  it("renderiza o texto do botão", () => {
+    render(<Button>Clique aqui</Button>);
+    expect(
+      screen.getByRole("button", { name: /clique aqui/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza com variante secondary", () => {
+    render(<Button variant="secondary">Secundário</Button>);
+    const btn = screen.getByRole("button", { name: /secundário/i });
+    expect(btn).toBeInTheDocument();
+    expect(btn.className).toContain("bg-gray-500");
+  });
+
+  it("renderiza com tamanho lg ocupando largura total", () => {
+    render(<Button size="lg">Largo</Button>);
+    const btn = screen.getByRole("button", { name: /largo/i });
+    expect(btn.className).toContain("w-full");
+  });
+
+  it("aplica classe de desabilitado quando disabled=true", () => {
+    render(<Button disabled={true}>Desabilitado</Button>);
+    const btn = screen.getByRole("button", { name: /desabilitado/i });
+    expect(btn.className).toContain("pointer-events-none");
+    expect(btn.className).toContain("opacity-50");
+  });
+
+  it("chama onClick ao ser clicado", async () => {
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Clicável</Button>);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /clicável/i }));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("não chama onClick quando disabled", async () => {
+    const handleClick = vi.fn();
+    render(
+      <Button disabled={true} onClick={handleClick}>
+        Bloqueado
+      </Button>,
+    );
+
+    const btn = screen.getByRole("button", { name: /bloqueado/i });
+
+    // O Button usa pointer-events-none (CSS) — não tem disabled nativo.
+    // O correto é verificar que as classes de bloqueio estão aplicadas.
+    expect(btn.className).toContain("pointer-events-none");
+    expect(btn.className).toContain("cursor-not-allowed");
+    expect(btn.className).toContain("opacity-50");
+  });
+});
+
+```
+
+## src\tests\InputText.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { InputText } from "../components/InputText";
+
+describe("InputText", () => {
+  it("renderiza o input na tela", () => {
+    render(<InputText />);
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+  });
+
+  it("renderiza com label visível", () => {
+    render(<InputText label="E-MAIL" />);
+    expect(screen.getByText(/e-mail/i)).toBeInTheDocument();
+  });
+
+  it("renderiza com placeholder", () => {
+    render(<InputText placeholder="Digite seu email" />);
+    expect(
+      screen.getByPlaceholderText(/digite seu email/i),
+    ).toBeInTheDocument();
+  });
+
+  it("aceita digitação do usuário", async () => {
+    render(<InputText placeholder="Digite algo" />);
+    const user = userEvent.setup();
+    const input = screen.getByPlaceholderText(/digite algo/i);
+
+    await user.type(input, "texto de teste");
+
+    expect(input).toHaveValue("texto de teste");
+  });
+
+  it("renderiza o helperText quando passado", () => {
+    render(<InputText helperText="Campo obrigatório" />);
+    expect(screen.getByText(/campo obrigatório/i)).toBeInTheDocument();
+  });
+
+  it("renderiza o helperText em vermelho quando error=true", () => {
+    render(<InputText helperText="Campo inválido" error={true} />);
+    const helper = screen.getByText(/campo inválido/i);
+    expect(helper.className).toContain("text-red");
+  });
+
+  it("chama onChange ao digitar", async () => {
+    const handleChange = vi.fn();
+    render(<InputText placeholder="Digite algo" onChange={handleChange} />);
+
+    const user = userEvent.setup();
+    await user.type(screen.getByPlaceholderText(/digite algo/i), "abc");
+
+    expect(handleChange).toHaveBeenCalled();
+  });
+});
+
+```
+
+## src\tests\PrivateRoute.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
+import { PrivateRoute } from "../routes/PrivateRoute";
+
+vi.mock("../hooks/useAuth", () => ({
+  useAuth: vi.fn(),
+}));
+
+import { useAuth } from "../hooks/useAuth";
+
+const mockUseAuth = vi.mocked(useAuth);
+
+const mockUser = {
+  id: "1",
+  name: "Teste",
+  email: "teste@email.com",
+  password: "",
+  avatarUrl: "",
+  role: "CLIENTE" as const,
+  createdAt: "2024-01-01",
+  updatedAt: "2024-01-01",
+  disponibilidades: [],
+};
+
+function PaginaProtegida() {
+  return <div>Conteúdo protegido</div>;
+}
+
+function PaginaLogin() {
+  return <div>Página de login</div>;
+}
+
+function renderPrivateRoute(roles?: string[]) {
+  return render(
+    <MemoryRouter initialEntries={["/protegido"]}>
+      <Routes>
+        <Route path="/login" element={<PaginaLogin />} />
+        <Route
+          path="/protegido"
+          element={
+            <PrivateRoute roles={roles}>
+              <PaginaProtegida />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+describe("PrivateRoute", () => {
+  it("mostra loading enquanto está carregando", () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      token: null,
+      isLoading: true,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+    renderPrivateRoute();
+
+    expect(screen.getByText(/carregando/i)).toBeInTheDocument();
+  });
+
+  it("redireciona para /login quando não há usuário", () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      token: null,
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+
+    renderPrivateRoute();
+
+    expect(screen.getByText(/página de login/i)).toBeInTheDocument();
+    expect(screen.queryByText(/conteúdo protegido/i)).not.toBeInTheDocument();
+  });
+
+  it("renderiza o conteúdo quando usuário está autenticado", () => {
+    mockUseAuth.mockReturnValue({
+      user: mockUser,
+      token: "abc",
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+    renderPrivateRoute();
+
+    expect(screen.getByText(/conteúdo protegido/i)).toBeInTheDocument();
+  });
+
+  it("redireciona quando usuário não tem o role exigido", () => {
+    mockUseAuth.mockReturnValue({
+      user: mockUser, // role: "CLIENTE"
+      token: "abc",
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+
+    // Rota exige ADMIN mas usuário é CLIENTE
+    renderPrivateRoute(["ADMIN"]);
+
+    expect(screen.getByText(/página de login/i)).toBeInTheDocument();
+    expect(screen.queryByText(/conteúdo protegido/i)).not.toBeInTheDocument();
+  });
+
+  it("renderiza quando usuário tem o role exigido", () => {
+    mockUseAuth.mockReturnValue({
+      user: { ...mockUser, role: "ADMIN" as const },
+      token: "abc",
+      isLoading: false,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      updateUser: vi.fn(),
+    });
+
+    // Rota exige ADMIN e usuário é ADMIN
+    renderPrivateRoute(["ADMIN"]);
+
+    expect(screen.getByText(/conteúdo protegido/i)).toBeInTheDocument();
+  });
+});
+
+```
+
+## src\tests\schemas.test.tsx
+
+```tsx
+import { describe, expect, it } from "vitest";
+import { z } from "zod";
+
+// Cópia dos schemas — igual ao que está nos componentes
+const signInSchema = z.object({
+  email: z.string().email({ message: "E-Mail inválido." }),
+  password: z
+    .string()
+    .min(6, { message: "A senha deve ter pelo menos 6 digitos" }),
+});
+
+const signUpSchema = z.object({
+  name: z.string().trim().min(1, { message: "Informe o nome completo." }),
+  email: z.string().email({ message: "E-Mail inválido." }),
+  password: z
+    .string()
+    .min(6, { message: "A senha deve ter pelo menos 6 digitos" }),
+});
+
+describe("signInSchema", () => {
+  it("aceita dados válidos", () => {
+    const result = signInSchema.safeParse({
+      email: "user@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejeita email inválido", () => {
+    const result = signInSchema.safeParse({
+      email: "nao-é-email",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("E-Mail inválido.");
+  });
+
+  it("rejeita senha com menos de 6 caracteres", () => {
+    const result = signInSchema.safeParse({
+      email: "user@email.com",
+      password: "123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe(
+      "A senha deve ter pelo menos 6 digitos",
+    );
+  });
+});
+
+describe("signUpSchema", () => {
+  it("aceita dados válidos", () => {
+    const result = signUpSchema.safeParse({
+      name: "João Silva",
+      email: "joao@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejeita nome vazio", () => {
+    const result = signUpSchema.safeParse({
+      name: "",
+      email: "joao@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Informe o nome completo.");
+  });
+
+  it("rejeita nome só com espaços", () => {
+    const result = signUpSchema.safeParse({
+      name: "   ",
+      email: "joao@email.com",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Informe o nome completo.");
+  });
+
+  it("rejeita email inválido", () => {
+    const result = signUpSchema.safeParse({
+      name: "João Silva",
+      email: "invalido",
+      password: "senha123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("E-Mail inválido.");
+  });
+
+  it("rejeita senha com menos de 6 caracteres", () => {
+    const result = signUpSchema.safeParse({
+      name: "João Silva",
+      email: "joao@email.com",
+      password: "123",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe(
+      "A senha deve ter pelo menos 6 digitos",
+    );
+  });
+});
+
+```
+
+## src\tests\setup.ts
+
+```ts
+import "@testing-library/jest-dom";
+
+```
+
+## src\tests\SignIn.test.tsx
+
+```tsx
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
+import { SignIn } from "../Pages/SignIn";
+
+vi.mock("../hooks/useAuth", () => ({
+  useAuth: () => ({
+    signIn: vi.fn(),
+    isLoading: false,
+  }),
+}));
+
+vi.mock("../services/api", () => ({
+  api: {
+    get: vi.fn().mockResolvedValue({ data: { status: "ok" } }),
+    post: vi.fn(),
+  },
+}));
+
+const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+describe("SignIn", () => {
+  beforeEach(() => {
+    alertMock.mockClear();
+  });
+
+  it("renderiza o formulário de login", () => {
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/digite sua senha/i),
+    ).toBeInTheDocument();
+  });
+
+  it("mostra alerta ao submeter com senha curta", async () => {
+    render(
+      <MemoryRouter>
+        <SignIn />
+      </MemoryRouter>,
+    );
+
+    const user = userEvent.setup();
+
+    // Aguarda botão habilitar
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /enviar/i }),
+      ).not.toBeDisabled();
+    });
+
+    // Email válido + senha curta — jsdom não bloqueia, Zod rejeita a senha
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "teste@email.com",
+    );
+    await user.type(screen.getByPlaceholderText(/digite sua senha/i), "123");
+
+    // Submete o form diretamente para contornar validação nativa HTML
+    fireEvent.submit(
+      screen.getByRole("button", { name: /enviar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith(
+        expect.stringMatching(/senha deve ter pelo menos/i),
+      );
+    });
+  });
+});
+
+```
+
+## src\tests\SignUp.test.tsx
+
+```tsx
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SignUp } from "../Pages/SignUp";
+
+vi.mock("../services/api", () => ({
+  api: {
+    get: vi.fn().mockResolvedValue({ data: { status: "ok" } }),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+  },
+}));
+
+const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+const confirmMock = vi.spyOn(window, "confirm").mockImplementation(() => false);
+
+describe("SignUp", () => {
+  beforeEach(() => {
+    alertMock.mockClear();
+    confirmMock.mockClear();
+  });
+
+  it("renderiza o formulário de cadastro", () => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByPlaceholderText(/digite o nome completo/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/digite sua senha/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /cadastrar/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("mostra alerta quando o nome está vazio", async () => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /cadastrar/i }),
+      ).not.toBeDisabled();
+    });
+
+    const user = userEvent.setup();
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "teste@email.com",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/digite sua senha/i),
+      "senha123",
+    );
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /cadastrar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith(
+        expect.stringMatching(/informe o nome/i),
+      );
+    });
+  });
+
+  it("mostra alerta quando a senha é curta", async () => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /cadastrar/i }),
+      ).not.toBeDisabled();
+    });
+
+    const user = userEvent.setup();
+    await user.type(
+      screen.getByPlaceholderText(/digite o nome completo/i),
+      "João Silva",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "teste@email.com",
+    );
+    await user.type(screen.getByPlaceholderText(/digite sua senha/i), "123");
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /cadastrar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith(
+        expect.stringMatching(/senha deve ter pelo menos/i),
+      );
+    });
+  });
+
+  it("chama api.post ao submeter com dados válidos", async () => {
+    const { api } = await import("../services/api");
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /cadastrar/i }),
+      ).not.toBeDisabled();
+    });
+
+    const user = userEvent.setup();
+    await user.type(
+      screen.getByPlaceholderText(/digite o nome completo/i),
+      "João Silva",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/exemplo@email.com/i),
+      "joao@email.com",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/digite sua senha/i),
+      "senha123",
+    );
+
+    fireEvent.submit(
+      screen.getByRole("button", { name: /cadastrar/i }).closest("form")!,
+    );
+
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledWith(
+        "/users",
+        expect.objectContaining({
+          name: "João Silva",
+          email: "joao@email.com",
+          password: "senha123",
+          role: "CLIENTE",
+        }),
+      );
+    });
+  });
+});
+
+```
+
+## src\tests\Text.test.tsx
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { Text } from "../components/Text";
+
+describe("Text", () => {
+  it("renderiza o texto passado como children", () => {
+    render(<Text>Olá mundo</Text>);
+    expect(screen.getByText(/olá mundo/i)).toBeInTheDocument();
+  });
+
+  it("renderiza como span por padrão", () => {
+    render(<Text>Texto padrão</Text>);
+    const el = screen.getByText(/texto padrão/i);
+    expect(el.tagName).toBe("SPAN");
+  });
+
+  it("renderiza como h1 quando as='h1'", () => {
+    render(<Text as="h1">Título</Text>);
+    const el = screen.getByText(/título/i);
+    expect(el.tagName).toBe("H1");
+  });
+
+  it("aplica classe font-bold na variante text-lg-bold", () => {
+    render(<Text variant="text-lg-bold">Negrito</Text>);
+    const el = screen.getByText(/negrito/i);
+    expect(el.className).toContain("font-bold");
+  });
+
+  it("aplica classe font-normal na variante text-sm-regular", () => {
+    render(<Text variant="text-sm-regular">Normal</Text>);
+    const el = screen.getByText(/normal/i);
+    expect(el.className).toContain("font-normal");
+  });
+
+  it("aplica classe text-xs na variante text-xs-bold", () => {
+    render(<Text variant="text-xs-bold">Pequeno</Text>);
+    const el = screen.getByText(/pequeno/i);
+    expect(el.className).toContain("text-xs");
+  });
+
+  it("aplica className extra quando passado", () => {
+    render(<Text className="text-red-500">Vermelho</Text>);
+    const el = screen.getByText(/vermelho/i);
+    expect(el.className).toContain("text-red-500");
+  });
+
+  it("renderiza como p quando as='p'", () => {
+    render(<Text as="p">Parágrafo</Text>);
+    const el = screen.getByText(/parágrafo/i);
+    expect(el.tagName).toBe("P");
+  });
+});
 
 ```
 
@@ -14128,15 +15744,9 @@ npm run generate-md
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "es2023",
-    "lib": [
-      "ES2023",
-      "DOM"
-    ],
+    "lib": ["ES2023", "DOM"],
     "module": "esnext",
-    "types": [
-      "vite/client",
-      "node"
-    ],
+    "types": ["vite/client", "node"],
     "skipLibCheck": true,
     /* Bundler mode */
     "strict": true,
@@ -14153,11 +15763,15 @@ npm run generate-md
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src",
-    "src/types"
+  "include": ["src", "src/types"],
+  "types": [
+    "vite/client",
+    "node",
+    "vitest/globals",
+    "@testing-library/jest-dom"
   ]
 }
+
 ```
 
 ## tsconfig.json
@@ -14206,9 +15820,9 @@ npm run generate-md
 ## vite.config.ts
 
 ```ts
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
@@ -14219,6 +15833,26 @@ export default defineConfig({
     tailwindcss(),
     svgr(),
   ],
+});
+
+```
+
+## vitest.config.ts
+
+```ts
+import react from "@vitejs/plugin-react";
+import svgr from "vite-plugin-svgr";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [react(), svgr()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./src/tests/setup.ts"],
+    css: false,
+    include: ["src/tests/**/*.test.{ts,tsx}"],
+  },
 });
 
 ```

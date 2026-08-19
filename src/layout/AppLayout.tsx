@@ -1,15 +1,12 @@
-import { useState, type ReactNode } from "react";
-
-import { Logo } from "../components/Logo";
-import { Sidebar } from "../components/Sidebar";
-import { Avatar } from "../components/Avatar";
-import { ButtonIcon } from "../components/ButtonIcon";
-
+import { type ReactNode, useState } from "react";
 import MenuIcon from "../assets/icons/menu.svg?react";
 import XIcon from "../assets/icons/x.svg?react";
-
-import { useAuth } from "../hooks/useAuth";
+import { Avatar } from "../components/Avatar";
+import { ButtonIcon } from "../components/ButtonIcon";
+import { Logo } from "../components/Logo";
+import { Sidebar } from "../components/Sidebar";
 import { UserMenu } from "../components/UserMenu.tsx";
+import { useAuth } from "../hooks/useAuth";
 
 interface AppLayoutProps {
   children: ReactNode;

@@ -1,49 +1,23 @@
-import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import CheckIcon from "../../assets/icons/circle-check-big.svg?react";
 import ClockIcon from "../../assets/icons/clock-2.svg?react";
-
+import PenLineIcon from "../../assets/icons/pen-line.svg?react";
+import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import type { Chamado, Status } from "../../contexts/Chamado/model/Chamado";
 import { getStatusConfig } from "../../utils/statusConfig";
 import { Avatar } from "../Avatar";
 import { Button } from "../Button";
 import { Card } from "../Card";
 import Divider from "../Divider";
+import { NavLink } from "../NavLink";
 import { Tags } from "../Tags";
 import { Text } from "../Text";
-import { NavLink } from "../NavLink";
-
-import { useState } from "react";
-import { api } from "../../services/api";
-import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
-import type { Chamado, Status } from "../../contexts/Chamado/model/Chamado";
 
 interface ChamadoCardProps {
   chamado: Chamado;
 }
 
-type Status = "ABERTO" | "EM_ATENDIMENTO" | "ENCERRADO";
-
 export function ChamadoCard({ chamado }: ChamadoCardProps) {
   const { updateChamado } = useChamados();
-  const [loading, setLoading] = useState(false);
-
-  async function handleUpdateStatus(novoStatus: Status) {
-    try {
-      setLoading(true);
-
-      await api.patch(`/chamados/${chamado.id}`, {
-        status: novoStatus,
-      });
-
-      // Recarrega os chamados para que o card
-      // mude de seção conforme o novo status
-      window.location.reload();
-    } catch (error) {
-      console.error("Erro ao atualizar status do chamado:", error);
-      alert("Não foi possível atualizar o status do chamado.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function handleStatusChange(status: Status) {
     try {
@@ -51,39 +25,6 @@ export function ChamadoCard({ chamado }: ChamadoCardProps) {
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
     }
-  }
-
-  function renderStatusButton() {
-    if (chamado.status === "ABERTO") {
-      return (
-        <Button
-          variant="primary"
-          size="sm"
-          type="button"
-          disabled={loading}
-          onClick={() => handleUpdateStatus("EM_ATENDIMENTO")}
-        >
-          {loading ? "..." : "Iniciar"}
-        </Button>
-      );
-    }
-
-    if (chamado.status === "EM_ATENDIMENTO") {
-      return (
-        <Button
-          variant="primary"
-          size="sm"
-          type="button"
-          icon={CheckIcon}
-          disabled={loading}
-          onClick={() => handleUpdateStatus("ENCERRADO")}
-        >
-          {loading ? "..." : "Encerrar"}
-        </Button>
-      );
-    }
-
-    return null;
   }
 
   return (
