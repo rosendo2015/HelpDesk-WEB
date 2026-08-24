@@ -73,7 +73,7 @@ export function EditarChamadoAdmin() {
       </header>
       <Container className="w-full md:max-w-[900px]">
         <form className="mx-auto flex flex-col gap-6 md:flex-row ">
-          <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[500px]">
+          <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[600px]">
             <div className="flex items-start justify-between mb-6">
               <div className="flex flex-col gap-2">
                 <Text as="h2" variant="heading-md-normal">
@@ -132,7 +132,7 @@ export function EditarChamadoAdmin() {
             </div>
           </Card>
 
-          <Card className="flex flex-col p-6 w-[400px] h-fit">
+          <Card className="flex flex-col p-6 w-full md:max-w-[300px] h-fit">
             <div>
               <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
                 Técnico responsável
