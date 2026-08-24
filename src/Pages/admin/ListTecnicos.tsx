@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { Icon } from "../../components/Icon";
-import { ActionLink } from "../../components/ActionLink";
-import { Text } from "../../components/Text";
-import { Avatar } from "../../components/Avatar";
-import { Skeleton } from "../../components/Skeleton";
-import { HorariosList } from "../../components/HorariosList";
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
 import PlusIcon from "../../assets/icons/plus.svg?react";
-import { api } from "../../services/api";
+import { ActionLink } from "../../components/ActionLink";
+import { Avatar } from "../../components/Avatar";
+import { HorariosList } from "../../components/HorariosList";
+import { Icon } from "../../components/Icon";
+import { Skeleton } from "../../components/Skeleton";
+import { Text } from "../../components/Text";
 import type { Users } from "../../contexts/User/model/users";
+import { api } from "../../services/api";
 
 export function TecnicosAdmin() {
   const [tecnicos, setTecnicos] = useState<Users[]>([]);
@@ -42,7 +42,7 @@ export function TecnicosAdmin() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-267.5 p-4 sm:p-6">
+    <div className="mx-auto max-w-267.5">
       <header className="flex items-center justify-between mb-4">
         <Text variant="text-lg-bold" className="text-blue-dark">
           Técnicos

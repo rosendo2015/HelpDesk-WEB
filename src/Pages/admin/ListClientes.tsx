@@ -1,18 +1,11 @@
 import { useEffect, useState } from "react";
-import { api } from "../../services/api";
-import type { Users } from "../../contexts/User/model/users";
 import z, { ZodError } from "zod";
-
-import { Text } from "../../components/Text";
-import { Avatar } from "../../components/Avatar";
-import { Skeleton } from "../../components/Skeleton";
-import { Icon } from "../../components/Icon";
+import PenLineIcon from "../../assets/icons/pen-line.svg?react";
+import TrachIcon from "../../assets/icons/trash.svg?react";
 import { ActionLink } from "../../components/ActionLink";
+import { Avatar } from "../../components/Avatar";
 import { Button } from "../../components/Button";
 import { ButtonIcon } from "../../components/ButtonIcon";
-import { InputText } from "../../components/InputText";
-import Divider from "../../components/Divider";
-
 import {
   Dialog,
   DialogClose,
@@ -21,9 +14,13 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "../../components/Dialog";
-
-import PenLineIcon from "../../assets/icons/pen-line.svg?react";
-import TrachIcon from "../../assets/icons/trash.svg?react";
+import Divider from "../../components/Divider";
+import { Icon } from "../../components/Icon";
+import { InputText } from "../../components/InputText";
+import { Skeleton } from "../../components/Skeleton";
+import { Text } from "../../components/Text";
+import type { Users } from "../../contexts/User/model/users";
+import { api } from "../../services/api";
 
 const clienteSchema = z.object({
   name: z
@@ -97,7 +94,7 @@ export function ClientesAdmin() {
   }
 
   return (
-    <div className="mx-auto max-w-267.5 p-4 sm:p-6">
+    <div className="mx-auto max-w-267.5">
       <header className="flex items-center justify-between mb-4">
         <Text as="h1" variant="text-lg-bold" className="text-blue-dark">
           Clientes

@@ -38,7 +38,7 @@ export function ChamadosAdmin() {
       .catch((err) => console.error("Erro ao buscar chamados:", err));
   }, []);
   return (
-    <div className="p-4 sm:p-6">
+    <div className="">
       <header className="mb-4">
         <Text variant="text-lg-bold" className="text-blue-dark">
           Chamados
@@ -55,16 +55,13 @@ export function ChamadosAdmin() {
                     Atualizado em
                   </Text>
                 </div>
-              </th>
-
+              </th>{" "}
               <th className="px-3 py-2 text-left hidden lg:table-cell">Id</th>
-
               <th className="px-3 py-2 text-left">
                 <Text variant="heading-md-bold" className="">
                   Título e Serviço
                 </Text>
               </th>
-
               <th className="px-3 py-2 text-left hidden lg:table-cell">
                 Valor total
               </th>
