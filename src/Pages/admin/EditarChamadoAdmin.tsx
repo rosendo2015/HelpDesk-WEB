@@ -10,6 +10,7 @@ import Divider from "../../components/Divider";
 import { Tags } from "../../components/Tags";
 import { Text } from "../../components/Text";
 import { useChamados } from "../../contexts/Chamado/hooks/useChamados";
+import { formatCurrencyBRL } from "../../utils/formatCurrency";
 import { getStatusConfig } from "../../utils/statusConfig";
 
 export function EditarChamadoAdmin() {
@@ -23,13 +24,18 @@ export function EditarChamadoAdmin() {
   }
 
   const chamadoId = chamado.id;
+
+  const servicoBase = chamado.services[0];
+
+  const adicionais = chamado.services.slice(1);
+
   function handleUpdateStatus(newStatus: "EM_ATENDIMENTO" | "ENCERRADO") {
     updateChamado(chamadoId, { status: newStatus });
   }
 
   return (
-    <div className="mx-auto md:w-full max-w-[800px]">
-      <header className="px-3 mx-auto mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 md:w-full md:max-w-[800px] ">
+    <div className="mx-auto md:w-full max-w-[900px]">
+      <header className="px-3 mx-auto mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 md:w-full md:max-w-[900px] ">
         <div className="flex flex-col items-start">
           <button
             type="button"
@@ -65,9 +71,9 @@ export function EditarChamadoAdmin() {
           </Button>
         </div>
       </header>
-      <Container className="w-full md:max-w-[800px]">
+      <Container className="w-full md:max-w-[900px]">
         <form className="mx-auto flex flex-col gap-6 md:flex-row ">
-          <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[480px]">
+          <Card className="flex flex-col gap-4 p-6 w-full md:max-w-[500px]">
             <div className="flex items-start justify-between mb-6">
               <div className="flex flex-col gap-2">
                 <Text as="h2" variant="heading-md-normal">
@@ -126,7 +132,7 @@ export function EditarChamadoAdmin() {
             </div>
           </Card>
 
-          <Card className="flex flex-col p-6 w-[269px] h-fit">
+          <Card className="flex flex-col p-6 w-[400px] h-fit">
             <div>
               <Text variant="text-sm-bold" className="text-gray-400 mb-2 block">
                 Técnico responsável
@@ -146,32 +152,36 @@ export function EditarChamadoAdmin() {
             </div>
 
             <div className="flex flex-col">
-              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+              <Text variant="text-sm-bold" className="text-gray-400 my-3">
                 Valores
               </Text>
               <div className="flex justify-between">
                 <Text>Preço Base</Text>
-                <Text>R$ {chamado.totalPrice.toFixed(2)}</Text>
+                <Text>{formatCurrencyBRL(servicoBase?.price ?? 0)}</Text>
               </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <Text variant="text-sm-bold" className="text-gray-400 mb-2">
+            <div className="flex flex-col gap-1 mb-3">
+              <Text variant="text-sm-bold" className="text-gray-400 my-3">
                 Adicionais
               </Text>
-              {/** nessa parte deve exibir os serviços adicionais */}
-              {chamado.services.slice(1).map((service) => (
-                <div key={service.id} className="flex justify-between">
-                  <Text>{service.nome}</Text>
-                  <Text>R$ {service.price.toFixed(2)}</Text>
-                </div>
-              ))}
+
+              {adicionais.length > 0 ? (
+                adicionais.map((service) => (
+                  <div key={service.id} className="flex justify-between">
+                    <Text>{service.nome}</Text>
+                    <Text>{formatCurrencyBRL(service.price)}</Text>
+                  </div>
+                ))
+              ) : (
+                <Text className="text-gray-400">Nenhum serviço adicional</Text>
+              )}
             </div>
             <Divider />
-            <div className="flex justify-between">
+            <div className="flex justify-between mt-3">
               <Text variant="heading-md-bold">Total</Text>
-              {/** aqui deve exibir o total do preço base + adicionais */}
+
               <Text variant="heading-md-bold">
-                R$ {chamado.totalPrice.toFixed(2)}
+                {formatCurrencyBRL(chamado.totalPrice)}
               </Text>
             </div>
           </Card>
