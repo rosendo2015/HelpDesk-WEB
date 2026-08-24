@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Text } from "../../components/Text";
-import { Icon } from "../../components/Icon";
-import { ActionLink } from "../../components/ActionLink";
-import { Tags } from "../../components/Tags";
-import { Avatar } from "../../components/Avatar";
 import PenLineIcon from "../../assets/icons/pen-line.svg?react";
+import { ActionLink } from "../../components/ActionLink";
+import { Avatar } from "../../components/Avatar";
+import { Icon } from "../../components/Icon";
+import { Tags } from "../../components/Tags";
+import { Text } from "../../components/Text";
 import { api } from "../../services/api";
 import { getStatusConfig } from "../../utils/statusConfig";
 
@@ -154,7 +154,7 @@ export function ChamadosAdmin() {
                 <td className="max-w-[52px] px-3 py-2">
                   <div className="flex items-center justify-end">
                     <ActionLink
-                      to={`editarChamados/${chamado.id}`}
+                      to={`/admin/editarChamados/${chamado.id}`}
                       variant="subtitle"
                       size="md"
                     >

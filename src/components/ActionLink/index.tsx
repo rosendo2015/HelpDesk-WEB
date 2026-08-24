@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { Link } from "react-router-dom";
 import { Icon } from "../Icon";
 import { Text } from "../Text";
 import {
@@ -29,8 +30,8 @@ export function ActionLink({
   onClick,
 }: ActionLinkProps) {
   return (
-    <a
-      href={to}
+    <Link
+      to={to}
       onClick={onClick}
       className={clsx(
         actionLinkVariants({ variant, size, disabled }),
@@ -53,6 +54,6 @@ export function ActionLink({
           {children}
         </Text>
       )}
-    </a>
+    </Link>
   );
 }
