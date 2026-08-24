@@ -1,11 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import {
-  type ReactNode,
-  startTransition,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import type { Users } from "../contexts/User/model/users";
 import { api } from "../services/api";
 import { AuthContext } from "./AuthContext";
@@ -33,7 +27,7 @@ export function AuthProvider({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    const loadStoredData = async () => {
+    const loadStoredData = () => {
       const storedUser = localStorage.getItem("@helpdesk:user");
       const storedToken = localStorage.getItem("@helpdesk:token");
 
@@ -52,15 +46,14 @@ export function AuthProvider({ children }: Props) {
           return;
         }
 
+        const parsedUser: Users = JSON.parse(storedUser);
+
         api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
 
-        // 🔹 Usa startTransition para evitar render síncrono
-        startTransition(() => {
-          setUser(JSON.parse(storedUser));
-          setToken(storedToken);
-        });
+        setUser(parsedUser);
+        setToken(storedToken);
       } catch (error) {
-        console.error("Erro ao carregar token:", error);
+        console.error("Erro ao carregar dados de autenticação:", error);
         signOut();
       } finally {
         setIsLoading(false);
