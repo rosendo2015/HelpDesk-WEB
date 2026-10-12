@@ -5,7 +5,7 @@
 </p>
 
 Interface web desenvolvida em **React**, **TypeScript** e **Vite**, conectada à [HelpDesk API](https://github.com/rosendo2015/HelpDesk-API).  
-O sistema oferece uma experiência moderna e intuitiva para gerenciamento de chamados, usuários e disponibilidade de técnicos.
+O sistema oferece uma experiência moderna e intuitiva para gerenciamento de chamados, usuários e disponibilidade de técnicos, design desenvolvido pela Rocketseate.
 
 ![React](https://img.shields.io/badge/React-18.x-61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
